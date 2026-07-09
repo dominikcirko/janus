@@ -1,0 +1,12 @@
+package io.github.janus.identity.application.port.in.command;
+
+import java.util.Set;
+import java.util.UUID;
+
+public record UserCreateCommand(String username,
+                                String familyName,
+                                String givenName,
+                                String email,
+                                Set<UUID> roleIds,
+                                String password,
+                                boolean verified) {}

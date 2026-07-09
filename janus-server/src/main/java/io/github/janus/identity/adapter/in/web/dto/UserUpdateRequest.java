@@ -6,14 +6,12 @@ import java.util.UUID;
 /*
  * Represents update requests for users inside existing tenant
  * */
-public record UserUpdateRequest(
-        String username,
-        String familyName,
-        String givenName,
-        String email,
-        Set<UUID> roleIds,
-        String password,
-        boolean verified
-) {
-}
+public record UserUpdateRequest(String username,
+                                String familyName,
+                                String givenName,
+                                String email,
+                                UUID tenantId,
+                                Set<UUID> roleIds,
+                                String password,
+                                boolean verified) {}
 //take tenant id from endpoint?

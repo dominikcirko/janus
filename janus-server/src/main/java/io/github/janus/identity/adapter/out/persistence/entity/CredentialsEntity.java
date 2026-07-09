@@ -15,6 +15,7 @@ import lombok.*;
 public class CredentialsEntity extends AbstractEntity {
 
     @Column
+    @Enumerated(EnumType.STRING)
     private CredentialType type;
 
     @ManyToOne
