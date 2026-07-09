@@ -1,6 +1,7 @@
-package io.github.janus.identity;
+package io.github.janus.identity.adapter.out.persistence.entity;
 
 import io.github.janus.common.AbstractEntity;
+import io.github.janus.identity.domain.type.SystemRoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

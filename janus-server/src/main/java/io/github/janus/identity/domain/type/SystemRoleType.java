@@ -1,4 +1,4 @@
-package io.github.janus.identity;
+package io.github.janus.identity.domain.type;
 
 public enum SystemRoleType {
     SUPER_ADMIN, // admin on customer level and all tenants inside customer
