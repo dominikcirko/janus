@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -20,16 +21,16 @@ import java.util.UUID;
 public abstract class AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
-    private long createdDate;
+    private Instant createdAt;
 
-    @Column(name = "modified_date")
+    @Column(name = "updated_at")
     @LastModifiedDate
-    private long modifiedDate;
+    private Instant updatedAt;
 
     // todo: add after implementing JanusAuditAware
 

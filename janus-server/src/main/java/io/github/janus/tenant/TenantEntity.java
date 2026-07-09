@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
 @Entity
+@Table(name = "tenant")
 @EqualsAndHashCode(callSuper = true)
 public class TenantEntity extends AbstractEntity {
 
@@ -24,7 +25,7 @@ public class TenantEntity extends AbstractEntity {
 
     @Column(name = "enviroment_tag")
     @Enumerated(EnumType.STRING)
-    private EnviromentTag enviromentTag;
+    private EnvironmentTag environmentTag;
 
 
 }

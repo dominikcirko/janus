@@ -1,8 +1,8 @@
 package io.github.janus.identity.adapter.in.web;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class UserController {
 
     //no need for usergetrequest, map directly to Query

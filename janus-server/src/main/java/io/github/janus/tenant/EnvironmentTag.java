@@ -1,6 +1,6 @@
 package io.github.janus.tenant;
 
-public enum EnviromentTag {
+public enum EnvironmentTag {
     DEVELOPMENT,
     STAGING,
     PRODUCTION,
