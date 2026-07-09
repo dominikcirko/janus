@@ -12,7 +12,8 @@ public record UserCreateRequest(
         String givenName,
         String email,
         Set<UUID> roleIds,
-        String password
+        String password,
+        boolean verified
     ) {
 }
 //take tenant id from endpoint?

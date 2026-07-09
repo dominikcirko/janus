@@ -1,11 +1,11 @@
 package io.github.janus.identity.application.port.out;
 
-import io.github.janus.identity.adapter.out.persistence.entity.UserEntity;
+import io.github.janus.identity.domain.model.User;
 
 import java.util.UUID;
 
 public interface UserRepository {
 
-    UserEntity findById(UUID userId);
+    User findById(UUID userId);
 
 }

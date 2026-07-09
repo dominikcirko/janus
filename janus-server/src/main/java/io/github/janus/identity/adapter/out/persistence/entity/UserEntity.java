@@ -29,6 +29,9 @@ public class UserEntity extends AbstractEntity {
     @Column
     private String email;
 
+    @Column
+    private boolean verified;
+
     @ManyToMany
     @JoinTable(
             name = "user_roles",

@@ -11,7 +11,8 @@ public record UserResponse(
         String familyName,
         String givenName,
         String email,
-        Set<RoleResponse> roles
+        Set<RoleResponse> roles,
+        boolean verified
 ) {
 }
 //take tenant id from endpoint?
