@@ -1,5 +1,6 @@
 package io.github.janus.identity.application.service;
 
+import io.github.janus.identity.application.port.in.query.user.UserGetAllQuery;
 import io.github.janus.identity.application.port.in.usecase.user.CreateUserUseCase;
 import io.github.janus.identity.application.port.in.usecase.user.DeleteUserUseCase;
 import io.github.janus.identity.application.port.in.usecase.user.GetUserUseCase;
@@ -13,6 +14,8 @@ import io.github.janus.identity.application.port.in.query.user.UserGetByUsername
 import io.github.janus.identity.domain.model.User;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService implements CreateUserUseCase,
@@ -58,6 +61,11 @@ public class UserService implements CreateUserUseCase,
 
     @Override
     public User getbyEmail(UserGetByEmailQuery query) {
+        return null;
+    }
+
+    @Override
+    public List<User> getAll(UserGetAllQuery query) {
         return null;
     }
 
