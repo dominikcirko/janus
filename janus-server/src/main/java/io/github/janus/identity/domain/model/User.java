@@ -1,5 +1,6 @@
 package io.github.janus.identity.domain.model;
 
+import io.github.janus.identity.domain.type.CredentialType;
 import io.github.janus.tenant.Tenant;
 import lombok.Data;
 
@@ -16,6 +17,6 @@ public class User {
     private boolean verified;
     private Set<Role> roles;
     private Tenant tenant;
-    private List<Credentials> credentials;
+    private List<Credential> credentials;
 
 }

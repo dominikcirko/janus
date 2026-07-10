@@ -1,4 +1,4 @@
 package io.github.janus.identity.domain.model;
 
-public class SystemRole {
+public class Permission {
 }

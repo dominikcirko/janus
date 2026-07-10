@@ -1,4 +1,4 @@
-package io.github.janus.identity.application.port.in.query;
+package io.github.janus.identity.application.port.in.query.user;
 
 import java.util.UUID;
 

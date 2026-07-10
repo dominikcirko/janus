@@ -4,14 +4,15 @@ import io.github.janus.common.AbstractEntity;
 import io.github.janus.tenant.TenantEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "users")
-@Builder
+@Table(name = "user")
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor

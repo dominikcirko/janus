@@ -1,4 +1,4 @@
-package io.github.janus.identity.application.port.in.command;
+package io.github.janus.identity.application.port.in.command.credential;
 
 import java.util.UUID;
 
