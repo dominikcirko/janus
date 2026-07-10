@@ -26,22 +26,20 @@ public class UserService implements CreateUserUseCase,
         DeleteUserUseCase, GetUserUseCase, UpdateUserUseCase {
 
 
-    private final Argon2PasswordEncoder encoder;
     private final UserApplicationMapper mapper;
     private final UserRepository userRepository;
     private final CreateCredentialUseCase credentialUseCase;
 
-    public UserService(Argon2PasswordEncoder encoder,
-                       UserApplicationMapper mapper,
-                       UserRepository userRepository, CreateCredentialUseCase credentialUseCase) {
-        this.encoder = encoder;
+    public UserService(UserApplicationMapper mapper,
+                       UserRepository userRepository,
+                       CreateCredentialUseCase credentialUseCase) {
         this.mapper = mapper;
         this.userRepository = userRepository;
         this.credentialUseCase = credentialUseCase;
     }
 
     @Override
-    public User create(UserCreateCommand command) {
+    public void create(UserCreateCommand command) {
         var user = userRepository.save(mapper.toDomain(command));
         credentialUseCase.create(
                 new CredentialCreateCommand(
@@ -50,7 +48,6 @@ public class UserService implements CreateUserUseCase,
                         user.getId()
                 )
         );
-        return userRepository.findById(user.getId());
     }
 
     @Override
