@@ -79,8 +79,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody UserCreateRequest request) {
         var tenantId = UUID.randomUUID(); // todo: fetch tenant id from jwt in auth header
-        var command = mapper.createReqToCommand(request, tenantId);
-        createUserUseCase.create(command);
+        var userCommand = mapper.createReqToCommand(request, tenantId);
+        createUserUseCase.create(userCommand);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @PutMapping

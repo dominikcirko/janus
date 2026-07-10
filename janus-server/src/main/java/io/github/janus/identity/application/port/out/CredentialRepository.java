@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface CredentialRepository {
 
     Credential findById(UUID id, UUID userId);
-    void save(Credential credential);
+    Credential save(Credential credential);
     Credential update(Credential credential);
     void delete(UUID id, UUID userId);
     List<Credential> findAllByUserId(UUID userId);

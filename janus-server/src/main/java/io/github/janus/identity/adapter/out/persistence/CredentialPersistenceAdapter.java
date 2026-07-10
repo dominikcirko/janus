@@ -33,10 +33,12 @@ public class CredentialPersistenceAdapter implements CredentialRepository {
     }
 
     @Override
-    public void save(Credential credential) {
+    public Credential save(Credential credential) {
         var entity = mapper.toEntity(credential);
         entity.setUser(userRepository.getReferenceById(credential.getUserId()));
-        repository.save(entity);
+
+        var saved = repository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override

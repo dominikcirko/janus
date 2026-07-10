@@ -34,12 +34,13 @@ public class CredentialService implements CreateCredentialUseCase,
     }
 
     @Override
-    public void create(CredentialCreateCommand command) {
+    public Credential create(CredentialCreateCommand command) {
         var credential = mapper.toDomain(command);
         if (command.type() == CredentialType.PASSWORD) {
-            credential.hashPassword(command.type(), encoder.encode(command.value()));
+            credential.setPasswordHash(command.type(), encoder.encode(command.value()));
         }
-        credentialRepository.save(credential);
+        // todo: cover other credential types
+        return credentialRepository.save(credential);
     }
 
     @Override
@@ -61,8 +62,9 @@ public class CredentialService implements CreateCredentialUseCase,
     public void update(CredentialUpdateCommand command) {
         var credential = mapper.toDomain(command);
         if (command.type() == CredentialType.PASSWORD) {
-            credential.hashPassword(command.type(), encoder.encode(command.value()));
+            credential.setPasswordHash(command.type(), encoder.encode(command.value()));
         }
+        // todo: cover other credential types
         credentialRepository.update(credential);
     }
 }

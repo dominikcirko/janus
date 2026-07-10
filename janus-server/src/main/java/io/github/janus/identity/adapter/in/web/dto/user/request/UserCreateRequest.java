@@ -1,5 +1,7 @@
 package io.github.janus.identity.adapter.in.web.dto.user.request;
 
+import io.github.janus.identity.domain.type.CredentialType;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,5 +13,6 @@ public record UserCreateRequest(String username,
                                 String givenName,
                                 String email,
                                 Set<UUID> roleIds,
-                                String password,
+                                String credentialValue,
+                                CredentialType type,
                                 boolean verified) {}

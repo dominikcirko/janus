@@ -1,5 +1,6 @@
 package io.github.janus.identity.adapter.out.persistence;
 
+import io.github.janus.identity.adapter.out.persistence.entity.UserEntity;
 import io.github.janus.identity.adapter.out.persistence.mapper.UserPersistenceMapper;
 import io.github.janus.identity.adapter.out.persistence.repository.UserJpaRepository;
 import io.github.janus.identity.application.port.out.UserRepository;
@@ -7,7 +8,6 @@ import io.github.janus.identity.domain.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -43,8 +43,9 @@ public class UserPersistenceAdapter implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
-        repository.save(mapper.toEntity(user));
+    public User save(User user) {
+        UserEntity saved = repository.save(mapper.toEntity(user));
+        return mapper.toDomain(saved);
     }
 
     @Override

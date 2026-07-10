@@ -1,7 +1,9 @@
 package io.github.janus.identity.application.service;
 
 import io.github.janus.identity.application.mapper.UserApplicationMapper;
+import io.github.janus.identity.application.port.in.command.credential.CredentialCreateCommand;
 import io.github.janus.identity.application.port.in.query.user.UserGetAllQuery;
+import io.github.janus.identity.application.port.in.usecase.credential.CreateCredentialUseCase;
 import io.github.janus.identity.application.port.in.usecase.user.CreateUserUseCase;
 import io.github.janus.identity.application.port.in.usecase.user.DeleteUserUseCase;
 import io.github.janus.identity.application.port.in.usecase.user.GetUserUseCase;
@@ -27,20 +29,28 @@ public class UserService implements CreateUserUseCase,
     private final Argon2PasswordEncoder encoder;
     private final UserApplicationMapper mapper;
     private final UserRepository userRepository;
+    private final CreateCredentialUseCase credentialUseCase;
 
     public UserService(Argon2PasswordEncoder encoder,
                        UserApplicationMapper mapper,
-                       UserRepository userRepository) {
+                       UserRepository userRepository, CreateCredentialUseCase credentialUseCase) {
         this.encoder = encoder;
         this.mapper = mapper;
         this.userRepository = userRepository;
+        this.credentialUseCase = credentialUseCase;
     }
 
     @Override
-    public void create(UserCreateCommand command) {
-        var hashedPassword = encoder.encode(command.password());
-        var domainUser = mapper.toDomain(command);
-        userRepository.save(domainUser);
+    public User create(UserCreateCommand command) {
+        var user = userRepository.save(mapper.toDomain(command));
+        credentialUseCase.create(
+                new CredentialCreateCommand(
+                        command.credentialType(),
+                        command.credentialValue(),
+                        user.getId()
+                )
+        );
+        return userRepository.findById(user.getId());
     }
 
     @Override
@@ -72,6 +82,7 @@ public class UserService implements CreateUserUseCase,
         return userRepository.findAll();
     }
 
+    //todo: credential updates go in their own separate flow, not here
     @Override
     public User update(UserUpdateCommand command) {
        var domainUser  = mapper.toDomain(command);

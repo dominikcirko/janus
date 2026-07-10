@@ -2,7 +2,6 @@ package io.github.janus.identity.domain.model;
 
 import io.github.janus.identity.domain.type.CredentialType;
 import lombok.*;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 
 import java.util.UUID;
 
@@ -18,12 +17,12 @@ public class Credential {
     private String value;
     private UUID userId;
 
-    public void hashPassword(CredentialType type, String hashedPassword) {
-        if(type != CredentialType.PASSWORD || hashedPassword == null || hashedPassword.isEmpty()) {
-            throw new RuntimeException("Not a password credential");
+    public void setPasswordHash(CredentialType type, String password) {
+        if(password == null || password.isEmpty()) {
+            throw new RuntimeException("Password hash cannot be empty");
         }
         this.type = type;
-        this.value = hashedPassword;
+        this.value = password;
     }
 
 }
