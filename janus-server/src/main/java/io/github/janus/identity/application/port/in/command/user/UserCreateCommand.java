@@ -8,5 +8,6 @@ public record UserCreateCommand(String username,
                                 String givenName,
                                 String email,
                                 Set<UUID> roleIds,
+                                UUID tenantId,
                                 String password,
                                 boolean verified) {}
