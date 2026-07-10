@@ -22,45 +22,44 @@ public class UserPersistenceAdapter implements UserRepository {
     }
 
     @Override
-    public User findById(UUID userId,  UUID tenantId) {
-        var user = repository.findById(userId, tenantId);
-        return mapper.toDomain(Optional.of(user));
+    public User findById(UUID id) {
+        return repository.findById(id)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new RuntimeException("Cannot find user with id: " + id));
     }
 
     @Override
-    public User findByEmail(String email, UUID tenantId) {
-        var user = repository.findByEmail(email, tenantId);
-        return mapper.toDomain(Optional.of(user));
+    public User findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new RuntimeException("Cannot find user with email: " + email));
     }
 
     @Override
-    public User findByUsername(String username, UUID tenantId) {
-        var user = repository.findByUsername(username, tenantId);
-        return mapper.toDomain(Optional.of(user));
+    public User findByUsername(String username) {
+        return repository.findByUsername(username)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new RuntimeException("Cannot find user with name: " + username));
     }
 
     @Override
     public void save(User user) {
-        var entity = mapper.toEntity(user);
-        var saved = repository.save(entity);
-        mapper.toDomain(Optional.of(saved));
+        repository.save(mapper.toEntity(user));
     }
 
     @Override
     public User update(User user) {
-        var entity = mapper.toEntity(user);
-        var saved = repository.save(entity);
-        return mapper.toDomain(Optional.of(saved));
+        var saved = repository.save(mapper.toEntity(user));
+        return mapper.toDomain(saved);
     }
 
     @Override
-    public void delete(UUID id, UUID tenantId) {
-        repository.deleteById(id, tenantId);
+    public void delete(UUID id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public List<User> findAll(UUID tenantId) {
-        var entities = repository.findAllByTenantId(tenantId);
-        return mapper.toDomainList(entities);
+    public List<User> findAll() {
+        return mapper.toDomainList(repository.findAll());
     }
 }

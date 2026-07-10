@@ -18,7 +18,7 @@ public interface UserPersistenceMapper {
 
     // mapper for Domain object -> entity
     UserEntity toEntity(User user);
-    User toDomain(Optional<UserEntity> userEntity);
+    User toDomain(UserEntity userEntity);
     List<User> toDomainList(List<UserEntity> users);
     List<UserEntity> toEntityList(List<User> users);
     Role toDomain(RoleEntity roleEntity);

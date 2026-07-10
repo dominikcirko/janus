@@ -3,7 +3,8 @@ package io.github.janus.identity.application.port.in.command.user;
 import java.util.Set;
 import java.util.UUID;
 
-public record UserUpdateCommand(String username,
+public record UserUpdateCommand(UUID id,
+                                String username,
                                 String familyName,
                                 String givenName,
                                 String email,

@@ -49,30 +49,30 @@ public class UserService implements CreateUserUseCase,
     @Override
     public void delete(UserDeleteCommand command) {
         var domainUser = mapper.toDomain(command);
-        userRepository.delete(domainUser.getId(), domainUser.getTenant().getId());
+        userRepository.delete(domainUser.getId());
     }
 
     @Override
     public User getbyId(UserGetByIdQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findById(domainUser.getId(), domainUser.getTenant().getId());
+        return userRepository.findById(domainUser.getId());
     }
 
     @Override
     public User getbyUsername(UserGetByUsernameQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findByUsername(domainUser.getUsername(), domainUser.getTenant().getId());
+        return userRepository.findByUsername(domainUser.getUsername());
     }
 
     @Override
     public User getbyEmail(UserGetByEmailQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findByEmail(domainUser.getEmail(), domainUser.getTenant().getId());
+        return userRepository.findByEmail(domainUser.getEmail());
     }
 
     @Override
     public List<User> getAll(UserGetAllQuery query) {
-        return userRepository.findAll(query.tenantId());
+        return userRepository.findAll();
     }
 
     @Override
