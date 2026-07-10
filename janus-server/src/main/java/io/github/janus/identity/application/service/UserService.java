@@ -1,6 +1,5 @@
 package io.github.janus.identity.application.service;
 
-import com.zaxxer.hikari.util.Credentials;
 import io.github.janus.identity.application.mapper.UserApplicationMapper;
 import io.github.janus.identity.application.port.in.query.user.UserGetAllQuery;
 import io.github.janus.identity.application.port.in.usecase.user.CreateUserUseCase;
@@ -14,13 +13,11 @@ import io.github.janus.identity.application.port.in.query.user.UserGetByEmailQue
 import io.github.janus.identity.application.port.in.query.user.UserGetByIdQuery;
 import io.github.janus.identity.application.port.in.query.user.UserGetByUsernameQuery;
 import io.github.janus.identity.application.port.out.UserRepository;
-import io.github.janus.identity.domain.model.Credential;
 import io.github.janus.identity.domain.model.User;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService implements CreateUserUseCase,
