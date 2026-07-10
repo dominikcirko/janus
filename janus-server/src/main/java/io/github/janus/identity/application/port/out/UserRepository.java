@@ -11,7 +11,7 @@ public interface UserRepository {
     User findByEmail(String email, UUID tenantId);
     User findByUsername(String username, UUID tenantId);
 
-    User save(User user);
+    void save(User user);
     User update(User user);
     void delete(UUID id,  UUID tenantId);
     List<User> findAll(UUID tenantId);

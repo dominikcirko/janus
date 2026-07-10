@@ -1,6 +1,6 @@
 package io.github.janus.identity.adapter.out.persistence.mapper;
 
-import io.github.janus.identity.adapter.out.persistence.entity.CredentialsEntity;
+import io.github.janus.identity.adapter.out.persistence.entity.CredentialEntity;
 import io.github.janus.identity.adapter.out.persistence.entity.RoleEntity;
 import io.github.janus.identity.adapter.out.persistence.entity.UserEntity;
 import io.github.janus.identity.domain.model.Credential;
@@ -25,6 +25,6 @@ public interface UserPersistenceMapper {
     RoleEntity toEntity(Role role);
     Tenant toDomain(TenantEntity tenantEntity);
     TenantEntity toEntity(Tenant tenant);
-    Credential toDomain(CredentialsEntity credentialsEntity);
-    CredentialsEntity toEntity(Credential credential);
+    Credential toDomain(CredentialEntity credentialEntity);
+    CredentialEntity toEntity(Credential credential);
 }

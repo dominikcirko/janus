@@ -1,11 +1,10 @@
 package io.github.janus.identity.adapter.in.web;
 
-import io.github.janus.identity.adapter.in.web.dto.user.UserCreateRequest;
-import io.github.janus.identity.adapter.in.web.dto.user.UserGetResponse;
-import io.github.janus.identity.adapter.in.web.dto.user.UserUpdateRequest;
-import io.github.janus.identity.adapter.in.web.dto.user.UserUpdateResponse;
+import io.github.janus.identity.adapter.in.web.dto.user.request.UserCreateRequest;
+import io.github.janus.identity.adapter.in.web.dto.user.response.UserGetResponse;
+import io.github.janus.identity.adapter.in.web.dto.user.request.UserUpdateRequest;
+import io.github.janus.identity.adapter.in.web.dto.user.response.UserUpdateResponse;
 import io.github.janus.identity.adapter.in.web.mapper.UserWebMapper;
-import io.github.janus.identity.application.port.in.command.user.UserCreateCommand;
 import io.github.janus.identity.application.port.in.command.user.UserDeleteCommand;
 import io.github.janus.identity.application.port.in.query.user.UserGetAllQuery;
 import io.github.janus.identity.application.port.in.query.user.UserGetByEmailQuery;
@@ -35,7 +34,8 @@ public class UserController {
     public UserController(UserWebMapper mapper,
                           GetUserUseCase getUserUseCase,
                           CreateUserUseCase createUserUseCase,
-                          UpdateUserUseCase updateUserUseCase, DeleteUserUseCase deleteUserUseCase) {
+                          UpdateUserUseCase updateUserUseCase,
+                          DeleteUserUseCase deleteUserUseCase) {
         this.mapper = mapper;
         this.getUserUseCase = getUserUseCase;
         this.createUserUseCase = createUserUseCase;

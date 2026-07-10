@@ -1,6 +1,10 @@
 package io.github.janus.identity.adapter.in.web.mapper;
 
-import io.github.janus.identity.adapter.in.web.dto.user.*;
+import io.github.janus.identity.adapter.in.web.dto.user.request.UserCreateRequest;
+import io.github.janus.identity.adapter.in.web.dto.user.request.UserUpdateRequest;
+import io.github.janus.identity.adapter.in.web.dto.user.response.UserGetResponse;
+import io.github.janus.identity.adapter.in.web.dto.user.response.UserListResponse;
+import io.github.janus.identity.adapter.in.web.dto.user.response.UserUpdateResponse;
 import io.github.janus.identity.application.port.in.command.user.UserCreateCommand;
 import io.github.janus.identity.application.port.in.command.user.UserUpdateCommand;
 import io.github.janus.identity.domain.model.User;

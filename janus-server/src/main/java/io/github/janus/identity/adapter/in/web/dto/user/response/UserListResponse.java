@@ -1,4 +1,4 @@
-package io.github.janus.identity.adapter.in.web.dto.user;
+package io.github.janus.identity.adapter.in.web.dto.user.response;
 
 import io.github.janus.identity.adapter.in.web.dto.role.RoleResponse;
 

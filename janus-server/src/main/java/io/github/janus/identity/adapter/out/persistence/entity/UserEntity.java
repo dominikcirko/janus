@@ -47,6 +47,6 @@ public class UserEntity extends AbstractEntity {
 
     @OneToMany
     @JoinColumn(name = "credentials_id")
-    private List<CredentialsEntity> credentials;
+    private List<CredentialEntity> credentials;
 
 }

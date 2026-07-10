@@ -40,10 +40,10 @@ public class UserPersistenceAdapter implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public void save(User user) {
         var entity = mapper.toEntity(user);
         var saved = repository.save(entity);
-        return mapper.toDomain(Optional.of(saved));
+        mapper.toDomain(Optional.of(saved));
     }
 
     @Override

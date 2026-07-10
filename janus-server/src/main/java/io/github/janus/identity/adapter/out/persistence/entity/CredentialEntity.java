@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CredentialsEntity extends AbstractEntity {
+public class CredentialEntity extends AbstractEntity {
 
     @Column
     @Enumerated(EnumType.STRING)

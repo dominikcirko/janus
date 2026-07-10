@@ -1,4 +1,4 @@
-package io.github.janus.identity.adapter.in.web.dto.user;
+package io.github.janus.identity.adapter.in.web.dto.user.request;
 
 import java.util.UUID;
 
