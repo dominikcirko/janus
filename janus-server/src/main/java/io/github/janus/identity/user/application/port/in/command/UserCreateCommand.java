@@ -12,5 +12,5 @@ public record UserCreateCommand(String username,
                                 Set<UUID> roleIds,
                                 UUID tenantId,
                                 String credentialValue,
-                                CredentialType credentialType,
+                                CredentialType type,
                                 boolean verified) {}

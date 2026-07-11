@@ -1,7 +1,7 @@
 package io.github.janus.identity.user.adapter.in.web.dto.response;
 
 
-import io.github.janus.identity.role.adapter.in.web.dto.role.RoleResponse;
+import io.github.janus.identity.role.adapter.in.web.dto.RoleResponse;
 
 import java.util.Set;
 

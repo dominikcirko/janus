@@ -16,15 +16,10 @@ import java.util.List;
 public interface UserApplicationMapper {
 
     User toDomain(UserCreateCommand command);
-
     User toDomain(UserUpdateCommand command);
-
     User toDomain(UserDeleteCommand command);
 
     User toDomain(UserGetByIdQuery query);
     User toDomain(UserGetByUsernameQuery query);
     User toDomain(UserGetByEmailQuery query);
-
-    List<User> toListDomain(List<UserGetAllQuery> query);
-
 }

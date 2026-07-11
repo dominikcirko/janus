@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,12 +17,7 @@ import java.util.Set;
 public class Role {
 
     private String name;
-    private Tenant tenant;
+    private UUID tenantId;
     private String description;
-    private boolean isSystemRole;
-    private String type;
     private Set<Permission> permissions;
-
-    //todo: check for system/normal role
-
 }

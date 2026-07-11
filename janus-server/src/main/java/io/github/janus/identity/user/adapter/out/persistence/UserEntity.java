@@ -45,7 +45,7 @@ public class UserEntity extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "tenant_id")
-    private TenantEntity tenant;
+    private TenantEntity tenant;  //todo: switch to tenant id w/o entity to use hibernate @TenantId
 
     @OneToMany
     @JoinColumn(name = "credentials_id")

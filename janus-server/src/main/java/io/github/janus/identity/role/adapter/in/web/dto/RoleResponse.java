@@ -1,4 +1,4 @@
-package io.github.janus.identity.role.adapter.in.web.dto.role;
+package io.github.janus.identity.role.adapter.in.web.dto;
 
 import java.util.UUID;
 

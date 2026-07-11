@@ -22,6 +22,7 @@ public class RoleEntity extends AbstractEntity {
     @Column
     private String name;
 
+    //todo: switch to tenant id w/o entity to use hibernate @TenantId
     @ManyToOne
     @JoinColumn(name = "tenant_id")
     private TenantEntity tenant; // tenant level roles - tenant admins customize them per tenant
