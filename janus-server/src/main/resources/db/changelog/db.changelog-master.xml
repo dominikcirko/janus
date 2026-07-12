@@ -6,7 +6,6 @@
 
     <include file="create-customer-table.xml" relativeToChangelogFile="true"/>
     <include file="create-tenant-table.xml" relativeToChangelogFile="true"/>
-    <include file="create-system-role-table.xml" relativeToChangelogFile="true"/>
     <include file="create-user-table.xml" relativeToChangelogFile="true"/>
     <include file="create-role-table.xml" relativeToChangelogFile="true"/>
     <include file="create-credential-table.xml" relativeToChangelogFile="true"/>

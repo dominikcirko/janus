@@ -1,4 +1,4 @@
-package test.java.io.github.janus;
+package io.github.janus;
 
 import io.github.janus.TestcontainersConfiguration;
 import org.springframework.boot.SpringApplication;

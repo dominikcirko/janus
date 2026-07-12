@@ -3,6 +3,7 @@ package io.github.janus.identity.user.adapter.out.persistence;
 import io.github.janus.common.AbstractEntity;
 import io.github.janus.identity.credential.adapter.out.persistence.CredentialEntity;
 import io.github.janus.identity.role.adapter.out.persistence.RoleEntity;
+import io.github.janus.identity.user.domain.type.SystemRoleType;
 import io.github.janus.tenant.TenantEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,6 +43,10 @@ public class UserEntity extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private SystemRoleType systemRole;
 
     @ManyToOne
     @JoinColumn(name = "tenant_id")
