@@ -2,9 +2,11 @@ package io.github.janus.identity.role.adapter.out.persistence;
 
 import io.github.janus.identity.role.application.port.out.RoleRepository;
 import io.github.janus.identity.role.domain.model.Role;
+import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+@Repository
 public class RolePersistenceAdapter implements RoleRepository {
 
     private final RoleJpaRepository repository;
@@ -20,30 +22,36 @@ public class RolePersistenceAdapter implements RoleRepository {
     public Role findById(UUID id) {
         var entity = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+        return mapper.toDomain(entity);
     }
 
     @Override
     public Role findByName(String name) {
-        return null;
+        var entity = repository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("Role not found with name: " + name));
+        return mapper.toDomain(entity);
     }
 
     @Override
-    public Role findByTenant(UUID tenantId) {
-        return null;
+    public Role findByTenantId(UUID tenantId) {
+        var entity = repository.findByTenantId(tenantId)
+                .orElseThrow(() -> new RuntimeException("Role not found with tenant id: " + tenantId));
+        return mapper.toDomain(entity);
     }
 
     @Override
     public void save(Role role) {
-
+        repository.save(mapper.toEntity(role));
     }
 
     @Override
     public Role update(Role role) {
-        return null;
+        var saved = repository.save(mapper.toEntity(role));
+        return mapper.toDomain(saved);
     }
 
     @Override
     public void delete(UUID id) {
-
+        repository.deleteById(id);
     }
 }

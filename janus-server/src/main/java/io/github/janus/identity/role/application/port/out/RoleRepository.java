@@ -8,7 +8,7 @@ public interface RoleRepository {
 
     Role findById(UUID id);
     Role findByName(String name);
-    Role findByTenant(UUID tenantId);
+    Role findByTenantId(UUID tenantId);
 
     void save(Role role);
     Role update(Role role);
