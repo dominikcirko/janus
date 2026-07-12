@@ -13,40 +13,40 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PermissionPersistenceAdapter implements PermissionRepository {
 
-    private final PermissionJpaRepository jpaRepository;
+    private final PermissionJpaRepository repository;
     private final PermissionPersistenceMapper mapper;
 
     @Override
     public Permission save(Permission permission) {
-        PermissionEntity entity = mapper.toEntity(permission);
-        PermissionEntity saved = jpaRepository.save(entity);
+        var entity = mapper.toEntity(permission);
+        var saved = repository.save(entity);
         return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Permission> findById(UUID id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        return repository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public Optional<Permission> findByName(String name) {
-        return jpaRepository.findByName(name).map(mapper::toDomain);
+        return repository.findByName(name).map(mapper::toDomain);
     }
 
     @Override
     public List<Permission> findAll() {
-        return jpaRepository.findAll().stream()
+        return repository.findAll().stream()
                 .map(mapper::toDomain)
                 .toList();
     }
 
     @Override
     public void deleteById(UUID id) {
-        jpaRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return jpaRepository.existsById(id);
+        return repository.existsById(id);
     }
 }

@@ -3,7 +3,7 @@ package io.github.janus.identity.role.adapter.out.persistence;
 import io.github.janus.common.utils.RefUtils;
 import io.github.janus.identity.role.application.port.out.RoleRepository;
 import io.github.janus.identity.role.domain.model.Role;
-import io.github.janus.tenant.adapter.out.persistence.TenantJpaRepository;
+import io.github.janus.tenancy.tenant.adapter.out.persistence.TenantJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;

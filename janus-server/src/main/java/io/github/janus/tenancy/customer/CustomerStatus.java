@@ -1,4 +1,4 @@
-package io.github.janus.customer;
+package io.github.janus.tenancy.customer;
 
 public enum CustomerStatus {
     ACTIVE,

@@ -2,7 +2,7 @@ package io.github.janus.identity.role.adapter.out.persistence;
 
 import io.github.janus.common.AbstractEntity;
 import io.github.janus.identity.permission.adapter.out.persistence.PermissionEntity;
-import io.github.janus.tenant.adapter.out.persistence.TenantEntity;
+import io.github.janus.tenancy.tenant.adapter.out.persistence.TenantEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -11,7 +11,6 @@ public interface RolePersistenceMapper {
     @Mapping(target = "tenantId", source = "tenant.id")
     Role toDomain(RoleEntity entity);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "tenant", ignore = true)

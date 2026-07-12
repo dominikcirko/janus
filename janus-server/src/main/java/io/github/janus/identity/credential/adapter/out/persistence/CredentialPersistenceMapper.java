@@ -12,6 +12,9 @@ public interface CredentialPersistenceMapper {
     @Mapping(target = "userId", source = "user.id")
     Credential toDomain(CredentialEntity credentialEntity);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "user", ignore = true)
     CredentialEntity toEntity(Credential credential);
 

@@ -1,8 +1,8 @@
-package io.github.janus.tenant.adapter.out.persistence;
+package io.github.janus.tenancy.tenant.adapter.out.persistence;
 
 import io.github.janus.common.AbstractEntity;
-import io.github.janus.customer.CustomerEntity;
-import io.github.janus.tenant.domain.type.EnvironmentTag;
+import io.github.janus.tenancy.customer.CustomerEntity;
+import io.github.janus.tenancy.tenant.domain.type.EnvironmentTag;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 

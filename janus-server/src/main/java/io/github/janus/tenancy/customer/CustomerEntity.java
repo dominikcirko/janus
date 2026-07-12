@@ -1,4 +1,4 @@
-package io.github.janus.customer;
+package io.github.janus.tenancy.customer;
 
 import io.github.janus.common.AbstractEntity;
 import jakarta.persistence.*;

@@ -1,19 +1,21 @@
 package io.github.janus.identity.user.adapter.out.persistence;
 
-import io.github.janus.identity.credential.adapter.out.persistence.CredentialEntity;
+import io.github.janus.identity.credential.adapter.out.persistence.CredentialPersistenceMapper;
 import io.github.janus.identity.permission.adapter.out.persistence.PermissionPersistenceMapper;
-import io.github.janus.identity.role.adapter.out.persistence.RoleEntity;
-import io.github.janus.identity.credential.domain.model.Credential;
-import io.github.janus.identity.role.domain.model.Role;
+import io.github.janus.identity.role.adapter.out.persistence.RolePersistenceMapper;
 import io.github.janus.identity.user.domain.model.User;
-import io.github.janus.tenant.domain.model.Tenant;
-import io.github.janus.tenant.adapter.out.persistence.TenantEntity;
+import io.github.janus.tenancy.tenant.adapter.out.persistence.TenantPersistenceMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(uses = { PermissionPersistenceMapper.class })
+@Mapper(uses = {
+        PermissionPersistenceMapper.class,
+        TenantPersistenceMapper.class,
+        CredentialPersistenceMapper.class,
+        RolePersistenceMapper.class
+})
 public interface UserPersistenceMapper {
 
     @Mapping(target = "tenant", ignore = true)
@@ -23,30 +25,4 @@ public interface UserPersistenceMapper {
 
     List<User> toDomainList(List<UserEntity> users);
     List<UserEntity> toEntityList(List<User> users);
-
-    @Mapping(target = "tenantId", source = "tenant.id")
-    Role toDomain(RoleEntity roleEntity);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "tenant", ignore = true)
-    RoleEntity toEntity(Role role);
-
-    @Mapping(target = "customerId", source = "customer.id")
-    Tenant toDomain(TenantEntity tenantEntity);
-
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "customerId", ignore = true)
-    TenantEntity toEntity(Tenant tenant);
-
-    @Mapping(target = "userId", source = "user.id")
-    Credential toDomain(CredentialEntity credentialEntity);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    CredentialEntity toEntity(Credential credential);
 }

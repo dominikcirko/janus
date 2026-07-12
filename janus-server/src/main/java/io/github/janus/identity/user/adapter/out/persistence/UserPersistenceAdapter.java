@@ -3,7 +3,7 @@ package io.github.janus.identity.user.adapter.out.persistence;
 import io.github.janus.common.utils.RefUtils;
 import io.github.janus.identity.user.application.port.out.UserRepository;
 import io.github.janus.identity.user.domain.model.User;
-import io.github.janus.tenant.adapter.out.persistence.TenantJpaRepository;
+import io.github.janus.tenancy.tenant.adapter.out.persistence.TenantJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,14 +13,14 @@ import java.util.UUID;
 public class UserPersistenceAdapter implements UserRepository {
 
     private final UserJpaRepository repository;
-    private final TenantJpaRepository tenantJpaRepository;
+    private final TenantJpaRepository tenantRepository;
     private final UserPersistenceMapper mapper;
 
     public UserPersistenceAdapter(UserJpaRepository repository,
-                                  TenantJpaRepository tenantJpaRepository,
+                                  TenantJpaRepository tenantRepository,
                                   UserPersistenceMapper mapper) {
         this.repository = repository;
-        this.tenantJpaRepository = tenantJpaRepository;
+        this.tenantRepository = tenantRepository;
         this.mapper = mapper;
     }
 
@@ -48,15 +48,17 @@ public class UserPersistenceAdapter implements UserRepository {
     @Override
     public User save(User user) {
         var saved = repository.save(mapper.toEntity(user));
-        var tenantRef = RefUtils.entityRef(tenantJpaRepository, saved.getTenant().getId());
+        var tenantRef = RefUtils.entityRef(tenantRepository, saved.getTenant().getId());
         saved.setTenant(tenantRef);
         return mapper.toDomain(saved);
     }
 
     @Override
     public User update(User user) {
-        var saved = repository.save(mapper.toEntity(user));
-        return mapper.toDomain(saved);
+        var updated = repository.save(mapper.toEntity(user));
+        var tenantRef = RefUtils.entityRef(tenantRepository, updated.getTenant().getId());
+        updated.setTenant(tenantRef);
+        return mapper.toDomain(updated);
     }
 
     @Override

@@ -1,6 +1,6 @@
-package io.github.janus.tenant.domain.model;
+package io.github.janus.tenancy.tenant.domain.model;
 
-import io.github.janus.tenant.domain.type.EnvironmentTag;
+import io.github.janus.tenancy.tenant.domain.type.EnvironmentTag;
 import lombok.Builder;
 import lombok.Data;
 
