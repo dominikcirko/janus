@@ -36,4 +36,10 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="002-add-system-role-field" author="dominik">
+        <addColumn tableName="user">
+            <column name="system_role" type="varchar(15)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
