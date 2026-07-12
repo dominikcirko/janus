@@ -1,6 +1,7 @@
 package io.github.janus.identity.role.adapter.out.persistence;
 
 import io.github.janus.common.utils.RefUtils;
+import io.github.janus.identity.permission.adapter.out.persistence.PermissionJpaRepository;
 import io.github.janus.identity.role.application.port.out.RoleRepository;
 import io.github.janus.identity.role.domain.model.Role;
 import io.github.janus.tenancy.tenant.adapter.out.persistence.TenantJpaRepository;
@@ -13,13 +14,15 @@ public class RolePersistenceAdapter implements RoleRepository {
 
     private final RoleJpaRepository repository;
     private final TenantJpaRepository tenantRepository;
+    private final PermissionJpaRepository permissionRepository;
     private final RolePersistenceMapper mapper;
 
     public RolePersistenceAdapter(RoleJpaRepository repository,
-                                  TenantJpaRepository tenantRepository,
+                                  TenantJpaRepository tenantRepository, PermissionJpaRepository permissionRepository,
                                   RolePersistenceMapper mapper) {
         this.repository = repository;
         this.tenantRepository = tenantRepository;
+        this.permissionRepository = permissionRepository;
         this.mapper = mapper;
     }
 
@@ -46,22 +49,30 @@ public class RolePersistenceAdapter implements RoleRepository {
 
     @Override
     public void save(Role role) {
-        var entity = mapper.toEntity(role);
-        var tenantRef = RefUtils.entityRef(tenantRepository, role.getTenantId());
-        entity.setTenant(tenantRef);
+        var entity = buildEntity(role);
         repository.save(entity);
     }
 
     @Override
     public Role update(Role role) {
-        var entity = mapper.toEntity(role);
-        var tenantRef = RefUtils.entityRef(tenantRepository, role.getTenantId());
-        entity.setTenant(tenantRef);
+        var entity = buildEntity(role);
         return mapper.toDomain(repository.save(entity));
     }
 
     @Override
     public void delete(UUID id) {
         repository.deleteById(id);
+    }
+
+
+    private RoleEntity buildEntity(Role role) {
+        var entity = mapper.toEntity(role);
+        var tenantRef = RefUtils.entityRef(tenantRepository, role.getTenantId());
+        entity.setTenant(tenantRef);
+        for (UUID permissionId : role.getPermissions()) {
+            var permissionRef = RefUtils.entityRef(permissionRepository, permissionId);
+            entity.getPermissions().add(permissionRef);
+        }
+        return entity;
     }
 }

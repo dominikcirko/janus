@@ -1,6 +1,5 @@
 package io.github.janus.identity.role.domain.model;
 
-import io.github.janus.identity.permission.domain.model.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +18,5 @@ public class Role {
     private String name;
     private UUID tenantId;
     private String description;
-    private Set<Permission> permissions;
+    private Set<UUID> permissions;
 }

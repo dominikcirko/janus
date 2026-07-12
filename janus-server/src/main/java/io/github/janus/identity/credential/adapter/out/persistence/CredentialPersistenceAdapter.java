@@ -1,8 +1,9 @@
 package io.github.janus.identity.credential.adapter.out.persistence;
 
-import io.github.janus.identity.user.adapter.out.persistence.UserJpaRepository;
+import io.github.janus.common.utils.RefUtils;
 import io.github.janus.identity.credential.application.port.out.CredentialRepository;
 import io.github.janus.identity.credential.domain.model.Credential;
+import io.github.janus.identity.user.adapter.out.persistence.UserJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,8 +34,8 @@ public class CredentialPersistenceAdapter implements CredentialRepository {
     @Override
     public Credential save(Credential credential) {
         var entity = mapper.toEntity(credential);
-        entity.setUser(userRepository.getReferenceById(credential.getUserId()));
-
+        var userRef = RefUtils.entityRef(userRepository, credential.getUserId());
+        entity.setUser(userRef);
         var saved = repository.save(entity);
         return mapper.toDomain(saved);
     }
@@ -52,6 +53,7 @@ public class CredentialPersistenceAdapter implements CredentialRepository {
         repository.findByIdAndUserId(id, userId)
                 .ifPresentOrElse(repository::delete,
                         () -> { throw new RuntimeException("Cannot find credential with id: " + id); });
+        repository.deleteById(id);
     }
 
     @Override

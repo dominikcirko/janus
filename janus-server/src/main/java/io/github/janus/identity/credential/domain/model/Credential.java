@@ -17,7 +17,7 @@ public class Credential {
     private String value;
     private UUID userId;
 
-    public void setPasswordHash(CredentialType type, String password) {
+    public void checkPassword(CredentialType type, String password) {
         if(password == null || password.isEmpty()) {
             throw new RuntimeException("Password hash cannot be empty");
         }
