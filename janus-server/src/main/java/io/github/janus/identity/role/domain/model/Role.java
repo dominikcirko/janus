@@ -1,7 +1,6 @@
 package io.github.janus.identity.role.domain.model;
 
 import io.github.janus.identity.permission.domain.model.Permission;
-import io.github.janus.tenant.Tenant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -26,23 +26,23 @@ public class UserService implements CreateUserUseCase,
 
 
     private final UserApplicationMapper mapper;
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final CreateCredentialUseCase credentialUseCase;
 
     public UserService(UserApplicationMapper mapper,
-                       UserRepository userRepository,
+                       UserRepository repository,
                        CreateCredentialUseCase credentialUseCase) {
         this.mapper = mapper;
-        this.userRepository = userRepository;
+        this.repository = repository;
         this.credentialUseCase = credentialUseCase;
     }
 
     @Override
     public void create(UserCreateCommand command) {
-        var user = userRepository.save(mapper.toDomain(command));
+        var user = repository.save(mapper.toDomain(command));
         credentialUseCase.create(
                 new CredentialCreateCommand(
-                        command.credentialType(),
+                        command.type(),
                         command.credentialValue(),
                         user.getId()
                 )
@@ -52,36 +52,36 @@ public class UserService implements CreateUserUseCase,
     @Override
     public void delete(UserDeleteCommand command) {
         var domainUser = mapper.toDomain(command);
-        userRepository.delete(domainUser.getId());
+        repository.delete(domainUser.getId());
     }
 
     @Override
     public User getbyId(UserGetByIdQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findById(domainUser.getId());
+        return repository.findById(domainUser.getId());
     }
 
     @Override
     public User getbyUsername(UserGetByUsernameQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findByUsername(domainUser.getUsername());
+        return repository.findByUsername(domainUser.getUsername());
     }
 
     @Override
     public User getbyEmail(UserGetByEmailQuery query) {
         var domainUser = mapper.toDomain(query);
-        return userRepository.findByEmail(domainUser.getEmail());
+        return repository.findByEmail(domainUser.getEmail());
     }
 
     @Override
     public List<User> getAll(UserGetAllQuery query) {
-        return userRepository.findAll();
+        return repository.findAll();
     }
 
     //todo: credential updates go in their own separate flow, not here
     @Override
     public User update(UserUpdateCommand command) {
        var domainUser  = mapper.toDomain(command);
-       return userRepository.update(domainUser);
+       return repository.update(domainUser);
     }
 }

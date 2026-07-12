@@ -4,7 +4,7 @@ import io.github.janus.common.AbstractEntity;
 import io.github.janus.identity.credential.adapter.out.persistence.CredentialEntity;
 import io.github.janus.identity.role.adapter.out.persistence.RoleEntity;
 import io.github.janus.identity.user.domain.type.SystemRoleType;
-import io.github.janus.tenant.TenantEntity;
+import io.github.janus.tenant.adapter.out.persistence.TenantEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

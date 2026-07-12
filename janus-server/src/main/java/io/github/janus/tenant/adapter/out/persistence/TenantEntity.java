@@ -1,7 +1,8 @@
-package io.github.janus.tenant;
+package io.github.janus.tenant.adapter.out.persistence;
 
 import io.github.janus.common.AbstractEntity;
 import io.github.janus.customer.CustomerEntity;
+import io.github.janus.tenant.domain.type.EnvironmentTag;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
@@ -12,7 +13,7 @@ public class TenantEntity extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private CustomerEntity customerId;
+    private CustomerEntity customer;
 
     @Column(name = "friendly_name")
     private String friendlyName;

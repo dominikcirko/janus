@@ -6,8 +6,8 @@ import io.github.janus.identity.role.adapter.out.persistence.RoleEntity;
 import io.github.janus.identity.credential.domain.model.Credential;
 import io.github.janus.identity.role.domain.model.Role;
 import io.github.janus.identity.user.domain.model.User;
-import io.github.janus.tenant.Tenant;
-import io.github.janus.tenant.TenantEntity;
+import io.github.janus.tenant.domain.model.Tenant;
+import io.github.janus.tenant.adapter.out.persistence.TenantEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -33,7 +33,7 @@ public interface UserPersistenceMapper {
     @Mapping(target = "tenant", ignore = true)
     RoleEntity toEntity(Role role);
 
-    @Mapping(target = "customerId", ignore = true)
+    @Mapping(target = "customerId", source = "customer.id")
     Tenant toDomain(TenantEntity tenantEntity);
 
     @Mapping(target = "createdAt", ignore = true)

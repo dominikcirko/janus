@@ -2,7 +2,7 @@ package io.github.janus.identity.user.domain.model;
 
 import io.github.janus.identity.credential.domain.model.Credential;
 import io.github.janus.identity.role.domain.model.Role;
-import io.github.janus.tenant.Tenant;
+import io.github.janus.tenant.domain.model.Tenant;
 import lombok.Builder;
 import lombok.Data;
 

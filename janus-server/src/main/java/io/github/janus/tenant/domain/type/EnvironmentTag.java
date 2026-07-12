@@ -1,4 +1,4 @@
-package io.github.janus.tenant;
+package io.github.janus.tenant.domain.type;
 
 public enum EnvironmentTag {
     DEVELOPMENT,
