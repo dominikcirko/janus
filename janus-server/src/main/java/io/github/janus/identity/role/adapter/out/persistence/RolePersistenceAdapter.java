@@ -1,7 +1,9 @@
 package io.github.janus.identity.role.adapter.out.persistence;
 
+import io.github.janus.common.utils.RefUtils;
 import io.github.janus.identity.role.application.port.out.RoleRepository;
 import io.github.janus.identity.role.domain.model.Role;
+import io.github.janus.tenant.adapter.out.persistence.TenantJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -10,11 +12,14 @@ import java.util.UUID;
 public class RolePersistenceAdapter implements RoleRepository {
 
     private final RoleJpaRepository repository;
+    private final TenantJpaRepository tenantRepository;
     private final RolePersistenceMapper mapper;
 
     public RolePersistenceAdapter(RoleJpaRepository repository,
+                                  TenantJpaRepository tenantRepository,
                                   RolePersistenceMapper mapper) {
         this.repository = repository;
+        this.tenantRepository = tenantRepository;
         this.mapper = mapper;
     }
 
@@ -41,13 +46,18 @@ public class RolePersistenceAdapter implements RoleRepository {
 
     @Override
     public void save(Role role) {
-        repository.save(mapper.toEntity(role));
+        var entity = mapper.toEntity(role);
+        var tenantRef = RefUtils.entityRef(tenantRepository, role.getTenantId());
+        entity.setTenant(tenantRef);
+        repository.save(entity);
     }
 
     @Override
     public Role update(Role role) {
-        var saved = repository.save(mapper.toEntity(role));
-        return mapper.toDomain(saved);
+        var entity = mapper.toEntity(role);
+        var tenantRef = RefUtils.entityRef(tenantRepository, role.getTenantId());
+        entity.setTenant(tenantRef);
+        return mapper.toDomain(repository.save(entity));
     }
 
     @Override

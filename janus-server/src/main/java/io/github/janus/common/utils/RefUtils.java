@@ -8,7 +8,8 @@ import java.util.UUID;
 public class RefUtils {
 
     /**
-     * helper method for fetching entities by id when mapping domain objects to entities
+     * helper method for fetching hibernate proxy objects of entity by id when mapping domain objects to entities
+     * todo: implement exception handling
      */
     public static <E extends AbstractEntity, R extends JpaRepository<E, UUID>> E entityRef(R repository, UUID entityId) {
         if(entityId == null) { throw new IllegalArgumentException("entityId is null"); }
