@@ -17,5 +17,4 @@ public class Tenant {
     private String supportEmail;
     private EnvironmentTag environmentTag;
 
-
 }
