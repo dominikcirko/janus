@@ -5,9 +5,7 @@ import io.github.janus.identity.role.domain.model.Role;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Builder
@@ -22,5 +20,8 @@ public class User {
     private Set<Role> roles;
     private UUID tenantId;
     private List<Credential> credentials;
+
+    @Builder.Default
+    private Map<String, Object> metadata = new HashMap<>();
 
 }
