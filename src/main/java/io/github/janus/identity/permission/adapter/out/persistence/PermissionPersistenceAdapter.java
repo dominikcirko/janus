@@ -1,7 +1,6 @@
 package io.github.janus.identity.permission.adapter.out.persistence;
 
 import io.github.janus.identity.permission.application.port.out.PermissionRepository;
-import io.github.janus.identity.permission.domain.model.Permission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,30 +13,25 @@ import java.util.UUID;
 public class PermissionPersistenceAdapter implements PermissionRepository {
 
     private final PermissionJpaRepository repository;
-    private final PermissionPersistenceMapper mapper;
 
     @Override
-    public Permission save(Permission permission) {
-        var entity = mapper.toEntity(permission);
-        var saved = repository.save(entity);
-        return mapper.toDomain(saved);
+    public PermissionEntity save(PermissionEntity permission) {
+        return repository.save(permission);
     }
 
     @Override
-    public Optional<Permission> findById(UUID id) {
-        return repository.findById(id).map(mapper::toDomain);
+    public Optional<PermissionEntity> findById(UUID id) {
+        return repository.findById(id);
     }
 
     @Override
-    public Optional<Permission> findByName(String name) {
-        return repository.findByName(name).map(mapper::toDomain);
+    public Optional<PermissionEntity> findByName(String name) {
+        return repository.findByName(name);
     }
 
     @Override
-    public List<Permission> findAll() {
-        return repository.findAll().stream()
-                .map(mapper::toDomain)
-                .toList();
+    public List<PermissionEntity> findAll() {
+        return repository.findAll();
     }
 
     @Override

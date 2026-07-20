@@ -1,11 +1,10 @@
 package io.github.janus.identity.role.adapter.out.persistence;
 
-import io.github.janus.identity.permission.adapter.out.persistence.PermissionPersistenceMapper;
 import io.github.janus.identity.role.domain.model.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = { PermissionPersistenceMapper.class })
+@Mapper
 public interface RolePersistenceMapper {
 
     @Mapping(target = "tenantId", source = "tenant.id")
