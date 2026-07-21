@@ -1,5 +1,8 @@
 package io.github.janus.auth.jwt.domain.type;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum SigningAlgorithm {
     HS256(KeyType.SYMMETRIC),
     RS256(KeyType.ASYMMETRIC),
@@ -7,7 +10,4 @@ public enum SigningAlgorithm {
 
     private final KeyType keyType;
 
-    SigningAlgorithm(KeyType keyType) {
-        this.keyType = keyType;
-    }
 }
