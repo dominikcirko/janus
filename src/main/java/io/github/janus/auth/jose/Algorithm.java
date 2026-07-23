@@ -1,6 +1,5 @@
 package io.github.janus.auth.jose;
 
-import io.github.janus.auth.jose.jwk.domain.type.KeyType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

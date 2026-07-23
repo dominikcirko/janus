@@ -1,4 +1,4 @@
-package io.github.janus.auth.jose.jwk.domain.type;
+package io.github.janus.auth.jose;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
