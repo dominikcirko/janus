@@ -1,4 +1,4 @@
-package io.github.janus.auth.jwt.application.service;
+package io.github.janus.auth.jose.jwt.application.service;
 
 
 import org.springframework.stereotype.Service;

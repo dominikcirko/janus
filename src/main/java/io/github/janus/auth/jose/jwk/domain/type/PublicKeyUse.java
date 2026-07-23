@@ -1,4 +1,4 @@
-package io.github.janus.auth.jwt.domain.type;
+package io.github.janus.auth.jose.jwk.domain.type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -21,7 +21,7 @@ public enum PublicKeyUse {
     @JsonCreator
     public static PublicKeyUse fromValue(String value) {
         for (PublicKeyUse pku : values()) {
-            if (pku.value.equalsIgnoreCase(value)) {
+            if (pku.value.equals(value)) {
                 return pku;
             }
         }
