@@ -6,7 +6,6 @@ import io.github.janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
 import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.security.cert.X509Certificate;
@@ -22,10 +21,6 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        prefix = "janus.signing.keystore",
-        name = {"path", "password"}
-)
 public class JwkSetService {
 
     private final SigningKeyStore signingKeyStore;

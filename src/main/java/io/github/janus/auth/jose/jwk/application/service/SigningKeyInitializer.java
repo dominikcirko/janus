@@ -3,7 +3,6 @@ package io.github.janus.auth.jose.jwk.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,10 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        prefix = "janus.signing.keystore",
-        name = {"path", "password"}
-)
 public class SigningKeyInitializer implements ApplicationRunner {
 
     private final SigningKeyProvisioner signingKeyProvisioner;

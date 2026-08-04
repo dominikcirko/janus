@@ -1,7 +1,6 @@
 package io.github.janus.auth.jose.jwk.application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.security.GeneralSecurityException;
@@ -17,10 +16,6 @@ import java.security.cert.X509Certificate;
  */
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        prefix = "janus.signing.keystore",
-        name = {"path", "password"}
-)
 public class SigningKeyProvisioner {
 
     private static final String RSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA256withRSA";

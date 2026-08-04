@@ -1,7 +1,6 @@
 package io.github.janus.auth.jose.jwk.application.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,10 +23,6 @@ import java.security.cert.X509Certificate;
  * JWKS workflow reads only the corresponding certificate and public key.</p>
  */
 @Component
-@ConditionalOnProperty(
-        prefix = "janus.signing.keystore",
-        name = {"path", "password"}
-)
 public class SigningKeyStore {
 
     public static final String RSA_SIGNING_KEYSTORE_ALIAS = "janus-signing-rsa-1";
