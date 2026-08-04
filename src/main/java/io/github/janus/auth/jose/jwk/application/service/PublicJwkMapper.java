@@ -1,6 +1,10 @@
 package io.github.janus.auth.jose.jwk.application.service;
 
+import io.github.janus.auth.jose.Algorithm;
+import io.github.janus.auth.jose.jwk.common.JwkEncodingUtils;
 import io.github.janus.auth.jose.jwk.domain.model.RSAPublicJwk;
+import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
+import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,6 +13,8 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class PublicJwkMapper {
@@ -37,7 +43,38 @@ public class PublicJwkMapper {
                 RSA_SIGNING_KEYSTORE_ALIAS,
                 "SHA256withRSA");
 
-        // todo: map to public & return
+        X509Certificate certificate =
+                (X509Certificate) keyStore.getCertificate(RSA_SIGNING_KEYSTORE_ALIAS);
+
+        RSAPublicKey publicKey =
+                (RSAPublicKey) certificate.getPublicKey();
+
+        return buildPublicRSA(
+                publicKey,
+                PublicKeyUse.SIG,
+                List.of(KeyOperations.VERIFY),
+                Algorithm.RS256,
+                RSA_SIGNING_KEYSTORE_ALIAS);
+    }
+
+    private RSAPublicJwk buildPublicRSA(
+            RSAPublicKey publicKey,
+            PublicKeyUse use,
+            List<KeyOperations> keyOps,
+            Algorithm algorithm,
+            String kid
+    ){
+        return new RSAPublicJwk(
+                use,
+                keyOps,
+                algorithm,
+                kid,
+                List.of(), // todo later
+                null, // todo later
+                null, // todo later
+                JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getModulus()),
+                JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getPublicExponent())
+        );
     }
 
     private void loadOrCreateKeyStore(
