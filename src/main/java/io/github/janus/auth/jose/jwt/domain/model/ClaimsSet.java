@@ -1,4 +1,4 @@
-package io.github.janus.auth.jose.jws.domain.model;
+package io.github.janus.auth.jose.jwt.domain.model;
 
 import java.time.Instant;
 import java.util.Set;

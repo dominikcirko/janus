@@ -10,7 +10,7 @@ import java.util.List;
 
 //https://datatracker.ietf.org/doc/html/rfc7517#section-4
 public sealed interface JsonWebKey
-        permits RsaPublicJwk, EcPublicJwk {
+        permits RSAPublicJwk, ECPublicJwk {
 
     JwkKeyType kty();
     PublicKeyUse use();
