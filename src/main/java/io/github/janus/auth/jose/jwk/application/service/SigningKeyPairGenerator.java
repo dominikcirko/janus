@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
-public class SigningKeyService {
+public class SigningKeyPairGenerator {
 
     public static final int RSA_KEY_SIZE = 3072;
     public static final long RSA_PUBLIC_EXPONENT_SIZE = 65537L;

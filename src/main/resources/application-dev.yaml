@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/janus_dev
+    username: postgres
+    password: postgres
+# janus.signing.keystore.
+janus:
+  signing:
+    keystore:
+      path: ${JANUS_SIGNING_KEYSTORE_PATH}
+      password: ${JANUS_SIGNING_KEYSTORE_PASSWORD}
