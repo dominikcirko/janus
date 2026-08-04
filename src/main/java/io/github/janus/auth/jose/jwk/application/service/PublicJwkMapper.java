@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 @RequiredArgsConstructor
 public class PublicJwkMapper {
@@ -17,29 +19,52 @@ public class PublicJwkMapper {
     @Value("${janus.signing.keystore.path}")
     private String signingKeystorePath;
 
-    public RSAPublicJwk toPublicRSA() throws KeyStoreException {
-        KeyPair rsaKeyPair;
-        try {
-            rsaKeyPair = SigningKeyPairGenerator.generateRsaKeyPair();
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e); //todo exception handling
-        }
+    public static String RSA_SIGNING_KEYSTORE_ALIAS = "janus-signing-rsa-1";
+    public static String EC_P256_SIGNING_KEYSTORE_ALIAS = "janus-signing-ec-p256-1";
+    public static String EC_P384_SIGNING_KEYSTORE_ALIAS = "janus-signing-ec-p384-1";
+    public static String EC_P521_SIGNING_KEYSTORE_ALIAS = "janus-signing-ec-p521-1";
 
-        KeyStore ks = KeyStore.getInstance("PKCS12");
+    public RSAPublicJwk toPublicRSA() throws KeyStoreException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
         char[] charKeyStorePassword = keyStorePassword.toCharArray();
+        KeyPair rsaKeyPair = SigningKeyPairGenerator.generateRsaKeyPair();
+
+        loadOrCreateKeyStore(
+                charKeyStorePassword,
+                keyStore,
+                rsaKeyPair,
+                RSA_SIGNING_KEYSTORE_ALIAS,
+                "SHA256withRSA");
+
 
     }
 
-    private void loadOrCreateKeyStore(char[] charKeyStorePassword, KeyStore ks){
+    private void loadOrCreateKeyStore(
+            char[] charKeyStorePassword,
+            KeyStore keyStore,
+            KeyPair keyPair,
+            String keyStoreAlias,
+            String signatureAlgorithm) throws KeyStoreException, NoSuchAlgorithmException {
         //todo exception handling
-        File f = new File(signingKeystorePath);
+        File file = new File(signingKeystorePath);
 
-        if(f.isFile()){
-            loadKeyStore(f, ks, charKeyStorePassword);
+        if(file.isFile()){
+            loadKeyStore(file, keyStore, charKeyStorePassword);
         } else{
-            initializeEmptyKeyStore(ks, charKeyStorePassword);
-            ks.setKeyEntry();
-            storeKeyStore(f, ks, charKeyStorePassword);
+            initializeEmptyKeyStore(keyStore, charKeyStorePassword);
+            X509CertificateIssuer x509issuer = new X509CertificateIssuer();
+            X509Certificate certificate = x509issuer.issueSelfSigned(keyPair, signatureAlgorithm);
+
+            Certificate[] certificateChain = {certificate};
+
+            keyStore.setKeyEntry(
+                    keyStoreAlias,
+                    keyPair.getPrivate(),
+                    charKeyStorePassword,
+                    certificateChain
+            );
+            storeKeyStore(file, keyStore, charKeyStorePassword);
         }
     }
 

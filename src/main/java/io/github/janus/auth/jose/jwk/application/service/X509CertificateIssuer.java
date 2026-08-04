@@ -27,7 +27,7 @@ import java.util.Date;
 
 public class X509CertificateIssuer {
 
-    public X509Certificate issueSelfSigned(KeyPair keyPair) {
+    public X509Certificate issueSelfSigned(KeyPair keyPair, String signatureAlgorithm) {
         var issuer = new X500Name("CN=Janus Self-Signed Certificate, C=HR");
         var subject = issuer; //self-signed -> issuer == subject
 
@@ -54,7 +54,7 @@ public class X509CertificateIssuer {
 
         try {
             addExtensions(certBuilder, keyPair);
-            ContentSigner sigGen = new JcaContentSignerBuilder("SHA256withRSA")
+            ContentSigner sigGen = new JcaContentSignerBuilder(signatureAlgorithm)
                     .build(keyPair.getPrivate());
             X509CertificateHolder holder = certBuilder.build(sigGen);
 
