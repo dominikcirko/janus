@@ -37,7 +37,7 @@ public class PublicJwkMapper {
                 RSA_SIGNING_KEYSTORE_ALIAS,
                 "SHA256withRSA");
 
-
+        // todo: map to public & return
     }
 
     private void loadOrCreateKeyStore(
@@ -45,25 +45,27 @@ public class PublicJwkMapper {
             KeyStore keyStore,
             KeyPair keyPair,
             String keyStoreAlias,
-            String signatureAlgorithm) throws KeyStoreException, NoSuchAlgorithmException {
+            String signatureAlgorithm) throws KeyStoreException {
         //todo exception handling
         File file = new File(signingKeystorePath);
 
-        if(file.isFile()){
+        if (file.isFile()) {
             loadKeyStore(file, keyStore, charKeyStorePassword);
-        } else{
+        } else {
             initializeEmptyKeyStore(keyStore, charKeyStorePassword);
-            X509CertificateIssuer x509issuer = new X509CertificateIssuer();
-            X509Certificate certificate = x509issuer.issueSelfSigned(keyPair, signatureAlgorithm);
+        }
 
-            Certificate[] certificateChain = {certificate};
+        if (!keyStore.containsAlias(keyStoreAlias)) {
+            X509Certificate certificate =
+                    new X509CertificateIssuer().issueSelfSigned(keyPair, signatureAlgorithm);
 
             keyStore.setKeyEntry(
                     keyStoreAlias,
                     keyPair.getPrivate(),
                     charKeyStorePassword,
-                    certificateChain
+                    new Certificate[]{certificate}
             );
+
             storeKeyStore(file, keyStore, charKeyStorePassword);
         }
     }
