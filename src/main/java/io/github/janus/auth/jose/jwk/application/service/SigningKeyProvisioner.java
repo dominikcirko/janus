@@ -1,0 +1,53 @@
+package io.github.janus.auth.jose.jwk.application.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+
+/**
+ * Creates signing-key material that Janus requires but does not already have.
+ *
+ * <p>Provisioning is deliberately separate from JWK mapping: generation and
+ * private-key storage happen here, while only public values are later exposed
+ * through the JWKS workflow.</p>
+ */
+@Service
+@RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "janus.signing.keystore",
+        name = {"path", "password"}
+)
+public class SigningKeyProvisioner {
+
+    private static final String RSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA256withRSA";
+
+    private final SigningKeyStore signingKeyStore;
+    private final X509CertificateIssuer certificateIssuer;
+
+    /**
+     * Ensures the configured store contains Janus's RSA signing key. An
+     * existing key is kept; a new key pair is generated only when its alias is
+     * absent.
+     */
+    public synchronized void ensureRsaSigningKey() {
+        String alias = SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
+        if (signingKeyStore.containsAlias(alias)) {
+            return;
+        }
+
+        try {
+            KeyPair keyPair = SigningKeyPairGenerator.generateRsaKeyPair();
+            X509Certificate certificate = certificateIssuer.issueSelfSigned(
+                    keyPair,
+                    RSA_CERTIFICATE_SIGNATURE_ALGORITHM
+            );
+            signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Could not provision RSA signing key", e);
+        }
+    }
+}

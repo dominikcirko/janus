@@ -10,21 +10,33 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
-public class SigningKeyPairGenerator {
+/**
+ * Generates the asymmetric key pairs used by Janus signing workflows.
+ *
+ * <p>The returned key pair is still Java cryptographic material. Persistence
+ * belongs to {@link SigningKeyStore}; conversion of its public half to JWK
+ * belongs to {@link PublicJwkMapper}.</p>
+ */
+public final class SigningKeyPairGenerator {
 
     public static final int RSA_KEY_SIZE = 3072;
-    public static final long RSA_PUBLIC_EXPONENT_SIZE = 65537L;
+    public static final long RSA_PUBLIC_EXPONENT = 65537L;
 
+    private SigningKeyPairGenerator() {
+    }
+
+    /** Generates an RSA signing key pair using the configured size and exponent. */
     public static KeyPair generateRsaKeyPair()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        BigInteger publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT_SIZE);
+        BigInteger publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT);
         RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(RSA_KEY_SIZE, publicExponent);
         kpg.initialize(spec);
 
         return kpg.generateKeyPair();
     }
 
+    /** Generates an EC signing key pair on the requested JOSE curve. */
     public static KeyPair generateEcKeyPair(Curve crv)
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");

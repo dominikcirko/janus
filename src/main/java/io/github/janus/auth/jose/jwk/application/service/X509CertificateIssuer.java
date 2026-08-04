@@ -13,6 +13,7 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
@@ -25,8 +26,20 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * Issues the X.509 certificate stored alongside a Janus private signing key.
+ *
+ * <p>PKCS#12 private-key entries require a certificate chain. For the current
+ * local Janus workflow, this class creates a self-signed, non-CA certificate
+ * whose public key matches the generated key pair.</p>
+ */
+@Component
 public class X509CertificateIssuer {
 
+    /**
+     * Creates a self-signed certificate for the supplied key pair and signs
+     * the certificate with that same pair's private key.
+     */
     public X509Certificate issueSelfSigned(KeyPair keyPair, String signatureAlgorithm) {
         var issuer = new X500Name("CN=Janus Self-Signed Certificate, C=HR");
         var subject = issuer; //self-signed -> issuer == subject
@@ -61,7 +74,7 @@ public class X509CertificateIssuer {
             return new JcaX509CertificateConverter()
                     .getCertificate(holder);
         } catch (NoSuchAlgorithmException | CertIOException | OperatorCreationException | CertificateException e) {
-            throw new IllegalStateException("Could not issue certificate");
+            throw new IllegalStateException("Could not issue certificate", e);
         }
 
     }
