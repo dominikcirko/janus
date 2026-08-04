@@ -25,7 +25,6 @@ public final class SigningKeyPairGenerator {
     private SigningKeyPairGenerator() {
     }
 
-    /** Generates an RSA signing key pair using the configured size and exponent. */
     public static KeyPair generateRsaKeyPair()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -36,7 +35,6 @@ public final class SigningKeyPairGenerator {
         return kpg.generateKeyPair();
     }
 
-    /** Generates an EC signing key pair on the requested JOSE curve. */
     public static KeyPair generateEcKeyPair(Curve crv)
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");

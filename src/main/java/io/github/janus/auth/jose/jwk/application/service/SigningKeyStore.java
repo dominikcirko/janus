@@ -72,7 +72,6 @@ public class SigningKeyStore {
         }
     }
 
-    /** Returns whether a stored key or certificate uses the given alias. */
     public synchronized boolean containsAlias(String alias) {
         try {
             return initializedKeyStore().containsAlias(alias);
