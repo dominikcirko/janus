@@ -25,7 +25,7 @@ public class SigningKeyManager {
 
     public synchronized void prepareSigningKeys(){
         prepareRsaSigningKey();
-        // prepareRcSigningKey();
+        // todo: prepareRcSigningKey();
     }
 
     private void prepareRsaSigningKey() {

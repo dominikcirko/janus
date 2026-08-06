@@ -43,7 +43,7 @@ public class PublicJwkMapper {
                 keyOps,
                 algorithm,
                 kid,
-                List.of(toX5cValue(certificate)), // todo later
+                List.of(encodeCertificate(certificate)),
                 null, // todo later
                 null, // todo later
                 JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getModulus()),
@@ -51,7 +51,7 @@ public class PublicJwkMapper {
         );
     }
 
-    private String toX5cValue(X509Certificate certificate) {
+    private String encodeCertificate(X509Certificate certificate) {
         try {
             return Base64.getEncoder()
                     .encodeToString(certificate.getEncoded());
