@@ -8,7 +8,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
 /**
- * Creates signing-key material that Janus requires but does not already have.
+ * Coordinates the signing keys required by Janus.
  *
  * <p>Provisioning is deliberately separate from JWK mapping: generation and
  * private-key storage happen here, while only public values are later exposed
@@ -16,11 +16,11 @@ import java.security.cert.X509Certificate;
  */
 @Service
 @RequiredArgsConstructor
-public class SigningKeyProvisioner {
+public class SigningKeyManager {
 
     private static final String RSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA256withRSA";
 
-    private final SigningKeyStore signingKeyStore;
+    private final Pkcs12SigningKeyStore signingKeyStore;
     private final X509CertificateIssuer certificateIssuer;
 
     /**
@@ -29,7 +29,7 @@ public class SigningKeyProvisioner {
      * absent.
      */
     public synchronized void ensureRsaSigningKey() {
-        String alias = SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
+        String alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
         if (signingKeyStore.containsAlias(alias)) {
             return;
         }

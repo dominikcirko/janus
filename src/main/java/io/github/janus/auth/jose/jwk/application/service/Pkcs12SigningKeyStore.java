@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate;
  * JWKS workflow reads only the corresponding certificate and public key.</p>
  */
 @Component
-public class SigningKeyStore {
+public class Pkcs12SigningKeyStore {
 
     public static final String RSA_SIGNING_KEYSTORE_ALIAS = "janus-signing-rsa-1";
     public static final String EC_P256_SIGNING_KEYSTORE_ALIAS = "janus-signing-ec-p256-1";
@@ -36,7 +36,7 @@ public class SigningKeyStore {
     private final char[] password;
     private KeyStore keyStore;
 
-    public SigningKeyStore(
+    public Pkcs12SigningKeyStore(
             @Value("${janus.signing.keystore.path}") String path,
             @Value("${janus.signing.keystore.password}") String password
     ) {

@@ -14,7 +14,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
  * Generates the asymmetric key pairs used by Janus signing workflows.
  *
  * <p>The returned key pair is still Java cryptographic material. Persistence
- * belongs to {@link SigningKeyStore}; conversion of its public half to JWK
+ * belongs to {@link Pkcs12SigningKeyStore}; conversion of its public half to JWK
  * belongs to {@link PublicJwkMapper}.</p>
  */
 public final class SigningKeyPairGenerator {

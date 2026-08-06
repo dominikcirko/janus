@@ -23,12 +23,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwkSetService {
 
-    private final SigningKeyStore signingKeyStore;
+    private final Pkcs12SigningKeyStore signingKeyStore;
     private final PublicJwkMapper publicJwkMapper;
 
     /** Returns the currently published public signing keys. */
     public JWKSet getPublicJwkSet() {
-        String alias = SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
+        String alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
         X509Certificate certificate = signingKeyStore.getCertificate(alias);
 
         RSAPublicJwk rsaPublicJwk = publicJwkMapper.toPublicRSA(

@@ -32,6 +32,8 @@ public enum KeyOperations {
     DERIVE_KEY("deriveKey"),
     DERIVE_BITS("deriveBits");
 
+    private final String value;
+
     @JsonValue
     public String getValue(){
         return this.value;
@@ -48,5 +50,4 @@ public enum KeyOperations {
         throw new IllegalArgumentException("Invalid key operation: " + value);
     }
 
-    private final String value;
 }
