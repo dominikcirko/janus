@@ -23,12 +23,12 @@ public class SigningKeyManager {
     private final Pkcs12SigningKeyStore signingKeyStore;
     private final X509CertificateIssuer certificateIssuer;
 
-    /**
-     * Ensures the configured store contains Janus's RSA signing key. An
-     * existing key is kept; a new key pair is generated only when its alias is
-     * absent.
-     */
-    public synchronized void ensureRsaSigningKey() {
+    public synchronized void prepareSigningKeys(){
+        prepareRsaSigningKey();
+        // prepareRcSigningKey();
+    }
+
+    private void prepareRsaSigningKey() {
         String alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
         if (signingKeyStore.containsAlias(alias)) {
             return;

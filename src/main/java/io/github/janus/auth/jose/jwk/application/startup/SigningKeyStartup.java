@@ -22,6 +22,6 @@ public class SigningKeyStartup implements ApplicationRunner {
 
     @Override
     public void run(@NonNull ApplicationArguments args) {
-        signingKeyManager.ensureRsaSigningKey();
+        signingKeyManager.prepareSigningKeys();
     }
 }

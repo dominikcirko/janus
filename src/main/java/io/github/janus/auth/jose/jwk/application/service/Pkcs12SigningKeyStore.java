@@ -3,19 +3,12 @@ package io.github.janus.auth.jose.jwk.application.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -47,20 +40,23 @@ public class Pkcs12SigningKeyStore {
 
     /**
      * Loads the configured PKCS#12 file, or initializes an empty store when
-     * the file does not exist yet. Calling this method more than once is safe.
+     * the file does not exist yet.
      */
-    public synchronized void initialize() {
+    public synchronized KeyStore getOrInitializeKeyStore() {
+        // prevent unnecessary calls to loadKeyStore()
         if (keyStore != null) {
-            return;
+            return keyStore;
         }
 
         try {
-            KeyStore loadedKeyStore = KeyStore.getInstance(KEYSTORE_TYPE);
-            File file = new File(signingKeystorePath);
+            var loadedKeyStore = KeyStore.getInstance(KEYSTORE_TYPE);
+            var pathToKeyStoreFile = Path.of(signingKeystorePath);
             char[] charKeyStorePassword = keyStorePassword.toCharArray();
 
-            if (Files.isRegularFile(Path.of(signingKeystorePath))) {
-                loadKeyStore(file, loadedKeyStore, charKeyStorePassword);
+            var keyStoreFileExists = Files.isRegularFile(Path.of(signingKeystorePath));
+
+            if (keyStoreFileExists) {
+                loadKeyStore(pathToKeyStoreFile, loadedKeyStore, charKeyStorePassword);
             } else {
                 initializeEmptyKeyStore(loadedKeyStore, charKeyStorePassword);
             }
@@ -72,41 +68,14 @@ public class Pkcs12SigningKeyStore {
                     e
             );
         }
+        return keyStore;
     }
 
     public synchronized boolean containsAlias(String alias) {
         try {
-            return initializedKeyStore().containsAlias(alias);
+            return getOrInitializeKeyStore().containsAlias(alias);
         } catch (GeneralSecurityException e) {
             throw new IllegalStateException("Could not inspect signing keystore", e);
-        }
-    }
-
-    /**
-     * Stores a private signing key with the certificate required by a Java
-     * private-key entry, then persists the complete PKCS#12 store to disk.
-     */
-    public synchronized void storePrivateKey(
-            String alias,
-            PrivateKey privateKey,
-            X509Certificate certificate
-    ) {
-        try {
-            KeyStore initializedKeyStore = initializedKeyStore();
-            char[] charKeyStorePassword = keyStorePassword.toCharArray();
-            initializedKeyStore.setKeyEntry(
-                    alias,
-                    privateKey,
-                    charKeyStorePassword,
-                    new Certificate[]{certificate}
-            );
-            storeKeyStore(
-                    new File(signingKeystorePath),
-                    initializedKeyStore,
-                    charKeyStorePassword
-            );
-        } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not store signing key: " + alias, e);
         }
     }
 
@@ -116,7 +85,7 @@ public class Pkcs12SigningKeyStore {
      */
     public synchronized X509Certificate getCertificate(String alias) {
         try {
-            Certificate certificate = initializedKeyStore().getCertificate(alias);
+            Certificate certificate = getOrInitializeKeyStore().getCertificate(alias);
             if (certificate == null) {
                 throw new IllegalStateException("No certificate found for signing key: " + alias);
             }
@@ -129,10 +98,10 @@ public class Pkcs12SigningKeyStore {
         }
     }
 
-    /** Returns the private key used by the token-signing workflow. */
+
     public synchronized PrivateKey getPrivateKey(String alias) {
         try {
-            Key key = initializedKeyStore().getKey(alias, keyStorePassword.toCharArray());
+            Key key = getOrInitializeKeyStore().getKey(alias, keyStorePassword.toCharArray());
             if (key == null) {
                 throw new IllegalStateException("No private key found for alias: " + alias);
             }
@@ -145,37 +114,69 @@ public class Pkcs12SigningKeyStore {
         }
     }
 
-    private KeyStore initializedKeyStore() {
-        initialize();
-        return keyStore;
+    public synchronized void storePrivateKey(
+            String alias,
+            PrivateKey privateKey,
+            X509Certificate certificate
+    ) {
+        var pathToKeyStoreFile = Path.of(signingKeystorePath);
+
+        try {
+            if (keyStore.containsAlias(alias)) {
+                throw new IllegalStateException("Key already exists: " + alias);
+            }
+
+            var keyStore = getOrInitializeKeyStore();
+            char[] charKeyStorePassword = keyStorePassword.toCharArray();
+            keyStore.setKeyEntry(
+                    alias,
+                    privateKey,
+                    charKeyStorePassword,
+                    new Certificate[]{certificate}
+            );
+            storeKeyStore(
+                    pathToKeyStoreFile,
+                    keyStore,
+                    charKeyStorePassword
+            );
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Could not store signing key: " + alias, e);
+        }
     }
 
-    /**
-     * Loads an existing PKCS#12 file into the supplied {@link KeyStore}.
-     *
-     * @param file the existing keystore file
-     * @param keyStore the keystore instance to populate
-     * @param charKeyStorePassword the password used to open the file
-     */
-    private void loadKeyStore(
-            File file,
+    private void storeKeyStore(
+            Path path,
             KeyStore keyStore,
             char[] charKeyStorePassword
     ) {
-        try (InputStream keyStoreData = new FileInputStream(file)) {
+        if (Files.isDirectory(path)) {
+            throw new RuntimeException("Must be a file");
+        }
+
+        try (OutputStream keyStoreOutputStream = Files.newOutputStream(path)) {
+            keyStore.store(keyStoreOutputStream, charKeyStorePassword);
+        } catch (CertificateException |
+                 KeyStoreException |
+                 NoSuchAlgorithmException |
+                 IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void loadKeyStore(
+            Path path,
+            KeyStore keyStore,
+            char[] charKeyStorePassword
+    ) {
+        try (InputStream keyStoreData = Files.newInputStream(path)) {
             keyStore.load(keyStoreData, charKeyStorePassword);
         } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Initializes the supplied {@link KeyStore} as empty so entries can be
-     * added to it. This does not create a file on disk.
-     *
-     * @param keyStore the keystore instance to initialize
-     * @param charKeyStorePassword the password that will protect the store
-     */
+
     private void initializeEmptyKeyStore(
             KeyStore keyStore,
             char[] charKeyStorePassword
@@ -187,30 +188,4 @@ public class Pkcs12SigningKeyStore {
         }
     }
 
-    /**
-     * Writes the current {@link KeyStore} contents to disk. The file is
-     * created when missing and overwritten when it already exists.
-     *
-     * @param file the keystore file to create or overwrite
-     * @param keyStore the keystore whose contents will be written
-     * @param charKeyStorePassword the password used to protect the file
-     */
-    private void storeKeyStore(
-            File file,
-            KeyStore keyStore,
-            char[] charKeyStorePassword
-    ) {
-        if (file.isDirectory()) {
-            throw new RuntimeException("Must be a file");
-        }
-
-        try (FileOutputStream keyStoreOutputStream = new FileOutputStream(file)) {
-            keyStore.store(keyStoreOutputStream, charKeyStorePassword);
-        } catch (CertificateException |
-                 KeyStoreException |
-                 NoSuchAlgorithmException |
-                 IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
