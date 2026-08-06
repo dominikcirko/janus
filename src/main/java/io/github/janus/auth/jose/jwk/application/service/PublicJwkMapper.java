@@ -49,7 +49,7 @@ public class PublicJwkMapper {
                 kid,
                 List.of(JwkUtils.encodeCertificate(certificate)),
                 x5u,
-                null, // todo later
+                JwkUtils.computeX5tS256(certificate),
                 JwkUtils.encodeBase64UrlUInt(publicKey.getModulus()),
                 JwkUtils.encodeBase64UrlUInt(publicKey.getPublicExponent())
         );
