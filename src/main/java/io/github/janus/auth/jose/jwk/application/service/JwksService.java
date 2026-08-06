@@ -8,7 +8,6 @@ import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +26,8 @@ public class JwksService {
     private final PublicJwkMapper publicJwkMapper;
 
     public JWKSet getPublicJwkSet() {
-        String alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
-        X509Certificate certificate = signingKeyStore.getCertificate(alias);
+        var alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
+        var certificate = signingKeyStore.getCertificate(alias);
 
         RSAPublicJwk rsaPublicJwk = publicJwkMapper.toPublicRSA(
                 certificate,

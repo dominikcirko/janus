@@ -7,8 +7,10 @@ import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
 import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import org.springframework.stereotype.Component;
 
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -41,12 +43,23 @@ public class PublicJwkMapper {
                 keyOps,
                 algorithm,
                 kid,
-                List.of(), // todo later
+                List.of(toX5cValue(certificate)), // todo later
                 null, // todo later
                 null, // todo later
                 JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getModulus()),
                 JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getPublicExponent())
         );
+    }
+
+    private String toX5cValue(X509Certificate certificate) {
+        try {
+            return Base64.getEncoder()
+                    .encodeToString(certificate.getEncoded());
+        } catch (CertificateEncodingException e) {
+            throw new IllegalStateException(
+                    "Could not encode certificate for JWK x5c", e
+            );
+        }
     }
 
     //todo; toPublicEC
