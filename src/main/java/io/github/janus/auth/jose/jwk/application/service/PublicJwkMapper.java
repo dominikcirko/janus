@@ -1,16 +1,15 @@
 package io.github.janus.auth.jose.jwk.application.service;
 
 import io.github.janus.auth.jose.Algorithm;
-import io.github.janus.auth.jose.jwk.common.JwkEncodingUtils;
+import io.github.janus.auth.jose.jwk.common.JwkUtils;
 import io.github.janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
 import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -21,6 +20,9 @@ import java.util.List;
  */
 @Component
 public class PublicJwkMapper {
+
+    @Value("${janus.x5u_base_url}")
+    private String X5U_BASE_URL;
 
     /**
      * Converts the RSA public key in a certificate to an RSA JWK. The caller
@@ -38,28 +40,19 @@ public class PublicJwkMapper {
             throw new IllegalArgumentException("Certificate does not contain an RSA public key");
         }
 
+        var x5u = X5U_BASE_URL + "/" + kid + ".pem";
+
         return new RSAPublicJwk(
                 use,
                 keyOps,
                 algorithm,
                 kid,
-                List.of(encodeCertificate(certificate)),
+                List.of(JwkUtils.encodeCertificate(certificate)),
+                x5u,
                 null, // todo later
-                null, // todo later
-                JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getModulus()),
-                JwkEncodingUtils.encodeBase64UrlUInt(publicKey.getPublicExponent())
+                JwkUtils.encodeBase64UrlUInt(publicKey.getModulus()),
+                JwkUtils.encodeBase64UrlUInt(publicKey.getPublicExponent())
         );
-    }
-
-    private String encodeCertificate(X509Certificate certificate) {
-        try {
-            return Base64.getEncoder()
-                    .encodeToString(certificate.getEncoded());
-        } catch (CertificateEncodingException e) {
-            throw new IllegalStateException(
-                    "Could not encode certificate for JWK x5c", e
-            );
-        }
     }
 
     //todo; toPublicEC

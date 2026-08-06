@@ -9,3 +9,4 @@ janus:
     keystore:
       path: ${JANUS_SIGNING_KEYSTORE_PATH}
       password: ${JANUS_SIGNING_KEYSTORE_PASSWORD}
+  x5u_base_url: ${JANUS_X5U_BASE_URL}
