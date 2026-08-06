@@ -20,7 +20,7 @@ public record ECPublicJwk(
         Curve crv, //https://datatracker.ietf.org/doc/html/rfc7518#section-6.2.1
         String x,
         String y
-) implements JsonWebKey {
+) implements PublicJwk {
 
     @Override
     public JwkKeyType kty() {

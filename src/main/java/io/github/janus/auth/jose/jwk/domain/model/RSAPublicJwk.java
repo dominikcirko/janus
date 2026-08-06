@@ -18,7 +18,7 @@ public record RSAPublicJwk(
         @JsonProperty("x5t#S256") String x5tS256,
         String n,
         String e
-) implements JsonWebKey {
+) implements PublicJwk {
 
     @Override
     public JwkKeyType kty() {

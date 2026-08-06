@@ -9,7 +9,7 @@ import io.github.janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import java.util.List;
 
 //https://datatracker.ietf.org/doc/html/rfc7517#section-4
-public sealed interface JsonWebKey
+public sealed interface PublicJwk
         permits RSAPublicJwk, ECPublicJwk {
 
     JwkKeyType kty();
