@@ -20,7 +20,7 @@ public class SigningKeyManager {
     private static final String RSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA256withRSA";
     private static final String SHA256_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA256withECDSA";
     private static final String SHA384_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA384withECDSA";
-    private static final String SHA521_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA512withECDSA";
+    private static final String SHA512_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM = "SHA512withECDSA";
 
     private final Pkcs12SigningKeyStore signingKeyStore;
     private final X509CertificateIssuer certificateIssuer;
@@ -70,7 +70,7 @@ public class SigningKeyManager {
         return switch (crv) {
             case P256 -> SHA256_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM;
             case P384 -> SHA384_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM;
-            case P521 -> SHA521_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM;
+            case P521 -> SHA512_WITH_ECDSA_CERTIFICATE_SIGNATURE_ALGORITHM;
         };
     }
 

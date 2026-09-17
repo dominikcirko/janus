@@ -1,6 +1,7 @@
 package io.github.janus.auth.jose.jwk.application.service;
 
 import io.github.janus.auth.jose.Algorithm;
+import io.github.janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import io.github.janus.auth.jose.jwk.domain.model.JWKSet;
 import io.github.janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
@@ -27,8 +28,14 @@ public class JwksService {
 
     public JWKSet getPublicJwkSet() {
         var rsaPublicJwk = getRsaPublicJwk();
+        var ecP256PublicJwk = getEcPublicJwk(Pkcs12SigningKeyStore.EC_P256_SIGNING_KEYSTORE_ALIAS, Algorithm.ES256);
+        var ecP384PublicJwk = getEcPublicJwk(Pkcs12SigningKeyStore.EC_P384_SIGNING_KEYSTORE_ALIAS, Algorithm.ES384);
+        var ecP521PublicJwk = getEcPublicJwk(Pkcs12SigningKeyStore.EC_P521_SIGNING_KEYSTORE_ALIAS, Algorithm.ES512);
 
-        return new JWKSet(List.of(rsaPublicJwk), Map.of());
+        return new JWKSet(
+                List.of(rsaPublicJwk, ecP256PublicJwk, ecP384PublicJwk, ecP521PublicJwk),
+                Map.of()
+        );
     }
 
     private RSAPublicJwk getRsaPublicJwk(){
@@ -40,6 +47,18 @@ public class JwksService {
                 PublicKeyUse.SIG,
                 List.of(KeyOperations.VERIFY),
                 Algorithm.RS256,
+                alias
+        );
+    }
+
+    private ECPublicJwk getEcPublicJwk(String alias, Algorithm algorithm){
+        var certificate = signingKeyStore.getCertificate(alias);
+
+        return publicJwkMapper.toPublicEC(
+                certificate,
+                PublicKeyUse.SIG,
+                List.of(KeyOperations.VERIFY),
+                algorithm,
                 alias
         );
     }
