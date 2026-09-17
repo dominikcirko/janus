@@ -26,17 +26,21 @@ public class JwksService {
     private final PublicJwkMapper publicJwkMapper;
 
     public JWKSet getPublicJwkSet() {
+        var rsaPublicJwk = getRsaPublicJwk();
+
+        return new JWKSet(List.of(rsaPublicJwk), Map.of());
+    }
+
+    private RSAPublicJwk getRsaPublicJwk(){
         var alias = Pkcs12SigningKeyStore.RSA_SIGNING_KEYSTORE_ALIAS;
         var certificate = signingKeyStore.getCertificate(alias);
 
-        RSAPublicJwk rsaPublicJwk = publicJwkMapper.toPublicRSA(
+        return publicJwkMapper.toPublicRSA(
                 certificate,
                 PublicKeyUse.SIG,
                 List.of(KeyOperations.VERIFY),
                 Algorithm.RS256,
                 alias
         );
-
-        return new JWKSet(List.of(rsaPublicJwk), Map.of());
     }
 }

@@ -31,11 +31,11 @@ public class JwkUtils {
         }
     }
 
-    public static String computeX5tS256(X509Certificate certificate) {
+    public static String computeX5t(X509Certificate certificate, String thumbprint) {
         try {
             byte[] certificateDer = certificate.getEncoded();
             byte[] digest = MessageDigest
-                    .getInstance("SHA-256")
+                    .getInstance(thumbprint)
                     .digest(certificateDer);
 
             return Base64.getUrlEncoder()
@@ -46,6 +46,19 @@ public class JwkUtils {
                     "Could not calculate certificate SHA-256 thumbprint", e
             );
         }
+    }
+
+    public static String encodeEcCoordinate(
+            BigInteger coordinate,
+            int fieldSize
+    ) {
+        int byteLength = (fieldSize + 7) / 8;
+
+        return Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(
+                        BigIntegers.asUnsignedByteArray(byteLength, coordinate)
+                );
     }
 
 }

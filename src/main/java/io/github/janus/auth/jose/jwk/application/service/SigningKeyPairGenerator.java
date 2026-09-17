@@ -27,9 +27,9 @@ public final class SigningKeyPairGenerator {
 
     public static KeyPair generateRsaKeyPair()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        BigInteger publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT);
-        RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(RSA_KEY_SIZE, publicExponent);
+        var kpg = KeyPairGenerator.getInstance("RSA");
+        var publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT);
+        var spec = new RSAKeyGenParameterSpec(RSA_KEY_SIZE, publicExponent);
         kpg.initialize(spec);
 
         return kpg.generateKeyPair();
@@ -37,8 +37,8 @@ public final class SigningKeyPairGenerator {
 
     public static KeyPair generateEcKeyPair(Curve crv)
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
-        ECGenParameterSpec spec = specFor(crv);
+        var kpg = KeyPairGenerator.getInstance("EC");
+        var spec = specFor(crv);
         kpg.initialize(spec);
 
         return kpg.generateKeyPair();

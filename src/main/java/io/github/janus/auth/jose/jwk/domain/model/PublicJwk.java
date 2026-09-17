@@ -15,9 +15,11 @@ public sealed interface PublicJwk
 
     @JsonProperty("kty") JwkKeyType kty();
     PublicKeyUse use();
-    List<KeyOperations> keyOps();
+    @JsonProperty("key_ops") List<KeyOperations> keyOps();
     Algorithm alg();
     String kid();
+    String x5u();
     List<String> x5c();
-    String x5tS256();
+    String x5t();
+    @JsonProperty("x5t#S256") String x5tS256();
 }
