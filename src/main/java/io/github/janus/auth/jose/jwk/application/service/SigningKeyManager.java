@@ -23,7 +23,7 @@ public class SigningKeyManager {
     private final Pkcs12SigningKeyStore signingKeyStore;
     private final X509CertificateIssuer certificateIssuer;
 
-    public synchronized void prepareSigningKeys(){
+    public void prepareSigningKeys(){
         prepareRsaSigningKey();
         // todo: prepareRcSigningKey();
     }
@@ -33,7 +33,6 @@ public class SigningKeyManager {
         if (signingKeyStore.containsAlias(alias)) {
             return;
         }
-
         try {
             KeyPair keyPair = SigningKeyPairGenerator.generateRsaKeyPair();
             X509Certificate certificate = certificateIssuer.issueSelfSigned(

@@ -122,11 +122,11 @@ public class Pkcs12SigningKeyStore {
         var pathToKeyStoreFile = Path.of(signingKeystorePath);
 
         try {
+            var keyStore = getOrInitializeKeyStore();
             if (keyStore.containsAlias(alias)) {
                 throw new IllegalStateException("Key already exists: " + alias);
             }
 
-            var keyStore = getOrInitializeKeyStore();
             char[] charKeyStorePassword = keyStorePassword.toCharArray();
             keyStore.setKeyEntry(
                     alias,
