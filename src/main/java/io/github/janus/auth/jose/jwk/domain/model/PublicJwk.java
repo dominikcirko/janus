@@ -1,6 +1,7 @@
 package io.github.janus.auth.jose.jwk.domain.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.janus.auth.jose.Algorithm;
 import io.github.janus.auth.jose.jwk.domain.type.JwkKeyType;
 import io.github.janus.auth.jose.jwk.domain.type.KeyOperations;
@@ -12,7 +13,7 @@ import java.util.List;
 public sealed interface PublicJwk
         permits RSAPublicJwk, ECPublicJwk {
 
-    JwkKeyType kty();
+    @JsonProperty("kty") JwkKeyType kty();
     PublicKeyUse use();
     List<KeyOperations> keyOps();
     Algorithm alg();

@@ -10,7 +10,7 @@ import java.util.List;
 
 public record RSAPublicJwk(
         PublicKeyUse use,
-        List<KeyOperations> keyOps,
+        @JsonProperty("key_ops") List<KeyOperations> keyOps,
         Algorithm alg,
         String kid,
         List<String> x5c,

@@ -43,7 +43,6 @@ public class Pkcs12SigningKeyStore {
      * the file does not exist yet.
      */
     public synchronized KeyStore getOrInitializeKeyStore() {
-        // prevent unnecessary calls to loadKeyStore()
         if (keyStore != null) {
             return keyStore;
         }
