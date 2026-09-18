@@ -12,13 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Builds the public JWK Set that Janus exposes to token verifiers.
- *
- * <p>It reads the certificate for the active signing key, maps its public key
- * to JWK fields, and returns it as a JWKS. The private key never enters this
- * workflow.</p>
- */
+
 @Service
 @RequiredArgsConstructor
 public class JwksService {

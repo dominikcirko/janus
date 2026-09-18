@@ -13,13 +13,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * Owns access to Janus's persistent signing-key store.
- *
- * <p>The store keeps private signing keys and their certificates out of the
- * public JWK model. Signing code can obtain a private key by alias, while the
- * JWKS workflow reads only the corresponding certificate and public key.</p>
- */
+
 @Component
 public class Pkcs12SigningKeyStore {
 
@@ -38,10 +32,6 @@ public class Pkcs12SigningKeyStore {
 
     private KeyStore keyStore;
 
-    /**
-     * Loads the configured PKCS#12 file, or initializes an empty store when
-     * the file does not exist yet.
-     */
     public synchronized KeyStore getOrInitializeKeyStore() {
         if (keyStore != null) {
             return keyStore;
@@ -78,10 +68,6 @@ public class Pkcs12SigningKeyStore {
         }
     }
 
-    /**
-     * Returns the certificate whose public key can be mapped to a published
-     * JWK. Private key material is not exposed by this operation.
-     */
     public synchronized X509Certificate getCertificate(String alias) {
         try {
             Certificate certificate = getOrInitializeKeyStore().getCertificate(alias);

@@ -6,13 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.GeneralSecurityException;
 
-/**
- * Coordinates the signing keys required by Janus.
- *
- * <p>Provisioning is deliberately separate from JWK mapping: generation and
- * private-key storage happen here, while only public values are later exposed
- * through the JWKS workflow.</p>
- */
 @Service
 @RequiredArgsConstructor
 public class SigningKeyManager {

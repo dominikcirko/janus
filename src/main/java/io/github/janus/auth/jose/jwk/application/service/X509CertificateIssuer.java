@@ -26,20 +26,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
-/**
- * Issues the X.509 certificate stored alongside a Janus private signing key.
- *
- * <p>PKCS#12 private-key entries require a certificate chain. For the current
- * local Janus workflow, this class creates a self-signed, non-CA certificate
- * whose public key matches the generated key pair.</p>
- */
 @Component
 public class X509CertificateIssuer {
 
-    /**
-     * Creates a self-signed certificate for the supplied key pair and signs
-     * the certificate with that same pair's private key.
-     */
     public X509Certificate issueSelfSigned(KeyPair keyPair, String signatureAlgorithm) {
         var issuer = new X500Name("CN=Janus Self-Signed Certificate, C=HR");
         var subject = issuer; //self-signed -> issuer == subject
@@ -90,14 +79,11 @@ public class X509CertificateIssuer {
                     true,
                     new BasicConstraints(false)
             );
-            // the private key may sign normal data such as JWTs
-            // the public key verifies those signatures
             certBuilder.addExtension(
                     Extension.keyUsage,
                     true,
                     new KeyUsage(KeyUsage.digitalSignature)
             );
-            // used for identifying public key from keypair
             certBuilder.addExtension(
                     Extension.subjectKeyIdentifier,
                     false,

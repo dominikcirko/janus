@@ -15,12 +15,6 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
-/**
- * Maps Java public-key representations to the public JSON Web Key model.
- *
- * <p>This class does not generate or store keys. It translates the public key
- * from a stored certificate into the values published by the JWKS endpoint.</p>
- */
 @Component
 public class PublicJwkMapper {
 
@@ -30,11 +24,6 @@ public class PublicJwkMapper {
     @Value("${janus.x5u_base_url}")
     private String X5U_BASE_URL;
 
-    /**
-     * Converts the RSA public key in a certificate to an RSA JWK. The caller
-     * supplies JOSE metadata because intended use, operations, algorithm, and
-     * key ID describe the workflow rather than the mathematical RSA key.
-     */
     public RSAPublicJwk toPublicRSA(
             X509Certificate certificate,
             PublicKeyUse use,
