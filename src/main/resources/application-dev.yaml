@@ -3,7 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/janus_dev
     username: postgres
     password: postgres
-# janus.signing.keystore.
 janus:
   signing:
     keystore:
