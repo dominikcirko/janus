@@ -4,13 +4,14 @@ import janus.auth.jose.Algorithm;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.JWKSet;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
-import janus.auth.jose.jwk.domain.type.KeyOperations;
+import janus.auth.jose.jwk.domain.type.KeyOperation;
 import janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -39,7 +40,7 @@ public class JwksService {
         return publicJwkMapper.toPublicRSA(
                 certificate,
                 PublicKeyUse.SIG,
-                List.of(KeyOperations.VERIFY),
+                Set.of(KeyOperation.VERIFY),
                 Algorithm.RS256,
                 alias
         );
@@ -51,7 +52,7 @@ public class JwksService {
         return publicJwkMapper.toPublicEC(
                 certificate,
                 PublicKeyUse.SIG,
-                List.of(KeyOperations.VERIFY),
+                Set.of(KeyOperation.VERIFY),
                 algorithm,
                 alias
         );

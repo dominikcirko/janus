@@ -4,10 +4,11 @@ package janus.auth.jose.jwk.domain.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import janus.auth.jose.Algorithm;
 import janus.auth.jose.jwk.domain.type.JwkKeyType;
-import janus.auth.jose.jwk.domain.type.KeyOperations;
+import janus.auth.jose.jwk.domain.type.KeyOperation;
 import janus.auth.jose.jwk.domain.type.PublicKeyUse;
 
 import java.util.List;
+import java.util.Set;
 
 //https://datatracker.ietf.org/doc/html/rfc7517#section-4
 public sealed interface PublicJwk
@@ -15,7 +16,7 @@ public sealed interface PublicJwk
 
     @JsonProperty("kty") JwkKeyType kty();
     PublicKeyUse use();
-    @JsonProperty("key_ops") List<KeyOperations> keyOps();
+    @JsonProperty("key_ops") Set<KeyOperation> keyOps();
     Algorithm alg();
     String kid();
     String x5u();

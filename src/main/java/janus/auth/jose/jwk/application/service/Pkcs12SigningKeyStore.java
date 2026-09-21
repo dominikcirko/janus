@@ -13,7 +13,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-
+//todo: switch to aws kms to not keep private keys in memory?
+//todo: or disable heap dumps in prod -XX:-HeapDumpOnOutOfMemoryError (default?) & -XX:+DisableAttachMechanism?
 @Component
 public class Pkcs12SigningKeyStore {
 

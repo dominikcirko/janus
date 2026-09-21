@@ -2,14 +2,15 @@ package janus.auth.jose.jwk.domain.model;
 
 import janus.auth.jose.Algorithm;
 import janus.auth.jose.jwk.domain.type.JwkKeyType;
-import janus.auth.jose.jwk.domain.type.KeyOperations;
+import janus.auth.jose.jwk.domain.type.KeyOperation;
 import janus.auth.jose.jwk.domain.type.PublicKeyUse;
 
 import java.util.List;
+import java.util.Set;
 
 public record RSAPublicJwk(
         PublicKeyUse use,
-        List<KeyOperations> keyOps,
+        Set<KeyOperation> keyOps,
         Algorithm alg,
         String kid,
         String x5u,

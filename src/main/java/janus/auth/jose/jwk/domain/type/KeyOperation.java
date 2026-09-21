@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 //https://datatracker.ietf.org/doc/html/rfc7517#page-4
 //https://www.w3.org/TR/webcrypto/#subtlecrypto-interface-methods
 @RequiredArgsConstructor
-public enum KeyOperations {
+public enum KeyOperation {
 
     SIGN("sign"),
     VERIFY("verify"),
@@ -40,8 +40,8 @@ public enum KeyOperations {
     }
 
     @JsonCreator
-    public static KeyOperations fromValue(String value) {
-        for (KeyOperations keyop : values()) {
+    public static KeyOperation fromValue(String value) {
+        for (KeyOperation keyop : values()) {
             if (keyop.value.equals(value)) {
                 return keyop;
             }

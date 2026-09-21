@@ -5,7 +5,7 @@ import janus.auth.jose.jwk.common.JwkUtils;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import janus.auth.jose.jwk.domain.type.Curve;
-import janus.auth.jose.jwk.domain.type.KeyOperations;
+import janus.auth.jose.jwk.domain.type.KeyOperation;
 import janus.auth.jose.jwk.domain.type.PublicKeyUse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class PublicJwkMapper {
@@ -27,7 +28,7 @@ public class PublicJwkMapper {
     public RSAPublicJwk toPublicRSA(
             X509Certificate certificate,
             PublicKeyUse use,
-            List<KeyOperations> keyOps,
+            Set<KeyOperation> keyOps,
             Algorithm alg,
             String kid
     ) {
@@ -54,7 +55,7 @@ public class PublicJwkMapper {
     public ECPublicJwk toPublicEC(
             X509Certificate certificate,
             PublicKeyUse use,
-            List<KeyOperations> keyOps,
+            Set<KeyOperation> keyOps,
             Algorithm alg,
             String kid
     ) {
@@ -97,5 +98,4 @@ public class PublicJwkMapper {
             );
         };
     }
-
 }
