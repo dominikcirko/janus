@@ -1,6 +1,5 @@
 package janus.auth.jose.jwk.domain.type;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
@@ -37,17 +36,6 @@ public enum KeyOperation {
     @JsonValue
     public String getValue(){
         return this.value;
-    }
-
-    @JsonCreator
-    public static KeyOperation fromValue(String value) {
-        for (KeyOperation keyop : values()) {
-            if (keyop.value.equals(value)) {
-                return keyop;
-            }
-        }
-        //todo: implement exception handling
-        throw new IllegalArgumentException("Invalid key operation: " + value);
     }
 
 }
