@@ -12,5 +12,4 @@ public record ClaimsSet(String iss,
                         Instant nbf,
                         Instant iat,
                         UUID jti,
-                        UUID tenantId,
                         Set<String> customClaims) {}

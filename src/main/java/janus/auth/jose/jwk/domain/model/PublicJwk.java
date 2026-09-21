@@ -2,7 +2,7 @@ package janus.auth.jose.jwk.domain.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import janus.auth.jose.Algorithm;
+import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jwk.domain.type.JwkKeyType;
 import janus.auth.jose.jwk.domain.type.KeyOperation;
 import janus.auth.jose.jwk.domain.type.PublicKeyUse;

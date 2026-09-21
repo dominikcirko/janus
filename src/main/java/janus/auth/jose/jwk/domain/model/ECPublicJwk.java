@@ -1,6 +1,6 @@
 package janus.auth.jose.jwk.domain.model;
 
-import janus.auth.jose.Algorithm;
+import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jwk.domain.type.Curve;
 import janus.auth.jose.jwk.domain.type.JwkKeyType;
 import janus.auth.jose.jwk.domain.type.KeyOperation;

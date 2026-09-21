@@ -1,4 +1,4 @@
-package janus.auth.jose;
+package janus.auth.jose.common;
 
 import lombok.RequiredArgsConstructor;
 

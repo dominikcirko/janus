@@ -1,6 +1,6 @@
 package janus.auth.jose.jwk.application.service;
 
-import janus.auth.jose.Algorithm;
+import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jwk.common.JwkUtils;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
