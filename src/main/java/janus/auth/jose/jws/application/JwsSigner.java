@@ -1,6 +1,7 @@
 package janus.auth.jose.jws.application;
 
 import janus.auth.jose.common.Algorithm;
+import janus.auth.jose.jwk.domain.model.PublicJwk;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class JwsSigner {
 
     private final ObjectMapper objectMapper;
 
-    public String sign(JwsHeader header, byte[] payload, PrivateKey privateKey)
+    public String sign(JwsHeader header, byte[] payload, PrivateKey privateKey, PublicJwk jwk)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         var headerBytes = objectMapper.writeValueAsBytes(header);
         var encoder = Base64.getUrlEncoder().withoutPadding();
@@ -36,10 +37,21 @@ public class JwsSigner {
         signature.initSign(privateKey);
         signature.update(signingInputBytes);
 
+        validateSigningInputs(header, jwk);
         var signatureBytes = signature.sign();
         var encodedSignature = encoder.encodeToString(signatureBytes);
 
         return signingInput + "." + encodedSignature;
+    }
+
+    private void validateSigningInputs(JwsHeader header, PublicJwk jwk){
+        if (header.alg() == null){
+            throw new IllegalArgumentException("Algorithm must not be null");
+        }
+
+        if (!header.params().kid().equals(jwk.kid())){
+            throw new IllegalStateException("JWS Header's kid must be identical to public JWK's kid");
+        }
     }
 
     private String getJcaSignatureAlgorithm(Algorithm algorithm) {
