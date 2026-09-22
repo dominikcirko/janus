@@ -1,5 +1,6 @@
 package janus.auth.jose.jws.application;
 
+import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,11 @@ import java.util.Base64;
 @Component
 @RequiredArgsConstructor
 public class JwsSigner {
+
+    private static final String SHA256_WITH_RSA_SIGNATURE_ALGORITHM = "SHA256withRSA";
+    private static final String SHA256_WITH_ECDSA_SIGNATURE_ALGORITHM = "SHA256withECDSAinP1363Format";
+    private static final String SHA384_WITH_ECDSA_SIGNATURE_ALGORITHM = "SHA384withECDSAinP1363Format";
+    private static final String SHA512_WITH_ECDSA_SIGNATURE_ALGORITHM = "SHA512withECDSAinP1363Format";
 
     private final ObjectMapper objectMapper;
 
@@ -26,7 +32,7 @@ public class JwsSigner {
         var signingInput = encodedHeader + "." + encodedPayload;
         var signingInputBytes = signingInput.getBytes(StandardCharsets.US_ASCII);
 
-        var signature = Signature.getInstance(header.alg().name());
+        var signature = Signature.getInstance(getJcaSignatureAlgorithm(header.alg()));
         signature.initSign(privateKey);
         signature.update(signingInputBytes);
 
@@ -34,6 +40,15 @@ public class JwsSigner {
         var encodedSignature = encoder.encodeToString(signatureBytes);
 
         return signingInput + "." + encodedSignature;
+    }
+
+    private String getJcaSignatureAlgorithm(Algorithm algorithm) {
+        return switch (algorithm) {
+            case RS256 -> SHA256_WITH_RSA_SIGNATURE_ALGORITHM;
+            case ES256 -> SHA256_WITH_ECDSA_SIGNATURE_ALGORITHM;
+            case ES384 -> SHA384_WITH_ECDSA_SIGNATURE_ALGORITHM;
+            case ES512 -> SHA512_WITH_ECDSA_SIGNATURE_ALGORITHM;
+        };
     }
 
 }
