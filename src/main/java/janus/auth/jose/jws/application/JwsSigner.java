@@ -9,6 +9,8 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.Base64;
 
 @Component
@@ -24,6 +26,8 @@ public class JwsSigner {
 
     public String sign(JwsHeader header, byte[] payload, PrivateKey privateKey, PublicJwk jwk)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        validateSigningInputs(header, jwk, payload, privateKey);
+        validatePrivateKeyForAlgorithm(privateKey, header.alg());
         var headerBytes = objectMapper.writeValueAsBytes(header);
         var encoder = Base64.getUrlEncoder().withoutPadding();
 
@@ -37,16 +41,15 @@ public class JwsSigner {
         signature.initSign(privateKey);
         signature.update(signingInputBytes);
 
-        validateSigningInputs(header, jwk);
         var signatureBytes = signature.sign();
         var encodedSignature = encoder.encodeToString(signatureBytes);
 
         return signingInput + "." + encodedSignature;
     }
 
-    private void validateSigningInputs(JwsHeader header, PublicJwk jwk){
-        if (header.alg() == null){
-            throw new IllegalArgumentException("Algorithm must not be null");
+    private void validateSigningInputs(JwsHeader header, PublicJwk jwk, byte[] payload, PrivateKey privateKey){
+        if (payload == null || header.params() == null || header.params().kid() == null || header.alg() == null){
+            throw new IllegalArgumentException("Required JWS fields must not be null");
         }
 
         if (!header.params().kid().equals(jwk.kid())){
@@ -54,6 +57,45 @@ public class JwsSigner {
         }
     }
 
+    /**
+     * Ensures the private key type and EC curve match the requested JWS algorithm.
+     */
+    private void validatePrivateKeyForAlgorithm(PrivateKey privateKey, Algorithm alg) {
+        switch (alg) {
+            case RS256 -> {
+                if (!(privateKey instanceof RSAPrivateKey)) {
+                    throw new IllegalArgumentException("RS256 requires an RSA private key");
+                }
+            }
+
+            case ES256, ES384, ES512 -> {
+                if (!(privateKey instanceof ECPrivateKey ecPrivateKey)) {
+                    throw new IllegalArgumentException(alg + " requires an EC private key");
+                }
+
+                int expectedFieldSize = switch (alg) {
+                    case ES256 -> 256;
+                    case ES384 -> 384;
+                    case ES512 -> 521;
+                    default -> throw new IllegalStateException("Unexpected algorithm: " + alg);
+                };
+
+                int actualFieldSize = ecPrivateKey.getParams()
+                        .getCurve()
+                        .getField()
+                        .getFieldSize();
+
+                if (actualFieldSize != expectedFieldSize) {
+                    throw new IllegalArgumentException(alg + " requires EC field size " + expectedFieldSize);
+                }
+            }
+        }
+    }
+
+    /**
+     * Maps the RFC-defined JOSE algorithm to Java's equivalent Signature algorithm so the
+     * signature scheme required by the protected header is used.
+     */
     private String getJcaSignatureAlgorithm(Algorithm algorithm) {
         return switch (algorithm) {
             case RS256 -> SHA256_WITH_RSA_SIGNATURE_ALGORITHM;

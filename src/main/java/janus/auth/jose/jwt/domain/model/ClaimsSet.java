@@ -1,7 +1,7 @@
 package janus.auth.jose.jwt.domain.model;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 //https://datatracker.ietf.org/doc/html/rfc7519#section-4
@@ -12,4 +12,4 @@ public record ClaimsSet(String iss,
                         Instant nbf,
                         Instant iat,
                         UUID jti,
-                        Set<String> customClaims) {}
+                        Map<String, Object> customClaims) {}
