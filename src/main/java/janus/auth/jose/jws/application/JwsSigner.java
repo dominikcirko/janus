@@ -48,12 +48,18 @@ public class JwsSigner {
     }
 
     private void validateSigningInputs(JwsHeader header, PublicJwk jwk, byte[] payload, PrivateKey privateKey){
-        if (payload == null || header.params() == null || header.params().kid() == null || header.alg() == null){
+        if (header == null || jwk == null || payload == null || privateKey == null
+                || header.params() == null || header.params().kid() == null
+                || header.alg() == null || jwk.kid() == null || jwk.alg() == null) {
             throw new IllegalArgumentException("Required JWS fields must not be null");
         }
 
         if (!header.params().kid().equals(jwk.kid())){
-            throw new IllegalStateException("JWS Header's kid must be identical to public JWK's kid");
+            throw new IllegalArgumentException("JWS Header's kid must be identical to public JWK's kid");
+        }
+
+        if (header.alg() != jwk.alg()) {
+            throw new IllegalArgumentException("JWS Header's alg must be identical to public JWK's alg");
         }
     }
 
