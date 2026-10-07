@@ -1,5 +1,7 @@
 package janus.auth.jose.jwt.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -19,6 +21,7 @@ public final class JWTClaimsSet {
     private final long nbf;
     private final long iat;
     private final String jti;
+    @Getter(AccessLevel.NONE)
     private final Map<String, Object> customClaims;
 
     public JWTClaimsSet(TokenIssuanceContext context) {
@@ -32,5 +35,10 @@ public final class JWTClaimsSet {
         this.nbf = now;
         this.jti = UUID.randomUUID().toString();
         this.customClaims = context.customClaims();
+    }
+    // custom claims must be serialized at the same top level as registered jwt claims
+    @JsonAnyGetter
+    public Map<String, Object> getCustomClaims() {
+        return customClaims;
     }
 }
