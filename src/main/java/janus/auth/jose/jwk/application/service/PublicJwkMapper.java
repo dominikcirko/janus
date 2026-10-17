@@ -22,7 +22,7 @@ public class PublicJwkMapper {
     public static final String SHA_256_THUMBPRINT = "SHA-256";
     public static final String SHA_1_THUMBPRINT = "SHA-1";
 
-    @Value("${janus.x5u_base_url}")
+    @Value("${janus.jose.x5u_base_url}")
     private String X5U_BASE_URL;
 
     public RSAPublicJwk toPublicRSA(

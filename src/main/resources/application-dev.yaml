@@ -4,9 +4,14 @@ spring:
     username: postgres
     password: postgres
 janus:
+  issuer: ${JANUS_ISSUER}
+
   signing:
     keystore:
       path: ${JANUS_SIGNING_KEYSTORE_PATH}
       password: ${JANUS_SIGNING_KEYSTORE_PASSWORD}
-  x5u_base_url: ${JANUS_X5U_BASE_URL}
-  issuer: ${JANUS_ISSUER}
+  jose:
+    x5u_base_url: ${JANUS_X5U_BASE_URL}
+    #todo: jwks uri currently uses http. when we introduce tls, change the var to https
+    #todo: introduce tls when ready for traefik & k8s
+    jwks-uri: ${JANUS_JWKS_URI}
