@@ -26,7 +26,7 @@ public class TokenService  {
     private final Pkcs12SigningKeyStore keyStore;
     private final JwksService jwksService;
 
-    public String issueJwt(TokenIssuanceContext ctx) throws
+    public String issueGenericJwt(TokenIssuanceContext ctx) throws
             NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         var jwtClaimsSet = new JWTClaimsSet(ctx);
@@ -35,7 +35,7 @@ public class TokenService  {
 
         JoseCommonParams params = JoseCommonParams.builder()
                 .kid(publicJwk.kid())
-                .typ(JoseObjectType.JWT_ACCESS_TOKEN)
+                .typ(JoseObjectType.JWT)
                 .build();
 
         //we are using ES256 as default algorithm, todo: later make it configurable
