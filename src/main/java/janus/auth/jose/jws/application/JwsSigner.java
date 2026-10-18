@@ -2,6 +2,7 @@ package janus.auth.jose.jws.application;
 
 import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jwk.domain.model.PublicJwk;
+import janus.auth.jose.jws.domain.exception.JwsSigningException;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -51,15 +52,15 @@ public class JwsSigner {
         if (header == null || jwk == null || payload == null || privateKey == null
                 || header.params() == null || header.params().kid() == null
                 || header.alg() == null || jwk.kid() == null || jwk.alg() == null) {
-            throw new IllegalArgumentException("Required JWS fields must not be null");
+            throw new JwsSigningException("Required JWS fields must not be null");
         }
 
         if (!header.params().kid().equals(jwk.kid())){
-            throw new IllegalArgumentException("JWS Header's kid must be identical to public JWK's kid");
+            throw new JwsSigningException("JWS Header's kid must be identical to public JWK's kid");
         }
 
         if (header.alg() != jwk.alg()) {
-            throw new IllegalArgumentException("JWS Header's alg must be identical to public JWK's alg");
+            throw new JwsSigningException("JWS Header's alg must be identical to public JWK's alg");
         }
     }
 
@@ -70,20 +71,20 @@ public class JwsSigner {
         switch (alg) {
             case RS256 -> {
                 if (!(privateKey instanceof RSAPrivateKey)) {
-                    throw new IllegalArgumentException("RS256 requires an RSA private key");
+                    throw new JwsSigningException("RS256 requires an RSA private key");
                 }
             }
 
             case ES256, ES384, ES512 -> {
                 if (!(privateKey instanceof ECPrivateKey ecPrivateKey)) {
-                    throw new IllegalArgumentException(alg + " requires an EC private key");
+                    throw new JwsSigningException(alg + " requires an EC private key");
                 }
 
                 int expectedFieldSize = switch (alg) {
                     case ES256 -> 256;
                     case ES384 -> 384;
                     case ES512 -> 521;
-                    default -> throw new IllegalStateException("Unexpected algorithm: " + alg);
+                    default -> throw new JwsSigningException("Unexpected algorithm: " + alg);
                 };
 
                 int actualFieldSize = ecPrivateKey.getParams()
@@ -92,7 +93,7 @@ public class JwsSigner {
                         .getFieldSize();
 
                 if (actualFieldSize != expectedFieldSize) {
-                    throw new IllegalArgumentException(alg + " requires EC field size " + expectedFieldSize);
+                    throw new JwsSigningException(alg + " requires EC field size " + expectedFieldSize);
                 }
             }
         }

@@ -30,9 +30,7 @@ public record TokenIssuanceContext(
         requireText(audience, "audience");
 
         if (tokenLifetime.toSeconds() <= 0) {
-            throw new IllegalArgumentException(
-                    "tokenLifetime must be at least one second"
-            );
+            throw new InvalidTokenContextException("tokenLifetime must be at least one second");
         }
 
     }
