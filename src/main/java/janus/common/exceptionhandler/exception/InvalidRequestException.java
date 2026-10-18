@@ -1,9 +1,9 @@
 package janus.common.exceptionhandler.exception;
 
-import janus.common.exceptionhandler.JanusException;
+import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class InvalidRequestException extends JanusException {
+public class InvalidRequestException extends JanusBaseException {
     public InvalidRequestException(String message) {
         super(
                 message,

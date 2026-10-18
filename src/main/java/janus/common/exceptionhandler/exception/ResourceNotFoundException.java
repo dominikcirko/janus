@@ -1,9 +1,9 @@
 package janus.common.exceptionhandler.exception;
 
-import janus.common.exceptionhandler.JanusException;
+import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class ResourceNotFoundException extends JanusException {
+public class ResourceNotFoundException extends JanusBaseException {
     public ResourceNotFoundException(String resourceName, String fieldName, Object fieldValue) {
         super(
                 String.format("%s not found with %s: '%s'", resourceName, fieldName, fieldValue),

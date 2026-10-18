@@ -1,9 +1,9 @@
 package janus.common.exceptionhandler.exception;
 
-import janus.common.exceptionhandler.JanusException;
+import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class BusinessLogicException extends JanusException {
+public class BusinessLogicException extends JanusBaseException {
     public BusinessLogicException(String message, String... suggestions) {
         super(
                 message,
