@@ -15,3 +15,5 @@ janus:
     #todo: jwks uri currently uses http. when we introduce tls, change the var to https
     #todo: introduce tls when ready for traefik & k8s
     jwks-uri: ${JANUS_JWKS_URI}
+app:
+  debug: true
