@@ -1,5 +1,7 @@
 package janus.auth.jose.jwt.domain.model;
 
+import janus.auth.jose.jwt.domain.exception.InvalidTokenContextException;
+
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
@@ -35,22 +37,17 @@ public record TokenIssuanceContext(
 
     }
 
-    public long tokenLifetimeSeconds() {
-        return tokenLifetime.toSeconds();
-    }
-
     private void requireText(String value, String name) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(name + " must not be blank");
+            throw new InvalidTokenContextException(name + " must not be blank");
         }
     }
 
+    // do not let user send registered claims through custom claims
     private static void rejectRegisteredClaims(Map<String, Object> customClaims) {
         for (String claimName : customClaims.keySet()) {
             if (REGISTERED_CLAIM_NAMES.contains(claimName)) {
-                throw new IllegalArgumentException(
-                        "customClaims must not contain registered claim: " + claimName
-                );
+                throw new InvalidTokenContextException("customClaims must not contain registered claim: " + claimName);
             }
         }
     }

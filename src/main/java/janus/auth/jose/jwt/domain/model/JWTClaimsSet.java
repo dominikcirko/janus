@@ -31,7 +31,7 @@ public final class JWTClaimsSet {
         this.sub = context.subject();
         this.aud = context.audience();
         this.iat = now;
-        this.exp = Math.addExact(this.iat, context.tokenLifetimeSeconds());
+        this.exp = Math.addExact(this.iat, context.tokenLifetime().toSeconds());
         this.nbf = now;
         this.jti = UUID.randomUUID().toString();
         this.customClaims = context.customClaims();
