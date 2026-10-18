@@ -18,9 +18,7 @@ public record TokenIssuanceContext(
     );
 
     public TokenIssuanceContext {
-        customClaims = customClaims == null
-                ? Map.of()
-                : Map.copyOf(customClaims); // copy to make it unmodifiable
+        customClaims = customClaims == null ? Map.of() : Map.copyOf(customClaims); // copy to make it unmodifiable
         rejectRegisteredClaims(customClaims);
 
         Objects.requireNonNull(tokenLifetime);

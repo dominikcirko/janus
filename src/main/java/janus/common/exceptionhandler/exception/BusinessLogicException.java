@@ -1,0 +1,15 @@
+package janus.common.exceptionhandler.exception;
+
+import janus.common.exceptionhandler.JanusException;
+import org.springframework.http.HttpStatus;
+
+public class BusinessLogicException extends JanusException {
+    public BusinessLogicException(String message, String... suggestions) {
+        super(
+                message,
+                "BUSINESS_LOGIC_ERROR",
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                suggestions
+        );
+    }
+}
