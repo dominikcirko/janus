@@ -13,10 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-
 @Service
 @RequiredArgsConstructor
 public class TokenService  {
@@ -26,8 +22,7 @@ public class TokenService  {
     private final Pkcs12SigningKeyStore keyStore;
     private final JwksService jwksService;
 
-    public String issueGenericJwt(TokenIssuanceContext ctx) throws
-            NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public String issueGenericJwt(TokenIssuanceContext ctx) {
 
         var jwtClaimsSet = new JWTClaimsSet(ctx);
         var jwtClaimsSetBytes = objectMapper.writeValueAsBytes(jwtClaimsSet);

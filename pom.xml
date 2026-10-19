@@ -27,6 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
+		<bouncycastle.version>1.85</bouncycastle.version>
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
@@ -115,7 +116,7 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk18on</artifactId>
-			<version>1.84</version>
+			<version>${bouncycastle.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -123,7 +124,7 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk18on</artifactId>
-			<version>1.85</version>
+			<version>${bouncycastle.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->

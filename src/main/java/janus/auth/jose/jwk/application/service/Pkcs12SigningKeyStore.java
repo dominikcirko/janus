@@ -13,6 +13,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 
 //todo: switch to aws kms to not keep private keys in memory?
 //todo: or disable heap dumps in prod -XX:-HeapDumpOnOutOfMemoryError (default?) & -XX:+DisableAttachMechanism?
@@ -43,13 +44,23 @@ public class Pkcs12SigningKeyStore {
     }
 
     public synchronized X509Certificate getCertificate(String alias) {
+        return findCertificate(alias)
+                .orElseThrow(() -> new SigningKeyStoreException(
+                        "Signing certificate not found: " + alias
+                ));
+    }
+
+    public synchronized Optional<X509Certificate> findCertificate(String alias) {
         try {
             Certificate certificate = getOrInitializeKeyStore().getCertificate(alias);
 
-            if (!(certificate instanceof X509Certificate x509Certificate)) {
-                throw new SigningKeyStoreException("Certificate is either null or not X.509: " + alias);
+            if (certificate == null) {
+                return Optional.empty();
             }
-            return x509Certificate;
+            if (!(certificate instanceof X509Certificate x509Certificate)) {
+                throw new SigningKeyStoreException("Certificate is not X.509: " + alias);
+            }
+            return Optional.of(x509Certificate);
         } catch (GeneralSecurityException e) {
             throw new SigningKeyStoreException("Could not read signing certificate: " + alias, e);
         }
@@ -117,10 +128,7 @@ public class Pkcs12SigningKeyStore {
 
             keyStore = loadedKeyStore;
         } catch (GeneralSecurityException e) {
-            throw new SigningKeyStoreException(
-                    "Could not initialize signing keystore: " + signingKeystorePath,
-                    e
-            );
+            throw new SigningKeyStoreException("Could not initialize signing keystore: " + signingKeystorePath, e);
         }
         return keyStore;
     }

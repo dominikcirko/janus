@@ -11,4 +11,13 @@ public class JwsSigningException extends JanusBaseException {
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
+
+    public JwsSigningException(String message, Throwable cause) {
+        super(
+                message,
+                cause,
+                "JWS_SIGNING_ERROR",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 }

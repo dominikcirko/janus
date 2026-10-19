@@ -3,6 +3,7 @@ package janus.auth.jose.jwk.adapter.in.web;
 
 import janus.auth.jose.jwk.application.service.Pkcs12SigningKeyStore;
 import janus.auth.jose.jwk.common.PemUtils;
+import janus.auth.jose.jwk.domain.exception.CertificateNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,10 @@ public class X509Controller {
             produces = APPLICATION_X509
     )
     public String getCertificate(@PathVariable String kid){
-        return PemUtils.encodeCertificate(keyStore.getCertificate(kid));
+        var certificate = keyStore.findCertificate(kid)
+                .orElseThrow(() -> new CertificateNotFoundException(kid));
+
+        return PemUtils.encodeCertificate(certificate);
     }
 
 }

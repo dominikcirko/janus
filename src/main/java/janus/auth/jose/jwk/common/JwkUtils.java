@@ -26,7 +26,7 @@ public class JwkUtils {
             return Base64.getEncoder()
                     .encodeToString(certificate.getEncoded());
         } catch (CertificateEncodingException e) {
-            throw new IllegalStateException(
+            throw new JwkEncodingException(
                     "Could not encode certificate for JWK x5c", e
             );
         }

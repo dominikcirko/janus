@@ -25,8 +25,7 @@ public class JwsSigner {
 
     private final ObjectMapper objectMapper;
 
-    public String sign(JwsHeader header, byte[] payload, PrivateKey privateKey, PublicJwk jwk)
-            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public String sign(JwsHeader header, byte[] payload, PrivateKey privateKey, PublicJwk jwk) {
         validateSigningInputs(header, jwk, payload, privateKey);
         validatePrivateKeyForAlgorithm(privateKey, header.alg());
         var headerBytes = objectMapper.writeValueAsBytes(header);
@@ -38,14 +37,18 @@ public class JwsSigner {
         var signingInput = encodedHeader + "." + encodedPayload;
         var signingInputBytes = signingInput.getBytes(StandardCharsets.US_ASCII);
 
-        var signature = Signature.getInstance(getJcaSignatureAlgorithm(header.alg()));
-        signature.initSign(privateKey);
-        signature.update(signingInputBytes);
+        try {
+            var signature = Signature.getInstance(getJcaSignatureAlgorithm(header.alg()));
+            signature.initSign(privateKey);
+            signature.update(signingInputBytes);
 
-        var signatureBytes = signature.sign();
-        var encodedSignature = encoder.encodeToString(signatureBytes);
+            var signatureBytes = signature.sign();
+            var encodedSignature = encoder.encodeToString(signatureBytes);
 
-        return signingInput + "." + encodedSignature;
+            return signingInput + "." + encodedSignature;
+        } catch (GeneralSecurityException e) {
+            throw new JwsSigningException("Could not create JWS signature", e);
+        }
     }
 
     private void validateSigningInputs(JwsHeader header, PublicJwk jwk, byte[] payload, PrivateKey privateKey){
