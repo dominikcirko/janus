@@ -8,8 +8,7 @@ public final class InvalidTokenContextException extends JanusBaseException {
         super(
                 message,
                 "INVALID_TOKEN_CONTEXT",
-                HttpStatus.BAD_REQUEST,
-                "Provide valid token issuance values"
+                HttpStatus.BAD_REQUEST
         );
     }
 }

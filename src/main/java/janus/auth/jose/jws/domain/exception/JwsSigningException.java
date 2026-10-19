@@ -8,8 +8,7 @@ public class JwsSigningException extends JanusBaseException {
         super(
                 message,
                 "JWS_SIGNING_ERROR",
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Provide valid token issuance values"
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 }

@@ -1,5 +1,6 @@
 package janus.auth.jose.jwk.application.service;
 
+import janus.auth.jose.jwk.domain.exception.CertificateIssuanceException;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
@@ -63,7 +64,7 @@ public class X509CertificateIssuer {
             return new JcaX509CertificateConverter()
                     .getCertificate(holder);
         } catch (NoSuchAlgorithmException | CertIOException | OperatorCreationException | CertificateException e) {
-            throw new IllegalStateException("Could not issue certificate", e);
+            throw new CertificateIssuanceException("Could not issue certificate", e);
         }
 
     }

@@ -2,6 +2,7 @@ package janus.auth.jose.jwk.application.service;
 
 import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.jwk.common.JwkUtils;
+import janus.auth.jose.jwk.domain.exception.PublicJwkMappingException;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import janus.auth.jose.jwk.domain.type.Curve;
@@ -33,7 +34,7 @@ public class PublicJwkMapper {
             String kid
     ) {
         if (!(certificate.getPublicKey() instanceof RSAPublicKey publicKey)) {
-            throw new IllegalArgumentException("Certificate does not contain an RSA public key");
+            throw new PublicJwkMappingException("Certificate does not contain an RSA public key");
         }
 
         var x5u = X5U_BASE_URL + "/" + kid + ".pem";
@@ -60,7 +61,7 @@ public class PublicJwkMapper {
             String kid
     ) {
         if (!(certificate.getPublicKey() instanceof ECPublicKey publicKey)) {
-            throw new IllegalArgumentException("Certificate does not contain an EC public key");
+            throw new PublicJwkMappingException("Certificate does not contain an EC public key");
         }
 
         int fieldSize = publicKey.getParams()
@@ -93,7 +94,7 @@ public class PublicJwkMapper {
             case 256 -> Curve.P256;
             case 384 -> Curve.P384;
             case 521 -> Curve.P521;
-            default -> throw new IllegalArgumentException(
+            default -> throw new PublicJwkMappingException(
                     "Unsupported EC field size: " + fieldSize
             );
         };

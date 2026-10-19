@@ -17,4 +17,12 @@ public class JanusBaseException extends RuntimeException{
         this.httpStatus = httpStatus;
         this.suggestions = suggestions;
     }
+
+    public JanusBaseException(String message, Throwable cause, String errorCode,
+                              HttpStatus httpStatus, String... suggestions) {
+        super(message, cause);
+        this.errorCode = errorCode;
+        this.httpStatus = httpStatus;
+        this.suggestions = suggestions;
+    }
 }

@@ -1,5 +1,6 @@
 package janus.auth.jose.jwk.application.service;
 
+import janus.auth.jose.jwk.domain.exception.SigningKeyGenerationException;
 import janus.auth.jose.jwk.domain.type.Curve;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class SigningKeyManager {
             );
             signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not provision RSA signing key", e);
+            throw new SigningKeyGenerationException("Could not generate RSA signing key", e);
         }
     }
 
@@ -55,7 +56,7 @@ public class SigningKeyManager {
             );
             signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not provision EC signing key", e);
+            throw new SigningKeyGenerationException("Could not generate EC signing key", e);
         }
     }
 

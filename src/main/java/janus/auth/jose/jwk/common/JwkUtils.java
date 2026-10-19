@@ -1,5 +1,6 @@
 package janus.auth.jose.jwk.common;
 
+import janus.auth.jose.jwk.domain.exception.JwkEncodingException;
 import org.bouncycastle.util.BigIntegers;
 
 import java.math.BigInteger;
@@ -42,9 +43,7 @@ public class JwkUtils {
                     .withoutPadding()
                     .encodeToString(digest);
         } catch (CertificateEncodingException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                    "Could not calculate certificate SHA-256 thumbprint", e
-            );
+            throw new JwkEncodingException("Could not calculate certificate SHA-256 thumbprint", e);
         }
     }
 

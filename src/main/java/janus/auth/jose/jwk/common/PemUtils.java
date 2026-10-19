@@ -1,5 +1,7 @@
 package janus.auth.jose.jwk.common;
 
+import janus.auth.jose.jwk.domain.exception.PemEncodingException;
+
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -24,7 +26,7 @@ public class PemUtils {
                     + base64Certificate
                     + "\n-----END CERTIFICATE-----\n";
         } catch (CertificateEncodingException e) {
-            throw new IllegalStateException("Could not encode certificate as PEM", e);
+            throw new PemEncodingException("Could not encode certificate as PEM", e);
         }
     }
 

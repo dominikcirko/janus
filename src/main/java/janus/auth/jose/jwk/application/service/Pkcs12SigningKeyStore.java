@@ -1,5 +1,6 @@
 package janus.auth.jose.jwk.application.service;
 
+import janus.auth.jose.jwk.domain.exception.SigningKeyStoreException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,7 @@ public class Pkcs12SigningKeyStore {
         try {
             return getOrInitializeKeyStore().containsAlias(alias);
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not inspect signing keystore", e);
+            throw new SigningKeyStoreException("Could not inspect signing keystore", e);
         }
     }
 
@@ -46,11 +47,11 @@ public class Pkcs12SigningKeyStore {
             Certificate certificate = getOrInitializeKeyStore().getCertificate(alias);
 
             if (!(certificate instanceof X509Certificate x509Certificate)) {
-                throw new IllegalStateException("Certificate is either null or not X.509: " + alias);
+                throw new SigningKeyStoreException("Certificate is either null or not X.509: " + alias);
             }
             return x509Certificate;
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not read signing certificate: " + alias, e);
+            throw new SigningKeyStoreException("Could not read signing certificate: " + alias, e);
         }
     }
 
@@ -58,11 +59,11 @@ public class Pkcs12SigningKeyStore {
         try {
             Key key = getOrInitializeKeyStore().getKey(alias, keyStorePassword.toCharArray());
             if (!(key instanceof PrivateKey privateKey)) {
-                throw new IllegalStateException("Entry is not a private key: " + alias);
+                throw new SigningKeyStoreException("Entry is not a private key: " + alias);
             }
             return privateKey;
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not read private signing key: " + alias, e);
+            throw new SigningKeyStoreException("Could not read private signing key: " + alias, e);
         }
     }
 
@@ -76,7 +77,7 @@ public class Pkcs12SigningKeyStore {
         try {
             var keyStore = getOrInitializeKeyStore();
             if (keyStore.containsAlias(alias)) {
-                throw new IllegalStateException("Key already exists: " + alias);
+                throw new SigningKeyStoreException("Key already exists: " + alias);
             }
 
             char[] charKeyStorePassword = keyStorePassword.toCharArray();
@@ -92,7 +93,7 @@ public class Pkcs12SigningKeyStore {
                     charKeyStorePassword
             );
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Could not store signing key: " + alias, e);
+            throw new SigningKeyStoreException("Could not store signing key: " + alias, e);
         }
     }
 
@@ -116,7 +117,7 @@ public class Pkcs12SigningKeyStore {
 
             keyStore = loadedKeyStore;
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException(
+            throw new SigningKeyStoreException(
                     "Could not initialize signing keystore: " + signingKeystorePath,
                     e
             );
@@ -130,7 +131,7 @@ public class Pkcs12SigningKeyStore {
             char[] charKeyStorePassword
     ) {
         if (Files.isDirectory(path)) {
-            throw new RuntimeException("Must be a file");
+            throw new SigningKeyStoreException("Signing keystore path must be a file");
         }
 
         try (OutputStream keyStoreOutputStream = Files.newOutputStream(path)) {
@@ -139,7 +140,7 @@ public class Pkcs12SigningKeyStore {
                  KeyStoreException |
                  NoSuchAlgorithmException |
                  IOException e) {
-            throw new RuntimeException(e);
+            throw new SigningKeyStoreException("Could not persist signing keystore", e);
         }
     }
 
@@ -152,7 +153,7 @@ public class Pkcs12SigningKeyStore {
         try (InputStream keyStoreData = Files.newInputStream(path)) {
             keyStore.load(keyStoreData, charKeyStorePassword);
         } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
-            throw new RuntimeException(e);
+            throw new SigningKeyStoreException("Could not load signing keystore", e);
         }
     }
 
@@ -164,7 +165,7 @@ public class Pkcs12SigningKeyStore {
         try {
             keyStore.load(null, charKeyStorePassword);
         } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
-            throw new RuntimeException(e);
+            throw new SigningKeyStoreException("Could not initialize empty signing keystore", e);
         }
     }
 
