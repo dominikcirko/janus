@@ -3,7 +3,7 @@ package janus.common.exceptionhandler.exception;
 import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class ResourceAlreadyExistsException extends JanusBaseException {
+public final class ResourceAlreadyExistsException extends JanusBaseException {
     public ResourceAlreadyExistsException(String resourceName, String fieldName, Object fieldValue) {
         super(
                 String.format("%s already exists with %s: '%s'", resourceName, fieldName, fieldValue),

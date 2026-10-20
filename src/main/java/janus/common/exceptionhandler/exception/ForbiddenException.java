@@ -3,7 +3,7 @@ package janus.common.exceptionhandler.exception;
 import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class ForbiddenException extends JanusBaseException {
+public final class ForbiddenException extends JanusBaseException {
     public ForbiddenException(String message) {
         super(
                 message,

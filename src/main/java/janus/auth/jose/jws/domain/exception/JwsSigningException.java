@@ -3,7 +3,7 @@ package janus.auth.jose.jws.domain.exception;
 import janus.common.exceptionhandler.JanusBaseException;
 import org.springframework.http.HttpStatus;
 
-public class JwsSigningException extends JanusBaseException {
+public final class JwsSigningException extends JanusBaseException {
     public JwsSigningException(String message) {
         super(
                 message,
