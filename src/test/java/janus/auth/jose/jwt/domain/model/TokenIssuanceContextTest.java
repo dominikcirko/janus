@@ -84,7 +84,7 @@ public class TokenIssuanceContextTest {
                 InvalidTokenContextException.class,
                 () -> new TokenIssuanceContext(
                         TEST_ISSUER, TEST_SUBJECT, TEST_AUDIENCE,
-                        lifetime, null)
+                        lifetime, CUSTOM_CLAIMS_WITHOUT_REGISTERED)
         );
         assertEquals(expectedMessage, exception.getMessage());
     }
