@@ -7,6 +7,7 @@ import janus.auth.jose.jwk.application.service.JwksService;
 import janus.auth.jose.jwk.application.service.Pkcs12SigningKeyStore;
 import janus.auth.jose.jws.application.JwsSigner;
 import janus.auth.jose.jws.domain.model.JwsHeader;
+import janus.auth.jose.jwt.application.port.in.usecase.TokenServiceUseCase;
 import janus.auth.jose.jwt.domain.model.JWTClaimsSet;
 import janus.auth.jose.jwt.domain.model.TokenIssuanceContext;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
-public class TokenService  {
+public class TokenService implements TokenServiceUseCase {
 
     private final ObjectMapper objectMapper;
     private final JwsSigner jwsSigner;
