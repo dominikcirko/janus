@@ -3,11 +3,14 @@ package janus.auth.jose.jwt.domain.model;
 import janus.auth.jose.jwt.domain.exception.InvalidTokenContextException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,27 +77,24 @@ public class TokenIssuanceContextTest {
         assertEquals("audience must not be blank", exception.getMessage());
     }
 
-    @Test
-    void testWhenTokenLifetimeNull_thenThrow(){
+    @ParameterizedTest
+    @MethodSource("invalidLifetimes")
+    void whenLifetimeInvalid_thenThrow(Duration lifetime, String expectedMessage) {
         var exception = assertThrows(
                 InvalidTokenContextException.class,
                 () -> new TokenIssuanceContext(
-                TEST_ISSUER, TEST_SUBJECT, TEST_AUDIENCE, null,
-                CUSTOM_CLAIMS_WITHOUT_REGISTERED)
+                        TEST_ISSUER, TEST_SUBJECT, TEST_AUDIENCE,
+                        lifetime, null)
         );
-        assertEquals("tokenLifetime must not be null", exception.getMessage());
-
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
-    @Test
-    void testWhenTokenLifetimeLessThanZero_thenThrow(){
-        var exception = assertThrows(
-                InvalidTokenContextException.class,
-                () -> new TokenIssuanceContext(
-                        TEST_ISSUER, TEST_SUBJECT, TEST_AUDIENCE, TEST_TOKEN_LIFETIME_NEGATED,
-                        CUSTOM_CLAIMS_WITHOUT_REGISTERED)
+    private static Stream<Arguments> invalidLifetimes(){
+        return Stream.of(
+                Arguments.of(null, "tokenLifetime must not be null"),
+                Arguments.of(Duration.ZERO, "tokenLifetime must be at least one second"),
+                Arguments.of(TEST_TOKEN_LIFETIME_NEGATED, "tokenLifetime must be at least one second")
         );
-        assertEquals("tokenLifetime must be at least one second", exception.getMessage());
     }
 
     @Test
