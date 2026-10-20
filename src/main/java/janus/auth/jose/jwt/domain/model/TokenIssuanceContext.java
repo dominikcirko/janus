@@ -45,22 +45,9 @@ public record TokenIssuanceContext(
         if (customClaims == null) {
             return Map.of();
         }
-
-        for (var claim : customClaims.entrySet()) {
-            if (claim.getKey() == null) {
-                throw new InvalidTokenContextException("customClaims must not contain a null claim name");
-            }
-            if (claim.getValue() == null) {
-                throw new InvalidTokenContextException(
-                        "customClaims must not contain a null value for claim: " + claim.getKey()
-                );
-            }
-        }
-
-        return Map.copyOf(customClaims); // defensive, unmodifiable copy
+        return Map.copyOf(customClaims); // unmodifiable copy, NPE on null key/value
     }
 
-    // do not let user send registered claims through custom claims
     private static void rejectRegisteredClaims(Map<String, Object> customClaims) {
         for (String claimName : customClaims.keySet()) {
             if (REGISTERED_CLAIM_NAMES.contains(claimName)) {
