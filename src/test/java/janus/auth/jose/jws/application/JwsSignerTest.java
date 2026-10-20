@@ -7,9 +7,12 @@ import janus.auth.jose.jwk.domain.model.PublicJwk;
 import janus.auth.jose.jws.domain.exception.JwsSigningException;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
@@ -21,7 +24,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class JwsSignerTest {
+
+    @Mock
+    private JwsHeader header;
+    @Mock
+    private JoseCommonParams params;
+    @Mock
+    private ECPublicJwk jwk;
+    @Mock
+    private PrivateKey privateKey;
+
+    private static final byte[] TEST_PAYLOAD =
+            "test-payload".getBytes(StandardCharsets.UTF_8);
 
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")
@@ -40,7 +56,6 @@ public class JwsSignerTest {
         JwsHeader header = mock(JwsHeader.class);
         JoseCommonParams params = mock(JoseCommonParams.class);
         PublicJwk jwk = mock(ECPublicJwk.class);
-        byte[] payload = "test-payload".getBytes(StandardCharsets.UTF_8);
         PrivateKey privateKey = mock(PrivateKey.class);
         var expectedMessage = "Required JWS fields must not be null";
 
@@ -52,20 +67,15 @@ public class JwsSignerTest {
         when(jwk.alg()).thenReturn(null);
 
         return Stream.of(
-            Arguments.of(null, jwk, payload, privateKey, expectedMessage),
-            Arguments.of(header, null, payload, privateKey, expectedMessage),
+            Arguments.of(null, jwk, TEST_PAYLOAD, privateKey, expectedMessage),
+            Arguments.of(header, null, TEST_PAYLOAD, privateKey, expectedMessage),
             Arguments.of(header, jwk, null, privateKey, expectedMessage),
-            Arguments.of(header, jwk, payload, null, expectedMessage)
+            Arguments.of(header, jwk, TEST_PAYLOAD, null, expectedMessage)
         );
     }
 
     @Test
     void testWhenHeaderKidNotEqualToJwkKid_thenThrow(){
-        JwsHeader header = mock(JwsHeader.class);
-        JoseCommonParams params = mock(JoseCommonParams.class);
-        PublicJwk jwk = mock(ECPublicJwk.class);
-        byte[] payload = "test-payload".getBytes(StandardCharsets.UTF_8);
-        PrivateKey privateKey = mock(PrivateKey.class);
 
         when(header.params()).thenReturn(params);
         when(header.alg()).thenReturn(Algorithm.ES256);
@@ -79,18 +89,13 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, payload, privateKey, jwk));
+                () -> signer.sign(header, TEST_PAYLOAD, privateKey, jwk));
         assertEquals(expectedMessage, exception.getMessage());
 
     }
 
     @Test
     void testWhenHeaderAlgNotEqualToJwkAlg_thenThrow(){
-        JwsHeader header = mock(JwsHeader.class);
-        JoseCommonParams params = mock(JoseCommonParams.class);
-        PublicJwk jwk = mock(ECPublicJwk.class);
-        byte[] payload = "test-payload".getBytes(StandardCharsets.UTF_8);
-        PrivateKey privateKey = mock(PrivateKey.class);
 
         when(header.params()).thenReturn(params);
         when(header.params().kid()).thenReturn("kid1");
@@ -104,7 +109,7 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, payload, privateKey, jwk));
+                () -> signer.sign(header, TEST_PAYLOAD, privateKey, jwk));
         assertEquals(expectedMessage, exception.getMessage());
 
     }
