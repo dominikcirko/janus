@@ -1,10 +1,12 @@
 package janus.auth.jose.jws.application;
 
+import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.common.JoseCommonParams;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.PublicJwk;
 import janus.auth.jose.jws.domain.exception.JwsSigningException;
 import janus.auth.jose.jws.domain.model.JwsHeader;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JwsSignerTest {
-
 
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")
@@ -58,6 +59,54 @@ public class JwsSignerTest {
         );
     }
 
+    @Test
+    void testWhenHeaderKidNotEqualToJwkKid_thenThrow(){
+        JwsHeader header = mock(JwsHeader.class);
+        JoseCommonParams params = mock(JoseCommonParams.class);
+        PublicJwk jwk = mock(ECPublicJwk.class);
+        byte[] payload = "test-payload".getBytes(StandardCharsets.UTF_8);
+        PrivateKey privateKey = mock(PrivateKey.class);
 
+        when(header.params()).thenReturn(params);
+        when(header.alg()).thenReturn(Algorithm.ES256);
+        when(header.params().kid()).thenReturn("kid1");
+        when(jwk.kid()).thenReturn("kid2");
+        when(jwk.alg()).thenReturn(Algorithm.ES256);
+
+        var expectedMessage = "JWS Header's kid must be identical to public JWK's kid";
+
+        JwsSigner signer = new JwsSigner(new ObjectMapper());
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, payload, privateKey, jwk));
+        assertEquals(expectedMessage, exception.getMessage());
+
+    }
+
+    @Test
+    void testWhenHeaderAlgNotEqualToJwkAlg_thenThrow(){
+        JwsHeader header = mock(JwsHeader.class);
+        JoseCommonParams params = mock(JoseCommonParams.class);
+        PublicJwk jwk = mock(ECPublicJwk.class);
+        byte[] payload = "test-payload".getBytes(StandardCharsets.UTF_8);
+        PrivateKey privateKey = mock(PrivateKey.class);
+
+        when(header.params()).thenReturn(params);
+        when(header.params().kid()).thenReturn("kid1");
+        when(jwk.kid()).thenReturn("kid1");
+        when(jwk.alg()).thenReturn(Algorithm.ES384);
+        when(header.alg()).thenReturn(Algorithm.ES256);
+
+        var expectedMessage = "JWS Header's alg must be identical to public JWK's alg";
+
+        JwsSigner signer = new JwsSigner(new ObjectMapper());
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, payload, privateKey, jwk));
+        assertEquals(expectedMessage, exception.getMessage());
+
+    }
 
 }
