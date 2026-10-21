@@ -4,6 +4,7 @@ import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.common.JoseCommonParams;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.PublicJwk;
+import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
 import janus.auth.jose.jws.domain.exception.JwsSigningException;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.ObjectMapper;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -24,8 +27,7 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.EllipticCurve;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +45,8 @@ public class JwsSignerTest {
 
     private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
     public static final int INVALID_CURVE_SIZE = 123;
+    private static final BigInteger UNDERSIZED_RSA_MODULUS = BigInteger.valueOf(3233);
+    private static final BigInteger UNDERSIZED_RSA_PRIVATE_EXPONENT = BigInteger.valueOf(2753);
 
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")
@@ -182,6 +186,41 @@ public class JwsSignerTest {
                 () -> signer.sign(header, TEST_PAYLOAD, ecPrivateKey, jwk)
         );
         assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void testWhenJcaRejectsPrivateKey_thenWrapException() {
+        var signer = new JwsSigner(new ObjectMapper());
+        var invalidKey = mock(RSAPrivateKey.class);
+        var rsaJwk = mock(RSAPublicJwk.class);
+
+        // 12-bit RSA key: structurally plausible but rejected by the JDK as too small
+        // -> minimum is 512 bits, source: Table 4-10 on
+        // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html#GUID-7093246A-31A3-4304-AC5F-5FB6400405E2
+
+        // the goal is to trigger a GeneralSecurityException inside sign()'s try block
+        // and verify that it gets wrapped in our custom JwsSigningException.
+        // We chose to trigger an InvalidKeyException in initSign() by providing an invalid key.
+        when(invalidKey.getAlgorithm()).thenReturn("RSA");
+        when(invalidKey.getModulus()).thenReturn(UNDERSIZED_RSA_MODULUS);
+        when(invalidKey.getPrivateExponent()).thenReturn(UNDERSIZED_RSA_PRIVATE_EXPONENT);
+
+        when(header.params()).thenReturn(params);
+        when(params.kid()).thenReturn("kid1");
+        when(header.alg()).thenReturn(Algorithm.RS256);
+
+        when(rsaJwk.kid()).thenReturn("kid1");
+        when(rsaJwk.alg()).thenReturn(Algorithm.RS256);
+
+        var expectedMessage = "Could not create JWS signature";
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, TEST_PAYLOAD, invalidKey, rsaJwk)
+        );
+
+        assertEquals(expectedMessage, exception.getMessage());
+        assertInstanceOf(InvalidKeyException.class, exception.getCause());
     }
 
 }
