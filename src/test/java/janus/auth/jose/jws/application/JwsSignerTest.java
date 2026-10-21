@@ -148,6 +148,9 @@ public class JwsSignerTest {
         };
     }
 
+    /**
+     * Checks null values passed directly to sign().
+     */
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")
     void testWhenSigningInputsNull_thenThrow(JwsHeader header, PublicJwk jwk, byte[] payload,
@@ -163,23 +166,73 @@ public class JwsSignerTest {
 
     private static Stream<Arguments> invalidSigningInputs(){
         JwsHeader header = mock(JwsHeader.class);
-        JoseCommonParams params = mock(JoseCommonParams.class);
         PublicJwk jwk = mock(ECPublicJwk.class);
         PrivateKey privateKey = mock(PrivateKey.class);
         var expectedMessage = "Required JWS fields must not be null";
-
-        when(header.params()).thenReturn(params);
-        when(header.params().kid()).thenReturn(null);
-        when(header.params()).thenReturn(null);
-        when(header.alg()).thenReturn(null);
-        when(jwk.kid()).thenReturn(null);
-        when(jwk.alg()).thenReturn(null);
 
         return Stream.of(
             Arguments.of(null, jwk, TEST_PAYLOAD, privateKey, expectedMessage),
             Arguments.of(header, null, TEST_PAYLOAD, privateKey, expectedMessage),
             Arguments.of(header, jwk, null, privateKey, expectedMessage),
             Arguments.of(header, jwk, TEST_PAYLOAD, null, expectedMessage)
+        );
+    }
+
+    /**
+     * Checks null required fields inside non-null header and JWK objects.
+     */
+    @ParameterizedTest
+    @MethodSource("invalidRequiredSigningFields")
+    void testWhenRequiredSigningFieldNull_thenThrow(JwsHeader header, PublicJwk jwk){
+        var signer = new JwsSigner(new ObjectMapper());
+        var expectedMessage = "Required JWS fields must not be null";
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, TEST_PAYLOAD, privateKeyMock, jwk)
+        );
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    private static Stream<Arguments> invalidRequiredSigningFields(){
+        var validParams = JoseCommonParams.builder()
+                .kid(TEST_KID)
+                .build();
+
+        var validHeader = JwsHeader.builder()
+                .alg(Algorithm.RS256)
+                .params(validParams)
+                .build();
+
+        var headerWithoutParams = JwsHeader.builder()
+                .alg(Algorithm.RS256)
+                .build();
+
+        var headerWithoutKid = JwsHeader.builder()
+                .alg(Algorithm.RS256)
+                .params(JoseCommonParams.builder().build())
+                .build();
+
+        var headerWithoutAlgorithm = JwsHeader.builder()
+                .params(validParams)
+                .build();
+
+        var validJwk = mock(RSAPublicJwk.class);
+        when(validJwk.kid()).thenReturn(TEST_KID);
+        when(validJwk.alg()).thenReturn(Algorithm.RS256);
+
+        var jwkWithoutKid = mock(RSAPublicJwk.class);
+        when(jwkWithoutKid.alg()).thenReturn(Algorithm.RS256);
+
+        var jwkWithoutAlgorithm = mock(RSAPublicJwk.class);
+        when(jwkWithoutAlgorithm.kid()).thenReturn(TEST_KID);
+
+        return Stream.of(
+                Arguments.of(headerWithoutParams, validJwk),
+                Arguments.of(headerWithoutKid, validJwk),
+                Arguments.of(headerWithoutAlgorithm, validJwk),
+                Arguments.of(validHeader, jwkWithoutKid),
+                Arguments.of(validHeader, jwkWithoutAlgorithm)
         );
     }
 
