@@ -6,6 +6,7 @@ import janus.auth.jose.jwk.application.service.SigningKeyPairGenerator;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.PublicJwk;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
+import janus.auth.jose.jwk.domain.type.Curve;
 import janus.auth.jose.jws.domain.exception.JwsSigningException;
 import janus.auth.jose.jws.domain.model.JwsHeader;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ public class JwsSignerTest {
     private PrivateKey privateKeyMock;
 
     private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
+    private static final String TEST_KID = "kid1";
     private static final int INVALID_CURVE_SIZE = 123;
     private static final BigInteger UNDERSIZED_RSA_MODULUS = BigInteger.valueOf(3233);
     private static final BigInteger UNDERSIZED_RSA_PRIVATE_EXPONENT = BigInteger.valueOf(2753);
@@ -57,13 +59,12 @@ public class JwsSignerTest {
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         var signer = new JwsSigner(new ObjectMapper());
         var keypair = SigningKeyPairGenerator.generateRsaKeyPair();
-        var decoder = Base64.getUrlDecoder();
 
-        when(rsaJwkMock.kid()).thenReturn("kid1");
+        when(rsaJwkMock.kid()).thenReturn(TEST_KID);
         when(rsaJwkMock.alg()).thenReturn(Algorithm.RS256);
 
         var params = JoseCommonParams.builder()
-                .kid("kid1")
+                .kid(TEST_KID)
                 .build();
 
         var header = JwsHeader.builder()
@@ -73,37 +74,77 @@ public class JwsSignerTest {
 
         var signed = signer.sign(header, TEST_PAYLOAD, keypair.getPrivate(), rsaJwkMock);
 
-        String[] jwsSegments = signed.split("[.]");
-        var decodedHeader = decoder.decode(jwsSegments[0]);
-        var decodedPayload = decoder.decode(jwsSegments[1]);
-        var decodedSignature = decoder.decode(jwsSegments[2]);
+        assertValidCompactJws(signed, Algorithm.RS256, keypair.getPublic());
+    }
 
-        var signingInput = jwsSegments[0] + "." + jwsSegments[1];
+    @ParameterizedTest
+    @MethodSource("validEcSigningInputs")
+    void testWhenEcSigningInputsAreValid_thenReturnValidCompactJws(Algorithm algorithm, Curve curve)
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        var signer = new JwsSigner(new ObjectMapper());
+        var keypair = SigningKeyPairGenerator.generateEcKeyPair(curve);
 
-        var verifier = Signature.getInstance("SHA256withRSA");
-        verifier.initVerify(keypair.getPublic());
-        verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));
+        when(ecJwkMock.kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.alg()).thenReturn(algorithm);
 
-        var objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(decodedHeader);
+        var params = JoseCommonParams.builder()
+                .kid(TEST_KID)
+                .build();
+
+        var header = JwsHeader.builder()
+                .alg(algorithm)
+                .params(params)
+                .build();
+
+        var signed = signer.sign(header, TEST_PAYLOAD, keypair.getPrivate(), ecJwkMock);
+
+        assertValidCompactJws(signed, algorithm, keypair.getPublic());
+
+    }
+
+    private static Stream<Arguments> validEcSigningInputs(){
+        return Stream.of(
+                Arguments.of(Algorithm.ES256, Curve.P256),
+                Arguments.of(Algorithm.ES384, Curve.P384),
+                Arguments.of(Algorithm.ES512, Curve.P521)
+        );
+    }
+
+    private static void assertValidCompactJws(String signed, Algorithm expectedAlgorithm, PublicKey publicKey)
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        var decoder = Base64.getUrlDecoder();
+        String[] jwsSegments = signed.split("[.]", -1);
 
         assertEquals(3, jwsSegments.length);
         assertFalse(jwsSegments[0].isBlank());
         assertFalse(jwsSegments[1].isBlank());
         assertFalse(jwsSegments[2].isBlank());
+
+        var decodedHeader = decoder.decode(jwsSegments[0]);
+        var decodedPayload = decoder.decode(jwsSegments[1]);
+        var decodedSignature = decoder.decode(jwsSegments[2]);
+
+        var signingInput = jwsSegments[0] + "." + jwsSegments[1];
+        var verifier = Signature.getInstance(getJcaSignatureAlgorithm(expectedAlgorithm));
+        verifier.initVerify(publicKey);
+        verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));
+
+        var objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(decodedHeader);
+
         assertArrayEquals(TEST_PAYLOAD, decodedPayload);
-        assertEquals("RS256", node.get("alg").asString());
-        assertEquals("kid1", node.get("kid").asString());
+        assertEquals(expectedAlgorithm.name(), node.get("alg").asString());
+        assertEquals(TEST_KID, node.get("kid").asString());
         assertTrue(verifier.verify(decodedSignature));
     }
 
-    @ParameterizedTest
-    @MethodSource("validEcSigningInputs")
-    void testWhenEcSigningInputsAreValid_thenReturnValidCompactJws(
-            Algorithm algorithm,
-            String curveName
-    ) {
-
+    private static String getJcaSignatureAlgorithm(Algorithm algorithm) {
+        return switch (algorithm) {
+            case RS256 -> "SHA256withRSA";
+            case ES256 -> "SHA256withECDSAinP1363Format";
+            case ES384 -> "SHA384withECDSAinP1363Format";
+            case ES512 -> "SHA512withECDSAinP1363Format";
+        };
     }
 
     @ParameterizedTest
