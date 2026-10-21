@@ -15,17 +15,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.ECField;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.EllipticCurve;
+import java.util.Base64;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,13 +37,15 @@ import static org.mockito.Mockito.when;
 public class JwsSignerTest {
 
     @Mock
-    private JwsHeader header;
+    private JwsHeader headerMock;
     @Mock
-    private JoseCommonParams params;
+    private JoseCommonParams paramsMock;
     @Mock
-    private ECPublicJwk jwk;
+    private ECPublicJwk ecJwkMock;
     @Mock
-    private PrivateKey privateKey;
+    private RSAPublicJwk rsaJwkMock;
+    @Mock
+    private PrivateKey privateKeyMock;
 
     private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
     private static final int INVALID_CURVE_SIZE = 123;
@@ -50,14 +53,48 @@ public class JwsSignerTest {
     private static final BigInteger UNDERSIZED_RSA_PRIVATE_EXPONENT = BigInteger.valueOf(2753);
 
     @Test
-    void testWhenRsaSigningInputsAreValid_thenReturnValidCompactJws() {
+    void testWhenRsaSigningInputsAreValid_thenReturnValidCompactJws()
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         var signer = new JwsSigner(new ObjectMapper());
-        var rsaPrivateKey = mock(RSAPrivateKey.class);
-        var keypair = SigningKeyPairGenerator.generateRsaKeyPair()
+        var keypair = SigningKeyPairGenerator.generateRsaKeyPair();
+        var decoder = Base64.getUrlDecoder();
 
-        var signed = signer.sign(header, TEST_PAYLOAD, rsaPrivateKey, jwk);
+        when(rsaJwkMock.kid()).thenReturn("kid1");
+        when(rsaJwkMock.alg()).thenReturn(Algorithm.RS256);
 
+        var params = JoseCommonParams.builder()
+                .kid("kid1")
+                .build();
 
+        var header = JwsHeader.builder()
+                .alg(Algorithm.RS256)
+                .params(params)
+                .build();
+
+        var signed = signer.sign(header, TEST_PAYLOAD, keypair.getPrivate(), rsaJwkMock);
+
+        String[] jwsSegments = signed.split("[.]");
+        var decodedHeader = decoder.decode(jwsSegments[0]);
+        var decodedPayload = decoder.decode(jwsSegments[1]);
+        var decodedSignature = decoder.decode(jwsSegments[2]);
+
+        var signingInput = jwsSegments[0] + "." + jwsSegments[1];
+
+        var verifier = Signature.getInstance("SHA256withRSA");
+        verifier.initVerify(keypair.getPublic());
+        verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));
+
+        var objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(decodedHeader);
+
+        assertEquals(3, jwsSegments.length);
+        assertFalse(jwsSegments[0].isBlank());
+        assertFalse(jwsSegments[1].isBlank());
+        assertFalse(jwsSegments[2].isBlank());
+        assertArrayEquals(TEST_PAYLOAD, decodedPayload);
+        assertEquals("RS256", node.get("alg").asString());
+        assertEquals("kid1", node.get("kid").asString());
+        assertTrue(verifier.verify(decodedSignature));
     }
 
     @ParameterizedTest
@@ -66,7 +103,7 @@ public class JwsSignerTest {
             Algorithm algorithm,
             String curveName
     ) {
-        // ES256, ES384, ES512
+
     }
 
     @ParameterizedTest
@@ -107,11 +144,11 @@ public class JwsSignerTest {
     @Test
     void testWhenHeaderKidNotEqualToJwkKid_thenThrow(){
 
-        when(header.params()).thenReturn(params);
-        when(header.alg()).thenReturn(Algorithm.ES256);
-        when(header.params().kid()).thenReturn("kid1");
-        when(jwk.kid()).thenReturn("kid2");
-        when(jwk.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(headerMock.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.params().kid()).thenReturn("kid1");
+        when(ecJwkMock.kid()).thenReturn("kid2");
+        when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
 
         var expectedMessage = "JWS Header's kid must be identical to public JWK's kid";
 
@@ -119,7 +156,7 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, privateKey, jwk));
+                () -> signer.sign(headerMock, TEST_PAYLOAD, privateKeyMock, ecJwkMock));
         assertEquals(expectedMessage, exception.getMessage());
 
     }
@@ -127,11 +164,11 @@ public class JwsSignerTest {
     @Test
     void testWhenHeaderAlgNotEqualToJwkAlg_thenThrow(){
 
-        when(header.params()).thenReturn(params);
-        when(header.params().kid()).thenReturn("kid1");
-        when(jwk.kid()).thenReturn("kid1");
-        when(jwk.alg()).thenReturn(Algorithm.ES384);
-        when(header.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(headerMock.params().kid()).thenReturn("kid1");
+        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(ecJwkMock.alg()).thenReturn(Algorithm.ES384);
+        when(headerMock.alg()).thenReturn(Algorithm.ES256);
 
         var expectedMessage = "JWS Header's alg must be identical to public JWK's alg";
 
@@ -139,7 +176,7 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, privateKey, jwk));
+                () -> signer.sign(headerMock, TEST_PAYLOAD, privateKeyMock, ecJwkMock));
         assertEquals(expectedMessage, exception.getMessage());
 
     }
@@ -149,17 +186,17 @@ public class JwsSignerTest {
         var signer = new JwsSigner(new ObjectMapper());
         var rsaPrivateKey = mock(RSAPrivateKey.class);
 
-        when(header.params()).thenReturn(params);
-        when(header.params().kid()).thenReturn("kid1");
-        when(jwk.kid()).thenReturn("kid1");
-        when(jwk.alg()).thenReturn(Algorithm.ES256);
-        when(header.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(headerMock.params().kid()).thenReturn("kid1");
+        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.alg()).thenReturn(Algorithm.ES256);
 
         var expectedMessage = "ES256 requires an EC private key";
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, rsaPrivateKey, jwk)
+                () -> signer.sign(headerMock, TEST_PAYLOAD, rsaPrivateKey, ecJwkMock)
         );
         assertEquals(expectedMessage, exception.getMessage());
 
@@ -170,17 +207,17 @@ public class JwsSignerTest {
         var signer = new JwsSigner(new ObjectMapper());
         var ecPrivateKey = mock(ECPrivateKey.class);
 
-        when(header.params()).thenReturn(params);
-        when(header.params().kid()).thenReturn("kid1");
-        when(jwk.kid()).thenReturn("kid1");
-        when(jwk.alg()).thenReturn(Algorithm.RS256);
-        when(header.alg()).thenReturn(Algorithm.RS256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(headerMock.params().kid()).thenReturn("kid1");
+        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(ecJwkMock.alg()).thenReturn(Algorithm.RS256);
+        when(headerMock.alg()).thenReturn(Algorithm.RS256);
 
         var expectedMessage = "RS256 requires an RSA private key";
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, ecPrivateKey, jwk)
+                () -> signer.sign(headerMock, TEST_PAYLOAD, ecPrivateKey, ecJwkMock)
         );
         assertEquals(expectedMessage, exception.getMessage());
     }
@@ -190,11 +227,11 @@ public class JwsSignerTest {
         var signer = new JwsSigner(new ObjectMapper());
         var ecPrivateKey = mock(ECPrivateKey.class);
 
-        when(header.params()).thenReturn(params);
-        when(header.params().kid()).thenReturn("kid1");
-        when(jwk.kid()).thenReturn("kid1");
-        when(jwk.alg()).thenReturn(Algorithm.ES256);
-        when(header.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(headerMock.params().kid()).thenReturn("kid1");
+        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
+        when(headerMock.alg()).thenReturn(Algorithm.ES256);
         when(ecPrivateKey.getParams()).thenReturn(mock(ECParameterSpec.class));
         when(ecPrivateKey.getParams().getCurve()).thenReturn(mock(EllipticCurve.class));
         when(ecPrivateKey.getParams().getCurve().getField()).thenReturn(mock(ECField.class));
@@ -204,7 +241,7 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, ecPrivateKey, jwk)
+                () -> signer.sign(headerMock, TEST_PAYLOAD, ecPrivateKey, ecJwkMock)
         );
         assertEquals(expectedMessage, exception.getMessage());
     }
@@ -226,9 +263,9 @@ public class JwsSignerTest {
         when(invalidKey.getModulus()).thenReturn(UNDERSIZED_RSA_MODULUS);
         when(invalidKey.getPrivateExponent()).thenReturn(UNDERSIZED_RSA_PRIVATE_EXPONENT);
 
-        when(header.params()).thenReturn(params);
-        when(params.kid()).thenReturn("kid1");
-        when(header.alg()).thenReturn(Algorithm.RS256);
+        when(headerMock.params()).thenReturn(paramsMock);
+        when(paramsMock.kid()).thenReturn("kid1");
+        when(headerMock.alg()).thenReturn(Algorithm.RS256);
 
         when(rsaJwk.kid()).thenReturn("kid1");
         when(rsaJwk.alg()).thenReturn(Algorithm.RS256);
@@ -237,7 +274,7 @@ public class JwsSignerTest {
 
         var exception = assertThrows(
                 JwsSigningException.class,
-                () -> signer.sign(header, TEST_PAYLOAD, invalidKey, rsaJwk)
+                () -> signer.sign(headerMock, TEST_PAYLOAD, invalidKey, rsaJwk)
         );
 
         assertEquals(expectedMessage, exception.getMessage());
