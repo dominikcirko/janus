@@ -1,12 +1,10 @@
 package janus.auth.jose.jwk.application.service;
 
+import janus.auth.jose.jwk.domain.exception.SigningKeyGenerationException;
 import janus.auth.jose.jwk.domain.type.Curve;
 
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
@@ -18,23 +16,29 @@ public final class SigningKeyPairGenerator {
     private SigningKeyPairGenerator() {
     }
 
-    public static KeyPair generateRsaKeyPair()
-            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        var kpg = KeyPairGenerator.getInstance("RSA");
-        var publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT);
-        var spec = new RSAKeyGenParameterSpec(RSA_KEY_SIZE, publicExponent);
-        kpg.initialize(spec);
-
-        return kpg.generateKeyPair();
+    public static KeyPair generateRsaKeyPair() {
+        KeyPairGenerator kpg;
+        try{
+            kpg = KeyPairGenerator.getInstance("RSA");
+            var publicExponent = BigInteger.valueOf(RSA_PUBLIC_EXPONENT);
+            var spec = new RSAKeyGenParameterSpec(RSA_KEY_SIZE, publicExponent);
+            kpg.initialize(spec);
+            return kpg.generateKeyPair();
+        } catch (GeneralSecurityException e) {
+            throw new SigningKeyGenerationException("Could not generate RSA signing key", e);
+        }
     }
 
-    public static KeyPair generateEcKeyPair(Curve crv)
-            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        var kpg = KeyPairGenerator.getInstance("EC");
-        var spec = specFor(crv);
-        kpg.initialize(spec);
-
-        return kpg.generateKeyPair();
+    public static KeyPair generateEcKeyPair(Curve curve) {
+        KeyPairGenerator kpg;
+        try{
+            kpg = KeyPairGenerator.getInstance("EC");
+            var spec = specFor(curve);
+            kpg.initialize(spec);
+            return kpg.generateKeyPair();
+        } catch (GeneralSecurityException e) {
+            throw new SigningKeyGenerationException("Could not generate EC signing key", e);
+        }
     }
 
     private static ECGenParameterSpec specFor(Curve curve) {

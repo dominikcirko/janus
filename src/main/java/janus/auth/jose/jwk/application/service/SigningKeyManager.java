@@ -1,11 +1,8 @@
 package janus.auth.jose.jwk.application.service;
 
-import janus.auth.jose.jwk.domain.exception.SigningKeyGenerationException;
 import janus.auth.jose.jwk.domain.type.Curve;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.security.GeneralSecurityException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +28,12 @@ public class SigningKeyManager {
         if (signingKeyStore.containsAlias(alias)) {
             return;
         }
-        try {
-            var keyPair = SigningKeyPairGenerator.generateRsaKeyPair();
-            var certificate = certificateIssuer.issueSelfSigned(
-                    keyPair,
-                    RSA_CERTIFICATE_SIGNATURE_ALGORITHM
-            );
-            signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
-        } catch (GeneralSecurityException e) {
-            throw new SigningKeyGenerationException("Could not generate RSA signing key", e);
-        }
+        var keyPair = SigningKeyPairGenerator.generateRsaKeyPair();
+        var certificate = certificateIssuer.issueSelfSigned(
+                keyPair, RSA_CERTIFICATE_SIGNATURE_ALGORITHM
+        );
+        signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
+
     }
 
     private void prepareEcSigningKey(String alias, Curve crv){
@@ -48,16 +41,11 @@ public class SigningKeyManager {
             return;
         }
         var signatureAlgorithm = getSignatureAlgorithmFromCrv(crv);
-        try {
-            var keyPair = SigningKeyPairGenerator.generateEcKeyPair(crv);
-            var certificate = certificateIssuer.issueSelfSigned(
-                    keyPair,
-                    signatureAlgorithm
-            );
-            signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
-        } catch (GeneralSecurityException e) {
-            throw new SigningKeyGenerationException("Could not generate EC signing key", e);
-        }
+        var keyPair = SigningKeyPairGenerator.generateEcKeyPair(crv);
+        var certificate = certificateIssuer.issueSelfSigned(
+                keyPair, signatureAlgorithm
+        );
+        signingKeyStore.storePrivateKey(alias, keyPair.getPrivate(), certificate);
     }
 
     private String getSignatureAlgorithmFromCrv(Curve crv){

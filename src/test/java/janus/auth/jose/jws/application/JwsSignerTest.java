@@ -2,6 +2,7 @@ package janus.auth.jose.jws.application;
 
 import janus.auth.jose.common.Algorithm;
 import janus.auth.jose.common.JoseCommonParams;
+import janus.auth.jose.jwk.application.service.SigningKeyPairGenerator;
 import janus.auth.jose.jwk.domain.model.ECPublicJwk;
 import janus.auth.jose.jwk.domain.model.PublicJwk;
 import janus.auth.jose.jwk.domain.model.RSAPublicJwk;
@@ -44,9 +45,29 @@ public class JwsSignerTest {
     private PrivateKey privateKey;
 
     private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
-    public static final int INVALID_CURVE_SIZE = 123;
+    private static final int INVALID_CURVE_SIZE = 123;
     private static final BigInteger UNDERSIZED_RSA_MODULUS = BigInteger.valueOf(3233);
     private static final BigInteger UNDERSIZED_RSA_PRIVATE_EXPONENT = BigInteger.valueOf(2753);
+
+    @Test
+    void testWhenRsaSigningInputsAreValid_thenReturnValidCompactJws() {
+        var signer = new JwsSigner(new ObjectMapper());
+        var rsaPrivateKey = mock(RSAPrivateKey.class);
+        var keypair = SigningKeyPairGenerator.generateRsaKeyPair()
+
+        var signed = signer.sign(header, TEST_PAYLOAD, rsaPrivateKey, jwk);
+
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("validEcSigningInputs")
+    void testWhenEcSigningInputsAreValid_thenReturnValidCompactJws(
+            Algorithm algorithm,
+            String curveName
+    ) {
+        // ES256, ES384, ES512
+    }
 
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")

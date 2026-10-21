@@ -95,9 +95,7 @@ public class JwsSigner {
                 .getFieldSize();
 
         if (actualFieldSize != expectedFieldSize) {
-            throw new JwsSigningException(
-                    algorithm + " requires EC field size " + expectedFieldSize
-            );
+            throw new JwsSigningException(algorithm + " requires EC field size " + expectedFieldSize);
         }
     }
 
