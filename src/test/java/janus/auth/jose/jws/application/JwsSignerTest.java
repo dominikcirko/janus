@@ -17,6 +17,11 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.ECField;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.EllipticCurve;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +41,14 @@ public class JwsSignerTest {
     @Mock
     private PrivateKey privateKey;
 
-    private static final byte[] TEST_PAYLOAD =
-            "test-payload".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
+    public static final int INVALID_CURVE_SIZE = 123;
 
     @ParameterizedTest
     @MethodSource("invalidSigningInputs")
     void testWhenSigningInputsNull_thenThrow(JwsHeader header, PublicJwk jwk, byte[] payload,
                                              PrivateKey privateKey, String expectedMessage){
-        JwsSigner signer = new JwsSigner(new ObjectMapper());
+        var signer = new JwsSigner(new ObjectMapper());
 
         var exception = assertThrows(
                 JwsSigningException.class, () -> signer.sign(header, payload, privateKey, jwk)
@@ -85,7 +90,7 @@ public class JwsSignerTest {
 
         var expectedMessage = "JWS Header's kid must be identical to public JWK's kid";
 
-        JwsSigner signer = new JwsSigner(new ObjectMapper());
+        var signer = new JwsSigner(new ObjectMapper());
 
         var exception = assertThrows(
                 JwsSigningException.class,
@@ -112,6 +117,71 @@ public class JwsSignerTest {
                 () -> signer.sign(header, TEST_PAYLOAD, privateKey, jwk));
         assertEquals(expectedMessage, exception.getMessage());
 
+    }
+
+    @Test
+    void testWhenRsaPrivateKeyWithNonRsaAlgorithm_thenThrow(){
+        var signer = new JwsSigner(new ObjectMapper());
+        var rsaPrivateKey = mock(RSAPrivateKey.class);
+
+        when(header.params()).thenReturn(params);
+        when(header.params().kid()).thenReturn("kid1");
+        when(jwk.kid()).thenReturn("kid1");
+        when(jwk.alg()).thenReturn(Algorithm.ES256);
+        when(header.alg()).thenReturn(Algorithm.ES256);
+
+        var expectedMessage = "ES256 requires an EC private key";
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, TEST_PAYLOAD, rsaPrivateKey, jwk)
+        );
+        assertEquals(expectedMessage, exception.getMessage());
+
+    }
+
+    @Test
+    void testWhenEcPrivateKeyWithNonEcAlgorithm_thenThrow(){
+        var signer = new JwsSigner(new ObjectMapper());
+        var ecPrivateKey = mock(ECPrivateKey.class);
+
+        when(header.params()).thenReturn(params);
+        when(header.params().kid()).thenReturn("kid1");
+        when(jwk.kid()).thenReturn("kid1");
+        when(jwk.alg()).thenReturn(Algorithm.RS256);
+        when(header.alg()).thenReturn(Algorithm.RS256);
+
+        var expectedMessage = "RS256 requires an RSA private key";
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, TEST_PAYLOAD, ecPrivateKey, jwk)
+        );
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void testWhenCurveFieldSizeNotValid_thenThrow(){
+        var signer = new JwsSigner(new ObjectMapper());
+        var ecPrivateKey = mock(ECPrivateKey.class);
+
+        when(header.params()).thenReturn(params);
+        when(header.params().kid()).thenReturn("kid1");
+        when(jwk.kid()).thenReturn("kid1");
+        when(jwk.alg()).thenReturn(Algorithm.ES256);
+        when(header.alg()).thenReturn(Algorithm.ES256);
+        when(ecPrivateKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        when(ecPrivateKey.getParams().getCurve()).thenReturn(mock(EllipticCurve.class));
+        when(ecPrivateKey.getParams().getCurve().getField()).thenReturn(mock(ECField.class));
+        when(ecPrivateKey.getParams().getCurve().getField().getFieldSize()).thenReturn(INVALID_CURVE_SIZE);
+
+        var expectedMessage = "ES256 requires EC field size 256";
+
+        var exception = assertThrows(
+                JwsSigningException.class,
+                () -> signer.sign(header, TEST_PAYLOAD, ecPrivateKey, jwk)
+        );
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
 }

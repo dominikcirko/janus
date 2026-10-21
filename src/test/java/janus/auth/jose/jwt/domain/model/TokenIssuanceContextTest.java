@@ -29,7 +29,6 @@ public class TokenIssuanceContextTest {
         var ctx = new TokenIssuanceContext(
                 TEST_ISSUER, TEST_SUBJECT, TEST_AUDIENCE, TEST_TOKEN_LIFETIME,
                 CUSTOM_CLAIMS_WITHOUT_REGISTERED);
-        assertNotNull(ctx);
         assertEquals(TEST_ISSUER, ctx.issuer());
         assertEquals(TEST_SUBJECT, ctx.subject());
         assertEquals(TEST_AUDIENCE, ctx.audience());

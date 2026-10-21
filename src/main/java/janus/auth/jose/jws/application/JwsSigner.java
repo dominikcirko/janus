@@ -78,27 +78,26 @@ public class JwsSigner {
                 }
             }
 
-            case ES256, ES384, ES512 -> {
-                if (!(privateKey instanceof ECPrivateKey ecPrivateKey)) {
-                    throw new JwsSigningException(alg + " requires an EC private key");
-                }
+            case ES256 -> validateEcKey(privateKey, alg, 256);
+            case ES384 -> validateEcKey(privateKey, alg, 384);
+            case ES512 -> validateEcKey(privateKey, alg, 521);
+        }
+    }
 
-                int expectedFieldSize = switch (alg) {
-                    case ES256 -> 256;
-                    case ES384 -> 384;
-                    case ES512 -> 521;
-                    default -> throw new JwsSigningException("Unexpected algorithm: " + alg);
-                };
+    private void validateEcKey(PrivateKey privateKey, Algorithm algorithm, int expectedFieldSize) {
+        if (!(privateKey instanceof ECPrivateKey ecPrivateKey)) {
+            throw new JwsSigningException(algorithm + " requires an EC private key");
+        }
 
-                int actualFieldSize = ecPrivateKey.getParams()
-                        .getCurve()
-                        .getField()
-                        .getFieldSize();
+        int actualFieldSize = ecPrivateKey.getParams()
+                .getCurve()
+                .getField()
+                .getFieldSize();
 
-                if (actualFieldSize != expectedFieldSize) {
-                    throw new JwsSigningException(alg + " requires EC field size " + expectedFieldSize);
-                }
-            }
+        if (actualFieldSize != expectedFieldSize) {
+            throw new JwsSigningException(
+                    algorithm + " requires EC field size " + expectedFieldSize
+            );
         }
     }
 
