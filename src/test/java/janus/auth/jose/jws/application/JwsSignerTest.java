@@ -50,6 +50,7 @@ public class JwsSignerTest {
 
     private static final byte[] TEST_PAYLOAD = "test-payload".getBytes(StandardCharsets.UTF_8);
     private static final String TEST_KID = "kid1";
+    private static final String TEST_KID_2 = "kid2";
     private static final int INVALID_CURVE_SIZE = 123;
     private static final BigInteger UNDERSIZED_RSA_MODULUS = BigInteger.valueOf(3233);
     private static final BigInteger UNDERSIZED_RSA_PRIVATE_EXPONENT = BigInteger.valueOf(2753);
@@ -187,8 +188,8 @@ public class JwsSignerTest {
 
         when(headerMock.params()).thenReturn(paramsMock);
         when(headerMock.alg()).thenReturn(Algorithm.ES256);
-        when(headerMock.params().kid()).thenReturn("kid1");
-        when(ecJwkMock.kid()).thenReturn("kid2");
+        when(headerMock.params().kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.kid()).thenReturn(TEST_KID_2);
         when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
 
         var expectedMessage = "JWS Header's kid must be identical to public JWK's kid";
@@ -206,8 +207,8 @@ public class JwsSignerTest {
     void testWhenHeaderAlgNotEqualToJwkAlg_thenThrow(){
 
         when(headerMock.params()).thenReturn(paramsMock);
-        when(headerMock.params().kid()).thenReturn("kid1");
-        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(headerMock.params().kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.kid()).thenReturn(TEST_KID);
         when(ecJwkMock.alg()).thenReturn(Algorithm.ES384);
         when(headerMock.alg()).thenReturn(Algorithm.ES256);
 
@@ -228,8 +229,8 @@ public class JwsSignerTest {
         var rsaPrivateKey = mock(RSAPrivateKey.class);
 
         when(headerMock.params()).thenReturn(paramsMock);
-        when(headerMock.params().kid()).thenReturn("kid1");
-        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(headerMock.params().kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.kid()).thenReturn(TEST_KID);
         when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
         when(headerMock.alg()).thenReturn(Algorithm.ES256);
 
@@ -249,8 +250,8 @@ public class JwsSignerTest {
         var ecPrivateKey = mock(ECPrivateKey.class);
 
         when(headerMock.params()).thenReturn(paramsMock);
-        when(headerMock.params().kid()).thenReturn("kid1");
-        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(headerMock.params().kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.kid()).thenReturn(TEST_KID);
         when(ecJwkMock.alg()).thenReturn(Algorithm.RS256);
         when(headerMock.alg()).thenReturn(Algorithm.RS256);
 
@@ -269,8 +270,8 @@ public class JwsSignerTest {
         var ecPrivateKey = mock(ECPrivateKey.class);
 
         when(headerMock.params()).thenReturn(paramsMock);
-        when(headerMock.params().kid()).thenReturn("kid1");
-        when(ecJwkMock.kid()).thenReturn("kid1");
+        when(headerMock.params().kid()).thenReturn(TEST_KID);
+        when(ecJwkMock.kid()).thenReturn(TEST_KID);
         when(ecJwkMock.alg()).thenReturn(Algorithm.ES256);
         when(headerMock.alg()).thenReturn(Algorithm.ES256);
         when(ecPrivateKey.getParams()).thenReturn(mock(ECParameterSpec.class));
@@ -305,10 +306,10 @@ public class JwsSignerTest {
         when(invalidKey.getPrivateExponent()).thenReturn(UNDERSIZED_RSA_PRIVATE_EXPONENT);
 
         when(headerMock.params()).thenReturn(paramsMock);
-        when(paramsMock.kid()).thenReturn("kid1");
+        when(paramsMock.kid()).thenReturn(TEST_KID);
         when(headerMock.alg()).thenReturn(Algorithm.RS256);
 
-        when(rsaJwk.kid()).thenReturn("kid1");
+        when(rsaJwk.kid()).thenReturn(TEST_KID);
         when(rsaJwk.alg()).thenReturn(Algorithm.RS256);
 
         var expectedMessage = "Could not create JWS signature";
