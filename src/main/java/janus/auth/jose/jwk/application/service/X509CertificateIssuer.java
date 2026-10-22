@@ -62,7 +62,8 @@ public class X509CertificateIssuer {
 
             return new JcaX509CertificateConverter()
                     .getCertificate(holder);
-        } catch (NoSuchAlgorithmException | CertIOException | OperatorCreationException | CertificateException e) {
+        } catch (NoSuchAlgorithmException | CertIOException |
+                 OperatorCreationException | CertificateException e) {
             throw new CertificateIssuanceException("Could not issue certificate", e);
         }
 
