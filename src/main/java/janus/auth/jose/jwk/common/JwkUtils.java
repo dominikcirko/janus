@@ -4,8 +4,8 @@ import janus.auth.jose.jwk.domain.exception.JwkEncodingException;
 import org.bouncycastle.util.BigIntegers;
 
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
@@ -40,8 +40,8 @@ public class JwkUtils {
             return Base64.getUrlEncoder()
                     .withoutPadding()
                     .encodeToString(digest);
-        } catch (CertificateEncodingException | NoSuchAlgorithmException e) {
-            throw new JwkEncodingException("Could not calculate certificate SHA-256 thumbprint", e);
+        } catch (GeneralSecurityException e) {
+            throw new JwkEncodingException("Could not calculate certificate thumbprint", e);
         }
     }
 

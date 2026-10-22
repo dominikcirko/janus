@@ -13,6 +13,21 @@ import static org.mockito.Mockito.when;
 public class PemUtilsTest {
 
     @Test
+    void testWhenCertificateEncodingSucceeds_thenReturnPem()
+            throws CertificateEncodingException {
+        var certificate = mock(X509Certificate.class);
+        when(certificate.getEncoded()).thenReturn(new byte[]{1, 2, 3}); // base 64 = AQID
+
+        var expected = """
+            -----BEGIN CERTIFICATE-----
+            AQID
+            -----END CERTIFICATE-----
+            """;
+
+        assertEquals(expected, PemUtils.encodeCertificate(certificate));
+    }
+
+    @Test
     void testWhenEncodingError_thenWrapException() throws CertificateEncodingException {
         var certificate = mock(X509Certificate.class);
         var cause = new CertificateEncodingException("Encoding failed");
@@ -27,4 +42,5 @@ public class PemUtilsTest {
         assertEquals(expectedMessage, exception.getMessage());
         assertSame(cause, exception.getCause());
     }
+
 }
