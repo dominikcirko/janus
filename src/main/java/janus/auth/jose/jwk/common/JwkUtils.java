@@ -14,6 +14,9 @@ public class JwkUtils {
 
     // https://datatracker.ietf.org/doc/html/rfc7518#section-2
     public static String encodeBase64UrlUInt(BigInteger value) {
+        if(value.signum() < 0 ){
+            throw new JwkEncodingException("Base64urlUInt cannot be negative");
+        }
         byte[] unsignedBytes = BigIntegers.asUnsignedByteArray(value);
 
         return Base64.getUrlEncoder()
@@ -30,32 +33,34 @@ public class JwkUtils {
         }
     }
 
-    public static String computeX5t(X509Certificate certificate, String thumbprint) {
+    public static String computeX5t(X509Certificate certificate, String digestAlgorithm) {
         try {
             byte[] certificateDer = certificate.getEncoded();
             byte[] digest = MessageDigest
-                    .getInstance(thumbprint)
+                    .getInstance(digestAlgorithm)
                     .digest(certificateDer);
 
             return Base64.getUrlEncoder()
                     .withoutPadding()
                     .encodeToString(digest);
         } catch (GeneralSecurityException e) {
-            throw new JwkEncodingException("Could not calculate certificate thumbprint", e);
+            throw new JwkEncodingException("Could not calculate certificate thumbprint using " + digestAlgorithm, e);
         }
     }
 
-    public static String encodeEcCoordinate(
-            BigInteger coordinate,
-            int fieldSize
-    ) {
+    public static String encodeEcCoordinate(BigInteger coordinate, int fieldSize) {
+        if(coordinate.signum() < 0){
+            throw new JwkEncodingException("EC coordinate cannot be negative");
+        }
+
         int byteLength = (fieldSize + 7) / 8;
+
+        var unsignedByteArr = BigIntegers
+                .asUnsignedByteArray(byteLength, coordinate);
 
         return Base64.getUrlEncoder()
                 .withoutPadding()
-                .encodeToString(
-                        BigIntegers.asUnsignedByteArray(byteLength, coordinate)
-                );
+                .encodeToString(unsignedByteArr);
     }
 
 }
