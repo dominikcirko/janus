@@ -27,11 +27,16 @@ public class Pkcs12SigningKeyStore {
 
     private static final String KEYSTORE_TYPE = "PKCS12";
 
-    @Value("${janus.signing.keystore.password}")
-    private String keyStorePassword;
+    private final String keyStorePassword;
+    private final String signingKeystorePath;
 
-    @Value("${janus.signing.keystore.path}")
-    private String signingKeystorePath;
+    public Pkcs12SigningKeyStore(
+            @Value("${janus.signing.keystore.password}") String keyStorePassword,
+            @Value("${janus.signing.keystore.path}") String signingKeystorePath
+    ) {
+        this.keyStorePassword = keyStorePassword;
+        this.signingKeystorePath = signingKeystorePath;
+    }
 
     private KeyStore keyStore;
 
