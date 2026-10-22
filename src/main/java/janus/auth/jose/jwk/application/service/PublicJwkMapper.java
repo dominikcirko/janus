@@ -23,8 +23,11 @@ public class PublicJwkMapper {
     public static final String SHA_256_THUMBPRINT = "SHA-256";
     public static final String SHA_1_THUMBPRINT = "SHA-1";
 
-    @Value("${janus.jose.x5u_base_url}")
-    private String X5U_BASE_URL;
+    private final String x5uBaseUrl;
+
+    public PublicJwkMapper(@Value("${janus.jose.x5u_base_url}") String x5uBaseUrl) {
+        this.x5uBaseUrl = x5uBaseUrl;
+    }
 
     public RSAPublicJwk toPublicRSA(
             X509Certificate certificate,
@@ -37,7 +40,7 @@ public class PublicJwkMapper {
             throw new PublicJwkMappingException("Certificate does not contain an RSA public key");
         }
 
-        var x5u = X5U_BASE_URL + "/" + kid + ".pem";
+        var x5u = x5uBaseUrl + "/" + kid + ".pem";
 
         return new RSAPublicJwk(
                 use,
@@ -72,7 +75,7 @@ public class PublicJwkMapper {
         var crv = resolveCurve(fieldSize);
 
         var point = publicKey.getW();
-        var x5u = X5U_BASE_URL + "/" + kid + ".pem";
+        var x5u = x5uBaseUrl + "/" + kid + ".pem";
 
         return new ECPublicJwk(
                 use,
