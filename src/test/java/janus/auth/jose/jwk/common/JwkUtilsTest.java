@@ -150,7 +150,6 @@ public class JwkUtilsTest {
     @Test
     void testWhenEcCoordinateNegative_thenThrow() {
         var expectedMessage = "EC coordinate cannot be negative";
-
         var exception = assertThrows(
                 JwkEncodingException.class,
                 () -> JwkUtils.encodeEcCoordinate(BigInteger.valueOf(-1L), 256)

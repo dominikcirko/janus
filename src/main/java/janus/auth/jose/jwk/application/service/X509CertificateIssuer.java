@@ -22,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -38,7 +37,7 @@ public class X509CertificateIssuer {
         //serial can be max 20 octets / 160 bits
         var serial = new BigInteger(128, new SecureRandom()).setBit(127);
 
-        Instant now = Clock.systemUTC().instant(); //clock for easier testing
+        var now = Instant.now();
 
         var notBefore = Date.from(now.minus(Duration.ofMinutes(5)));
         var notAfter  = Date.from(now.plus(Duration.ofDays(3650)));
