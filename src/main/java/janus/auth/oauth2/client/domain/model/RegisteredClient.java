@@ -1,34 +1,95 @@
 package janus.auth.oauth2.client.domain.model;
 
 import jakarta.persistence.*;
+import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
+import janus.auth.oauth2.client.domain.type.ClientStatus;
 import janus.auth.oauth2.client.domain.type.ClientType;
+import janus.auth.oauth2.client.domain.type.GrantType;
+import janus.auth.oauth2.client.domain.type.ResponseType;
 import janus.common.AbstractEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 //https://datatracker.ietf.org/doc/html/rfc6749#section-2
 @Entity
-@Data
+@Getter
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "registered_client")
 public class RegisteredClient extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "client_type", nullable = false, length = 32)
     private ClientType type;
 
-    @Column(name = "redirection_uri", nullable = false)
-    private List<String> redirectionUri;
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(
+            name = "registered_client_redirect_uri",
+            joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
+    )
+    @Column(name = "redirect_uri", nullable = false, length = 2048)
+    private Set<String> redirectUris = new HashSet<>();
 
     @Column(name = "application_name")
     private String applicationName;
 
-    private String website;
-    private String description;
+    @Column(name = "client_id",
+            nullable = false,
+            unique = true,
+            updatable = false)
+    private String clientId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "client_authentication_method", nullable = false, length = 64)
+    private ClientAuthenticationMethod authenticationMethod;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "client_status", nullable = false, length = 32)
+    private ClientStatus status = ClientStatus.ACTIVE;
+
+    @Column(name = "client_secret_hash")
+    private String clientSecretHash;
+
+    @Column(name = "client_secret_expires_at")
+    private Instant clientSecretExpiresAt;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "registered_client_grant_type",
+            joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
+    )
+    @Builder.Default
+    @Column(name = "grant_type", nullable = false, length = 128)
+    @Enumerated(EnumType.STRING)
+    private Set<GrantType> grantTypes = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(
+            name = "registered_client_scope",
+            joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
+    )
+    @Builder.Default
+    @Column(name = "scope", nullable = false)
+    private Set<String> scopes = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(
+            name = "registered_client_response_type",
+            joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
+    )
+    @Builder.Default
+    @Column(name = "response_type", nullable = false, length = 128)
+    @Enumerated(EnumType.STRING)
+    private Set<ResponseType> responseTypes = new HashSet<>();
+
+    @Column(length = 2048)
+    private String website;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 }
