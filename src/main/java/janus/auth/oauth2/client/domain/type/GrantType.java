@@ -1,5 +1,7 @@
 package janus.auth.oauth2.client.domain.type;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum GrantType {
     AUTHORIZATION_CODE("authorization_code"),
     REFRESH_TOKEN("refresh_token"),
@@ -12,6 +14,7 @@ public enum GrantType {
         this.value = value;
     }
 
+    @JsonValue
     public String value() {
         return value;
     }

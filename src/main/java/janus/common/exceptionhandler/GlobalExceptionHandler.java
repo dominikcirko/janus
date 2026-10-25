@@ -1,10 +1,14 @@
 package janus.common.exceptionhandler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import janus.auth.oauth2.client.application.dto.ClientRegistrationErrorResponse;
+import janus.auth.oauth2.client.application.exception.ClientRegistrationException;
 import janus.common.exceptionhandler.dto.ApiResponse;
 import janus.common.exceptionhandler.dto.ErrorDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +26,23 @@ public class GlobalExceptionHandler {
 
     @Value("${app.debug:false}")
     private boolean debugMode;
+
+    @ExceptionHandler(ClientRegistrationException.class)
+    public ResponseEntity<ClientRegistrationErrorResponse> handleClientRegistrationException(
+            ClientRegistrationException ex
+    ) {
+        log.warn("Client registration rejected: {}", ex.getMessage());
+
+        var response = new ClientRegistrationErrorResponse(
+                ex.getErrorCode(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(ex.getHttpStatus())
+                .cacheControl(CacheControl.noStore())
+                .body(response);
+    }
 
     @ExceptionHandler(JanusBaseException.class)
     public ResponseEntity<ApiResponse<Void>> handleJanusException(

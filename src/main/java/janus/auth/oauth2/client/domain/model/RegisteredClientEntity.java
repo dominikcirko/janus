@@ -87,8 +87,8 @@ public class RegisteredClientEntity extends AbstractEntity {
     )
     private Set<ResponseType> responseTypes = new HashSet<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String website;
+    @Column(name = "client_uri", columnDefinition = "TEXT")
+    private String clientUri;
 
     @Column(columnDefinition = "TEXT")
     private String description;
