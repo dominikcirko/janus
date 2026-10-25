@@ -36,8 +36,8 @@ public class RegisteredClientEntity extends AbstractEntity {
     )
     private Set<String> redirectUris = new HashSet<>();
 
-    @Column(name = "application_name")
-    private String applicationName;
+    @Column(name = "client_name")
+    private String clientName;
 
     @Column(name = "client_id", nullable = false,
             unique = true, updatable = false)

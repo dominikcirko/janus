@@ -27,7 +27,6 @@ public interface RegisteredClientMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "type", source = "request.tokenEndpointAuthMethod", qualifiedByName = "toClientType")
-    @Mapping(target = "applicationName", source = "request.clientName")
     @Mapping(target = "clientId", source = "clientId")
     @Mapping(target = "authenticationMethod", source = "request.tokenEndpointAuthMethod")
     @Mapping(target = "status", ignore = true)
@@ -47,7 +46,6 @@ public interface RegisteredClientMapper {
             expression = "java(clientSecret == null ? null : toExpirationEpochSecond(entity.getClientSecretExpiresAt()))"
     )
     @Mapping(target = "tokenEndpointAuthMethod", source = "entity.authenticationMethod")
-    @Mapping(target = "clientName", source = "entity.applicationName")
     @Mapping(target = "scope", source = "entity.scopes", qualifiedByName = "toScope")
     ClientRegistrationResponse toResponse(
             RegisteredClientEntity entity,

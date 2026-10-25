@@ -18,7 +18,7 @@
             <column name="client_type" type="VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="application_name" type="VARCHAR(255)"/>
+            <column name="client_name" type="VARCHAR(255)"/>
             <column name="client_id" type="VARCHAR(255)">
                 <constraints nullable="false"
                              unique="true"

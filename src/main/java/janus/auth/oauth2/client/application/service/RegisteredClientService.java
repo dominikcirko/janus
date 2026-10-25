@@ -131,10 +131,16 @@ public class RegisteredClientService implements RegisteredClientUseCase {
                 ClientRegistrationError.INVALID_CLIENT_METADATA,
                 "Invalid client URI: " + value
         );
-        if (!uri.isAbsolute()) {
+
+        var scheme = uri.getScheme();
+        var isWebUri = scheme != null
+                && (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))
+                && uri.getHost() != null;
+
+        if (!isWebUri) {
             throw new ClientRegistrationException(
                     ClientRegistrationError.INVALID_CLIENT_METADATA,
-                    "Client URI must be absolute: " + value
+                    "Client URI must be an HTTP or HTTPS URL with a valid host: " + value
             );
         }
     }
