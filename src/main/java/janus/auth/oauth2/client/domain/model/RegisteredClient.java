@@ -21,26 +21,26 @@ import java.util.Set;
 @Table(name = "registered_client")
 public class RegisteredClient extends AbstractEntity {
 
+    //todo add multitenancy
+
     @Enumerated(EnumType.STRING)
     @Column(name = "client_type", nullable = false, length = 32)
     private ClientType type;
 
     @Builder.Default
     @ElementCollection
+    @Column(name = "redirect_uri", nullable = false, columnDefinition = "TEXT")
     @CollectionTable(
             name = "registered_client_redirect_uri",
             joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
     )
-    @Column(name = "redirect_uri", nullable = false, length = 2048)
     private Set<String> redirectUris = new HashSet<>();
 
     @Column(name = "application_name")
     private String applicationName;
 
-    @Column(name = "client_id",
-            nullable = false,
-            unique = true,
-            updatable = false)
+    @Column(name = "client_id", nullable = false,
+            unique = true, updatable = false)
     private String clientId;
 
     @Enumerated(EnumType.STRING)
@@ -59,35 +59,35 @@ public class RegisteredClient extends AbstractEntity {
     private Instant clientSecretExpiresAt;
 
     @ElementCollection
+    @Builder.Default
+    @Column(name = "grant_type", nullable = false, length = 128)
+    @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "registered_client_grant_type",
             joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
     )
-    @Builder.Default
-    @Column(name = "grant_type", nullable = false, length = 128)
-    @Enumerated(EnumType.STRING)
     private Set<GrantType> grantTypes = new HashSet<>();
 
     @ElementCollection
+    @Builder.Default
+    @Column(name = "scope", nullable = false)
     @CollectionTable(
             name = "registered_client_scope",
             joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
     )
-    @Builder.Default
-    @Column(name = "scope", nullable = false)
     private Set<String> scopes = new HashSet<>();
 
     @ElementCollection
+    @Builder.Default
+    @Column(name = "response_type", nullable = false, length = 128)
+    @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "registered_client_response_type",
             joinColumns = @JoinColumn(name = "registered_client_id", nullable = false)
     )
-    @Builder.Default
-    @Column(name = "response_type", nullable = false, length = 128)
-    @Enumerated(EnumType.STRING)
     private Set<ResponseType> responseTypes = new HashSet<>();
 
-    @Column(length = 2048)
+    @Column(columnDefinition = "TEXT")
     private String website;
 
     @Column(columnDefinition = "TEXT")
