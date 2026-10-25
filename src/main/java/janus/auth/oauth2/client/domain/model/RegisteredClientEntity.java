@@ -19,7 +19,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Table(name = "registered_client")
-public class RegisteredClient extends AbstractEntity {
+public class RegisteredClientEntity extends AbstractEntity {
 
     //todo add multitenancy
 
