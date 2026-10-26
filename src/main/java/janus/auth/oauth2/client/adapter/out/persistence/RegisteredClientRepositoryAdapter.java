@@ -1,7 +1,7 @@
 package janus.auth.oauth2.client.adapter.out.persistence;
 
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
-import janus.auth.oauth2.client.domain.model.RegisteredClientEntity;
+import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

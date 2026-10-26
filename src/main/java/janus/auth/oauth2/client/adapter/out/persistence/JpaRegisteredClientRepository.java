@@ -1,6 +1,6 @@
 package janus.auth.oauth2.client.adapter.out.persistence;
 
-import janus.auth.oauth2.client.domain.model.RegisteredClientEntity;
+import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -2,7 +2,7 @@ package janus.auth.oauth2.client.application.mapper;
 
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
-import janus.auth.oauth2.client.domain.model.RegisteredClientEntity;
+import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientType;
 import org.mapstruct.Mapper;

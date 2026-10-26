@@ -1,4 +1,4 @@
-package janus.auth.oauth2.client.domain.model;
+package janus.auth.oauth2.client.adapter.out.persistence.entity;
 
 import jakarta.persistence.*;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
