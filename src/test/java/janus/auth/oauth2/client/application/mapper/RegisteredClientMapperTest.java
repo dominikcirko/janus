@@ -28,7 +28,8 @@ public class RegisteredClientMapperTest {
     private static final Instant TEST_CLIENT_ID_ISSUED_AT = Instant.parse("2026-10-26T10:00:00Z");
     private static final Instant TEST_CLIENT_SECRET_EXPIRES_AT = Instant.parse("2027-10-26T10:00:00Z");
 
-    private final RegisteredClientMapper mapper = Mappers.getMapper(RegisteredClientMapper.class);
+    private final RegisteredClientMapper mapper =
+            Mappers.getMapper(RegisteredClientMapper.class);
 
     @Test
     void testWhenConfidentialRegistrationInputValid_thenReturnMappedEntity() {
