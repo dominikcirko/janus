@@ -1,6 +1,6 @@
 package janus.common.exceptionhandler;
 
-import janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController;
+import janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController.JANUS_EXCEPTION_ENDPOINT;
-import static janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController.NULL_POINTER_EXCEPTION_ENDPOINT;
-import static janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController.REQUEST_VALIDATION_ENDPOINT;
-import static janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController.TYPE_MISMATCH_ENDPOINT;
-import static janus.common.exceptionhandler.testfixture.GlobalExceptionHandlerTestController.UNEXPECTED_EXCEPTION_ENDPOINT;
+import static janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController.JANUS_EXCEPTION_ENDPOINT;
+import static janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController.NULL_POINTER_EXCEPTION_ENDPOINT;
+import static janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController.REQUEST_VALIDATION_ENDPOINT;
+import static janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController.TYPE_MISMATCH_ENDPOINT;
+import static janus.common.exceptionhandler.testhelper.GlobalExceptionHandlerTestController.UNEXPECTED_EXCEPTION_ENDPOINT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

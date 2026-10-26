@@ -1,4 +1,4 @@
-package janus.common.exceptionhandler.testfixture;
+package janus.common.exceptionhandler.testhelper;
 
 import jakarta.validation.Valid;
 import janus.common.exceptionhandler.JanusBaseException;
