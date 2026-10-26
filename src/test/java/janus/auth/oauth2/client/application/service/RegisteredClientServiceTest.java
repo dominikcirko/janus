@@ -7,9 +7,7 @@ import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientI
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
-import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.client.testdata.RegisteredClientTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Base64;
-import java.util.Collections;
-import java.util.Set;
 
+import static janus.auth.oauth2.client.testdata.RegisteredClientTestDataFactory.TEST_CLIENT_SECRET_HASH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,14 +35,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class RegisteredClientServiceTest {
-
-    private static final String TEST_CLIENT_NAME = "Test Client";
-    private static final String TEST_CLIENT_URI = "https://client.example.com";
-    private static final String TEST_HTTP_CLIENT_URI = "http://client.example.com";
-    private static final String TEST_REDIRECT_URI = "https://client.example.com/callback";
-    private static final String TEST_SCOPE = "openid profile";
-    private static final String TEST_DESCRIPTION = "Test client description";
-    private static final String TEST_CLIENT_SECRET_HASH = "test-client-secret-hash";
 
     @Mock
     private RegisteredClientRepository registeredClientRepositoryMock;
@@ -73,14 +62,7 @@ public class RegisteredClientServiceTest {
 
     @Test
     void testWhenConfidentialRegistrationValid_thenGenerateSecretHashAndSaveClient() {
-        var input = createInput(
-                Set.of(),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.CLIENT_CREDENTIALS),
-                Set.of(),
-                TEST_HTTP_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory.createValidConfidentialInput();
         when(passwordEncoderMock.encode(anyString())).thenReturn(TEST_CLIENT_SECRET_HASH);
         when(registeredClientMapperMock.toEntity(
                 same(input),
@@ -108,14 +90,7 @@ public class RegisteredClientServiceTest {
 
     @Test
     void testWhenPublicRegistrationValid_thenSaveClientWithoutSecret() {
-        var input = createInput(
-                Set.of(TEST_REDIRECT_URI),
-                ClientAuthenticationMethod.NONE,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(ResponseType.CODE),
-                null,
-                null
-        );
+        var input = RegisteredClientTestDataFactory.createValidPublicInput();
         when(registeredClientMapperMock.toEntity(
                 same(input),
                 anyString(),
@@ -133,56 +108,31 @@ public class RegisteredClientServiceTest {
 
     @Test
     void testWhenAuthorizationCodeRedirectUriMissing_thenRejectRegistration() {
-        var input = createInput(
-                Set.of(),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(ResponseType.CODE),
-                TEST_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory
+                .createAuthorizationCodeInputWithoutRedirectUri();
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_REDIRECT_URI);
     }
 
     @Test
     void testWhenAuthorizationCodeResponseTypeMissing_thenRejectRegistration() {
-        var input = createInput(
-                Set.of(TEST_REDIRECT_URI),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(),
-                TEST_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory
+                .createAuthorizationCodeInputWithoutResponseType();
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
     @Test
     void testWhenCodeResponseTypeHasNoAuthorizationCodeGrant_thenRejectRegistration() {
-        var input = createInput(
-                Set.of(),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.CLIENT_CREDENTIALS),
-                Set.of(ResponseType.CODE),
-                TEST_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory
+                .createClientCredentialsInputWithCodeResponseType();
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
     @Test
     void testWhenPublicClientUsesClientCredentials_thenRejectRegistration() {
-        var input = createInput(
-                Set.of(),
-                ClientAuthenticationMethod.NONE,
-                Set.of(GrantType.CLIENT_CREDENTIALS),
-                Set.of(),
-                TEST_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory.createPublicClientCredentialsInput();
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
@@ -195,14 +145,7 @@ public class RegisteredClientServiceTest {
             "https://client example.com/callback"
     })
     void testWhenRedirectUriInvalid_thenRejectRegistration(String redirectUri) {
-        var input = createInput(
-                Collections.singleton(redirectUri),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(ResponseType.CODE),
-                TEST_CLIENT_URI,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory.createInputWithRedirectUri(redirectUri);
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_REDIRECT_URI);
     }
@@ -215,14 +158,7 @@ public class RegisteredClientServiceTest {
             "https://client example.com"
     })
     void testWhenClientUriInvalid_thenRejectRegistration(String clientUri) {
-        var input = createInput(
-                Set.of(TEST_REDIRECT_URI),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(ResponseType.CODE),
-                clientUri,
-                TEST_SCOPE
-        );
+        var input = RegisteredClientTestDataFactory.createInputWithClientUri(clientUri);
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
@@ -235,14 +171,7 @@ public class RegisteredClientServiceTest {
             "open\"id"
     })
     void testWhenScopeInvalid_thenRejectRegistration(String scope) {
-        var input = createInput(
-                Set.of(TEST_REDIRECT_URI),
-                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
-                Set.of(GrantType.AUTHORIZATION_CODE),
-                Set.of(ResponseType.CODE),
-                TEST_CLIENT_URI,
-                scope
-        );
+        var input = RegisteredClientTestDataFactory.createInputWithScope(scope);
 
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
@@ -261,23 +190,4 @@ public class RegisteredClientServiceTest {
         );
     }
 
-    private RegisteredClientInput createInput(
-            Set<String> redirectUris,
-            ClientAuthenticationMethod authenticationMethod,
-            Set<GrantType> grantTypes,
-            Set<ResponseType> responseTypes,
-            String clientUri,
-            String scope
-    ) {
-        return new RegisteredClientInput(
-                redirectUris,
-                authenticationMethod,
-                grantTypes,
-                responseTypes,
-                TEST_CLIENT_NAME,
-                clientUri,
-                scope,
-                TEST_DESCRIPTION
-        );
-    }
 }
