@@ -1,8 +1,8 @@
 package janus.auth.oauth2.client.adapter.in.web;
 
-import janus.auth.oauth2.client.application.dto.ClientRegistrationErrorResponse;
-import janus.auth.oauth2.client.application.exception.ClientRegistrationError;
-import janus.auth.oauth2.client.application.exception.ClientRegistrationException;
+import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientErrorResponse;
+import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
+import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Handles client-registration errors separately from the global exception handler because
  * RFC 7591 defines its own {@code error} and {@code error_description} response format.
- * This advice is scoped to {@link ClientRegistrationController}, so other endpoints continue
+ * This advice is scoped to {@link RegisteredClientController}, so other endpoints continue
  * to use the standard Janus error response.
  */
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@RestControllerAdvice(assignableTypes = ClientRegistrationController.class)
-public class ClientRegistrationExceptionHandler {
+@RestControllerAdvice(assignableTypes = RegisteredClientController.class)
+public class RegisteredClientExceptionHandler {
 
-    @ExceptionHandler(ClientRegistrationException.class)
-    public ResponseEntity<ClientRegistrationErrorResponse> handleClientRegistrationException(
-            ClientRegistrationException ex) {
+    @ExceptionHandler(RegisteredClientException.class)
+    public ResponseEntity<RegisteredClientErrorResponse> handleRegisteredClientException(
+            RegisteredClientException ex) {
         log.warn("Client registration rejected: {}", ex.getMessage());
 
-        var response = new ClientRegistrationErrorResponse(
+        var response = new RegisteredClientErrorResponse(
                 ex.getErrorCode(),
                 ex.getMessage()
         );
@@ -41,44 +41,42 @@ public class ClientRegistrationExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ClientRegistrationErrorResponse> handleValidationException(
+    public ResponseEntity<RegisteredClientErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
         log.warn("Client registration validation failed: {}", ex.getMessage());
 
-        var error = ex.getBindingResult()
+        var invalidRedirectUri = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .anyMatch(fieldError -> fieldError.getField().startsWith("redirectUris"))
-                ? ClientRegistrationError.INVALID_REDIRECT_URI
-                : ClientRegistrationError.INVALID_CLIENT_METADATA;
+                .anyMatch(fieldError -> fieldError.getField().startsWith("redirectUris"));
 
-        var validationErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                .toList();
+        if (invalidRedirectUri) {
+            return errorResponse(
+                    RegisteredClientError.INVALID_REDIRECT_URI,
+                    "One or more redirect URIs are invalid"
+            );
+        }
 
-        var description = validationErrors.isEmpty()
-                ? "Invalid client metadata"
-                : String.join("; ", validationErrors);
-
-        return errorResponse(error, description);
+        return errorResponse(
+                RegisteredClientError.INVALID_CLIENT_METADATA,
+                "One or more client metadata fields are invalid"
+        );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ClientRegistrationErrorResponse> handleMessageNotReadableException(
+    public ResponseEntity<RegisteredClientErrorResponse> handleMessageNotReadableException(
             HttpMessageNotReadableException ex) {
         log.warn("Client registration request body could not be read: {}", ex.getMessage());
 
         return errorResponse(
-                ClientRegistrationError.INVALID_CLIENT_METADATA,
+                RegisteredClientError.INVALID_CLIENT_METADATA,
                 "Registration request contains malformed JSON or invalid metadata values"
         );
     }
 
-    private ResponseEntity<ClientRegistrationErrorResponse> errorResponse(
-            ClientRegistrationError error, String description) {
-        var response = new ClientRegistrationErrorResponse(error.value(), description);
+    private ResponseEntity<RegisteredClientErrorResponse> errorResponse(
+            RegisteredClientError error, String description) {
+        var response = new RegisteredClientErrorResponse(error.value(), description);
 
         return ResponseEntity
                 .badRequest()

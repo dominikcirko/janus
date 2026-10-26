@@ -1,4 +1,4 @@
-package janus.auth.oauth2.client.application.dto;
+package janus.auth.oauth2.client.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import janus.auth.oauth2.client.domain.type.ResponseType;
 
 import java.util.Set;
 
-public record ClientRegistrationRequest(
+public record RegisteredClientRequest(
         @JsonProperty("redirect_uris")
         Set<@NotBlank String> redirectUris,
 
@@ -33,18 +33,27 @@ public record ClientRegistrationRequest(
         String description
 ) {
 
-    public ClientRegistrationRequest {
-        redirectUris = redirectUris == null
-                ? Set.of()
-                : Set.copyOf(redirectUris);
-        tokenEndpointAuthMethod = tokenEndpointAuthMethod == null
-                ? ClientAuthenticationMethod.CLIENT_SECRET_BASIC
-                : tokenEndpointAuthMethod;
-        grantTypes = grantTypes == null
-                ? Set.of(GrantType.AUTHORIZATION_CODE)
-                : Set.copyOf(grantTypes);
-        responseTypes = responseTypes == null
-                ? Set.of(ResponseType.CODE)
-                : Set.copyOf(responseTypes);
+    public RegisteredClientRequest {
+        if (redirectUris == null) {
+            redirectUris = Set.of();
+        } else {
+            redirectUris = Set.copyOf(redirectUris);
+        }
+
+        if (tokenEndpointAuthMethod == null) {
+            tokenEndpointAuthMethod = ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+        }
+
+        if (grantTypes == null) {
+            grantTypes = Set.of(GrantType.AUTHORIZATION_CODE);
+        } else {
+            grantTypes = Set.copyOf(grantTypes);
+        }
+
+        if (responseTypes == null) {
+            responseTypes = Set.of(ResponseType.CODE);
+        } else {
+            responseTypes = Set.copyOf(responseTypes);
+        }
     }
 }

@@ -1,7 +1,7 @@
 package janus.auth.oauth2.client.application.mapper;
 
-import janus.auth.oauth2.client.application.dto.ClientRegistrationRequest;
-import janus.auth.oauth2.client.application.dto.ClientRegistrationResponse;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.model.RegisteredClientEntity;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientType;
@@ -26,15 +26,15 @@ public interface RegisteredClientMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "type", source = "request.tokenEndpointAuthMethod", qualifiedByName = "toClientType")
+    @Mapping(target = "type", source = "input.tokenEndpointAuthMethod", qualifiedByName = "toClientType")
     @Mapping(target = "clientId", source = "clientId")
-    @Mapping(target = "authenticationMethod", source = "request.tokenEndpointAuthMethod")
+    @Mapping(target = "authenticationMethod", source = "input.tokenEndpointAuthMethod")
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "clientSecretHash", source = "clientSecretHash")
     @Mapping(target = "clientSecretExpiresAt", ignore = true)
-    @Mapping(target = "scopes", source = "request.scope", qualifiedByName = "toScopes")
+    @Mapping(target = "scopes", source = "input.scope", qualifiedByName = "toScopes")
     RegisteredClientEntity toEntity(
-            ClientRegistrationRequest request,
+            RegisteredClientInput input,
             String clientId,
             String clientSecretHash
     );
@@ -43,20 +43,22 @@ public interface RegisteredClientMapper {
     @Mapping(target = "clientIdIssuedAt", expression = "java(toEpochSecond(entity.getCreatedAt()))")
     @Mapping(
             target = "clientSecretExpiresAt",
-            expression = "java(clientSecret == null ? null : toExpirationEpochSecond(entity.getClientSecretExpiresAt()))"
+            expression = "java(toExpirationEpochSecond(entity.getClientSecretExpiresAt(), clientSecret))"
     )
     @Mapping(target = "tokenEndpointAuthMethod", source = "entity.authenticationMethod")
     @Mapping(target = "scope", source = "entity.scopes", qualifiedByName = "toScope")
-    ClientRegistrationResponse toResponse(
+    RegisteredClientOutput toOutput(
             RegisteredClientEntity entity,
             String clientSecret
     );
 
     @Named("toClientType")
     default ClientType toClientType(ClientAuthenticationMethod authenticationMethod) {
-        return authenticationMethod == ClientAuthenticationMethod.NONE
-                ? ClientType.PUBLIC
-                : ClientType.CONFIDENTIAL;
+        if (authenticationMethod == ClientAuthenticationMethod.NONE) {
+            return ClientType.PUBLIC;
+        }
+
+        return ClientType.CONFIDENTIAL;
     }
 
     @Named("toScopes")
@@ -81,7 +83,15 @@ public interface RegisteredClientMapper {
         return value.getEpochSecond();
     }
 
-    default Long toExpirationEpochSecond(Instant value) {
-        return value == null ? 0L : value.getEpochSecond();
+    default Long toExpirationEpochSecond(Instant value, String clientSecret) {
+        if (clientSecret == null) {
+            return null;
+        }
+
+        if (value == null) {
+            return 0L;
+        }
+
+        return value.getEpochSecond();
     }
 }

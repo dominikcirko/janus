@@ -1,4 +1,4 @@
-package janus.auth.oauth2.client.application.dto;
+package janus.auth.oauth2.client.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import janus.auth.oauth2.client.domain.type.ResponseType;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ClientRegistrationResponse(
+public record RegisteredClientResponse(
         @JsonProperty("client_id")
         String clientId,
 

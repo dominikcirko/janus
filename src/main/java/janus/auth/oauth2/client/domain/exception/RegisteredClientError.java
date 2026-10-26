@@ -1,12 +1,12 @@
-package janus.auth.oauth2.client.application.exception;
+package janus.auth.oauth2.client.domain.exception;
 
-public enum ClientRegistrationError {
+public enum RegisteredClientError {
     INVALID_REDIRECT_URI("invalid_redirect_uri"),
     INVALID_CLIENT_METADATA("invalid_client_metadata");
 
     private final String value;
 
-    ClientRegistrationError(String value) {
+    RegisteredClientError(String value) {
         this.value = value;
     }
 

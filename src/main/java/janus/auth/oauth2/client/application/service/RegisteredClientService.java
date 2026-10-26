@@ -1,12 +1,12 @@
 package janus.auth.oauth2.client.application.service;
 
-import janus.auth.oauth2.client.application.dto.ClientRegistrationRequest;
-import janus.auth.oauth2.client.application.dto.ClientRegistrationResponse;
-import janus.auth.oauth2.client.application.exception.ClientRegistrationError;
-import janus.auth.oauth2.client.application.exception.ClientRegistrationException;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapper;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
 import janus.auth.oauth2.client.application.port.usecase.RegisteredClientUseCase;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
+import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
+import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.GrantType;
 import janus.auth.oauth2.client.domain.type.ResponseType;
@@ -29,6 +29,10 @@ public class RegisteredClientService implements RegisteredClientUseCase {
     private static final int CLIENT_SECRET_SIZE_BYTES = 32;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+    private final RegisteredClientRepository registeredClientRepository;
+    private final RegisteredClientMapper registeredClientMapper;
+    private final PasswordEncoder passwordEncoder;
+
     // RFC 6749 section 3.3:
     // scope       = scope-token *( SP scope-token )
     // scope-token = 1*( %x21 / %x23-5B / %x5D-7E )
@@ -36,43 +40,42 @@ public class RegisteredClientService implements RegisteredClientUseCase {
             "[\\x21\\x23-\\x5B\\x5D-\\x7E]+(?: [\\x21\\x23-\\x5B\\x5D-\\x7E]+)*"
     );
 
-    private final RegisteredClientRepository registeredClientRepository;
-    private final RegisteredClientMapper registeredClientMapper;
-    private final PasswordEncoder passwordEncoder;
-
     @Override
     @Transactional
-    public ClientRegistrationResponse registerClient(ClientRegistrationRequest request) {
-        validateRegistration(request);
+    public RegisteredClientOutput registerClient(RegisteredClientInput input) {
+        validateRegistration(input);
 
         var clientId = UUID.randomUUID().toString();
-        var clientSecret = generateClientSecret(request.tokenEndpointAuthMethod());
-        var clientSecretHash = clientSecret == null ? null : passwordEncoder.encode(clientSecret);
+        var clientSecret = generateClientSecret(input.tokenEndpointAuthMethod());
+        String clientSecretHash = null;
+        if (clientSecret != null) {
+            clientSecretHash = passwordEncoder.encode(clientSecret);
+        }
 
         var client = registeredClientMapper.toEntity(
-                request,
+                input,
                 clientId,
                 clientSecretHash
         );
         var registeredClient = registeredClientRepository.save(client);
 
-        return registeredClientMapper.toResponse(registeredClient, clientSecret);
+        return registeredClientMapper.toOutput(registeredClient, clientSecret);
     }
 
-    private void validateRegistration(ClientRegistrationRequest request) {
-        var grantTypes = request.grantTypes();
-        var responseTypes = request.responseTypes();
+    private void validateRegistration(RegisteredClientInput input) {
+        var grantTypes = input.grantTypes();
+        var responseTypes = input.responseTypes();
 
         if (grantTypes.contains(GrantType.AUTHORIZATION_CODE)) {
-            if (request.redirectUris().isEmpty()) {
-                throw new ClientRegistrationException(
-                        ClientRegistrationError.INVALID_REDIRECT_URI,
+            if (input.redirectUris().isEmpty()) {
+                throw new RegisteredClientException(
+                        RegisteredClientError.INVALID_REDIRECT_URI,
                         "Authorization code clients must register at least one redirect URI"
                 );
             }
             if (!responseTypes.contains(ResponseType.CODE)) {
-                throw new ClientRegistrationException(
-                        ClientRegistrationError.INVALID_CLIENT_METADATA,
+                throw new RegisteredClientException(
+                        RegisteredClientError.INVALID_CLIENT_METADATA,
                         "The authorization_code grant requires the code response type"
                 );
             }
@@ -80,35 +83,35 @@ public class RegisteredClientService implements RegisteredClientUseCase {
 
         if (responseTypes.contains(ResponseType.CODE)
                 && !grantTypes.contains(GrantType.AUTHORIZATION_CODE)) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_CLIENT_METADATA,
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_CLIENT_METADATA,
                     "The code response type requires the authorization_code grant"
             );
         }
 
         if (grantTypes.contains(GrantType.CLIENT_CREDENTIALS)
-                && request.tokenEndpointAuthMethod() == ClientAuthenticationMethod.NONE) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_CLIENT_METADATA,
+                && input.tokenEndpointAuthMethod() == ClientAuthenticationMethod.NONE) {
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_CLIENT_METADATA,
                     "The client_credentials grant requires a confidential client"
             );
         }
 
-        request.redirectUris().forEach(this::validateRedirectUri);
-        validateClientUri(request.clientUri());
-        validateScope(request.scope());
+        input.redirectUris().forEach(this::validateRedirectUri);
+        validateClientUri(input.clientUri());
+        validateScope(input.scope());
     }
 
     private void validateRedirectUri(String value) {
         var uri = parseUri(
                 value,
-                ClientRegistrationError.INVALID_REDIRECT_URI,
+                RegisteredClientError.INVALID_REDIRECT_URI,
                 "Invalid redirect URI: " + value
         );
 
         if (!uri.isAbsolute() || uri.getFragment() != null) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_REDIRECT_URI,
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_REDIRECT_URI,
                     "Redirect URI must be absolute and must not contain a fragment: " + value
             );
         }
@@ -121,14 +124,14 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         }
 
         if (value.isBlank()) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_CLIENT_METADATA,
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_CLIENT_METADATA,
                     "Client URI must not be blank"
             );
         }
         var uri = parseUri(
                 value,
-                ClientRegistrationError.INVALID_CLIENT_METADATA,
+                RegisteredClientError.INVALID_CLIENT_METADATA,
                 "Invalid client URI: " + value
         );
 
@@ -138,8 +141,8 @@ public class RegisteredClientService implements RegisteredClientUseCase {
                 && uri.getHost() != null;
 
         if (!isWebUri) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_CLIENT_METADATA,
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_CLIENT_METADATA,
                     "Client URI must be an HTTP or HTTPS URL with a valid host: " + value
             );
         }
@@ -151,18 +154,18 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         }
 
         if (!OAUTH_SCOPE_PATTERN.matcher(scope).matches()) {
-            throw new ClientRegistrationException(
-                    ClientRegistrationError.INVALID_CLIENT_METADATA,
+            throw new RegisteredClientException(
+                    RegisteredClientError.INVALID_CLIENT_METADATA,
                     "Scope must contain valid values separated by single spaces"
             );
         }
     }
 
-    private URI parseUri(String value, ClientRegistrationError error, String message) {
+    private URI parseUri(String value, RegisteredClientError error, String message) {
         try {
             return new URI(value);
         } catch (URISyntaxException | NullPointerException e) {
-            throw new ClientRegistrationException(error, message);
+            throw new RegisteredClientException(error, message);
         }
     }
 
