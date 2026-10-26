@@ -6,6 +6,11 @@ import janus.auth.oauth2.client.domain.type.ResponseType;
 
 import java.util.Set;
 
+/**
+ * Application representation of a successful client information response.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+ */
 public record RegisteredClientOutput(
         String clientId,
         String clientSecret,

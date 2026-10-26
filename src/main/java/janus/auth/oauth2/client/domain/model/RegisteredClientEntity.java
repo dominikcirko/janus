@@ -13,7 +13,11 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-//https://datatracker.ietf.org/doc/html/rfc6749#section-2
+/**
+ * Persists the metadata associated with a registered OAuth client.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2">RFC 7591, Section 2</a>
+ */
 @Entity
 @Getter
 @SuperBuilder

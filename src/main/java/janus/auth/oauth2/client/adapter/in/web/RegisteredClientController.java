@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Exposes the OAuth dynamic client registration endpoint, which must be deployed over TLS.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3">RFC 7591, Section 3</a>
+ */
 @RestController
 @RequestMapping("/api/{version}/clients")
 @RequiredArgsConstructor
@@ -23,6 +28,12 @@ public class RegisteredClientController {
     private final RegisteredClientUseCase registeredClientUseCase;
     private final RegisteredClientWebMapper registeredClientWebMapper;
 
+    /**
+     * Accepts registration metadata and returns the registered client with HTTP 201.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.1">RFC 7591, Section 3.1</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+     */
     @PostMapping(
             version = "1+",
             consumes = MediaType.APPLICATION_JSON_VALUE,

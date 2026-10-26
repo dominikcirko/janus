@@ -22,6 +22,11 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+/**
+ * Validates and persists dynamic client registrations.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.1">RFC 7591, Section 3.1</a>
+ */
 @Service
 @RequiredArgsConstructor
 public class RegisteredClientService implements RegisteredClientUseCase {
@@ -33,13 +38,20 @@ public class RegisteredClientService implements RegisteredClientUseCase {
     private final RegisteredClientMapper registeredClientMapper;
     private final PasswordEncoder passwordEncoder;
 
-    // RFC 6749 section 3.3:
-    // scope       = scope-token *( SP scope-token )
-    // scope-token = 1*( %x21 / %x23-5B / %x5D-7E )
+    /**
+     * Enforces the space-delimited scope-token syntax.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     */
     private static final Pattern OAUTH_SCOPE_PATTERN = Pattern.compile(
             "[\\x21\\x23-\\x5B\\x5D-\\x7E]+(?: [\\x21\\x23-\\x5B\\x5D-\\x7E]+)*"
     );
 
+    /**
+     * Registers the client and returns the metadata required in a successful response.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+     */
     @Override
     @Transactional
     public RegisteredClientOutput registerClient(RegisteredClientInput input) {
@@ -62,6 +74,14 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         return registeredClientMapper.toOutput(registeredClient, clientSecret);
     }
 
+    /**
+     * Rejects inconsistent grant/response types, missing redirect URIs, and public
+     * clients attempting to use the client credentials grant.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2.1">RFC 7591, Section 2.1</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-5">RFC 7591, Section 5</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.4">RFC 6749, Section 4.4</a>
+     */
     private void validateRegistration(RegisteredClientInput input) {
         var grantTypes = input.grantTypes();
         var responseTypes = input.responseTypes();
@@ -102,6 +122,11 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         validateScope(input.scope());
     }
 
+    /**
+     * Requires an absolute redirect URI without a fragment.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.1.2">RFC 6749, Section 3.1.2</a>
+     */
     private void validateRedirectUri(String value) {
         var uri = parseUri(
                 value,
@@ -117,6 +142,11 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         }
     }
 
+    /**
+     * Applies Janus's syntactic check for the RFC valid-web-page requirement.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2">RFC 7591, Section 2</a>
+     */
     private void validateClientUri(String value) {
         // client uri can be null since it is optional, but blank is invalid
         if (value == null) {
@@ -148,6 +178,11 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         }
     }
 
+    /**
+     * Validates the RFC scope-token syntax when scope metadata is present.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     */
     private void validateScope(String scope) {
         if (scope == null) {
             return;
@@ -169,6 +204,11 @@ public class RegisteredClientService implements RegisteredClientUseCase {
         }
     }
 
+    /**
+     * Generates the optional secret returned for clients that use authentication.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+     */
     private String generateClientSecret(ClientAuthenticationMethod authenticationMethod) {
         if (authenticationMethod == ClientAuthenticationMethod.NONE) {
             return null;

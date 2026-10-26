@@ -8,6 +8,11 @@ import janus.auth.oauth2.client.domain.type.ResponseType;
 
 import java.util.Set;
 
+/**
+ * Successful registration response containing issued credentials and registered metadata.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record RegisteredClientResponse(
         @JsonProperty("client_id")

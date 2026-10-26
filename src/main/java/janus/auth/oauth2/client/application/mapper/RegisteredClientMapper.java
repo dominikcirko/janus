@@ -52,6 +52,11 @@ public interface RegisteredClientMapper {
             String clientSecret
     );
 
+    /**
+     * Derives Janus's internal public/confidential type from the authentication method.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-2.1">RFC 6749, Section 2.1</a>
+     */
     @Named("toClientType")
     default ClientType toClientType(ClientAuthenticationMethod authenticationMethod) {
         if (authenticationMethod == ClientAuthenticationMethod.NONE) {
@@ -61,6 +66,11 @@ public interface RegisteredClientMapper {
         return ClientType.CONFIDENTIAL;
     }
 
+    /**
+     * Converts the space-delimited RFC scope value to the internal set.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     */
     @Named("toScopes")
     default Set<String> toScopes(String scope) {
         if (scope == null) {
@@ -70,6 +80,11 @@ public interface RegisteredClientMapper {
         return new HashSet<>(Arrays.asList(scope.split(" ")));
     }
 
+    /**
+     * Converts internal scopes to the space-delimited registration value.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2">RFC 7591, Section 2</a>
+     */
     @Named("toScope")
     default String toScope(Set<String> scopes) {
         if (scopes.isEmpty()) {
@@ -79,10 +94,20 @@ public interface RegisteredClientMapper {
         return String.join(" ", new TreeSet<>(scopes));
     }
 
+    /**
+     * Encodes {@code client_id_issued_at} as UTC epoch seconds.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+     */
     default Long toEpochSecond(Instant value) {
         return value.getEpochSecond();
     }
 
+    /**
+     * Returns the required secret expiration value, using zero for no expiration.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.1">RFC 7591, Section 3.2.1</a>
+     */
     default Long toExpirationEpochSecond(Instant value, String clientSecret) {
         if (clientSecret == null) {
             return null;

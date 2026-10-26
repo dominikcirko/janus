@@ -18,12 +18,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * RFC 7591 defines its own {@code error} and {@code error_description} response format.
  * This advice is scoped to {@link RegisteredClientController}, so other endpoints continue
  * to use the standard Janus error response.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.2">RFC 7591, Section 3.2.2</a>
  */
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(assignableTypes = RegisteredClientController.class)
 public class RegisteredClientExceptionHandler {
 
+    /**
+     * Serializes registration failures using the RFC error response shape.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.2">RFC 7591, Section 3.2.2</a>
+     */
     @ExceptionHandler(RegisteredClientException.class)
     public ResponseEntity<RegisteredClientErrorResponse> handleRegisteredClientException(
             RegisteredClientException ex) {
@@ -40,6 +47,11 @@ public class RegisteredClientExceptionHandler {
                 .body(response);
     }
 
+    /**
+     * Maps invalid redirect URIs and other invalid metadata to their RFC error codes.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.2">RFC 7591, Section 3.2.2</a>
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RegisteredClientErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
@@ -63,6 +75,11 @@ public class RegisteredClientExceptionHandler {
         );
     }
 
+    /**
+     * Reports malformed registration metadata as {@code invalid_client_metadata}.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.2">RFC 7591, Section 3.2.2</a>
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<RegisteredClientErrorResponse> handleMessageNotReadableException(
             HttpMessageNotReadableException ex) {

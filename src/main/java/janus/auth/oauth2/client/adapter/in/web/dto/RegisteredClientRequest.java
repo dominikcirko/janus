@@ -9,6 +9,11 @@ import janus.auth.oauth2.client.domain.type.ResponseType;
 
 import java.util.Set;
 
+/**
+ * Client metadata accepted by the dynamic registration endpoint.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.1">RFC 7591, Section 3.1</a>
+ */
 public record RegisteredClientRequest(
         @JsonProperty("redirect_uris")
         Set<@NotBlank String> redirectUris,
@@ -33,6 +38,11 @@ public record RegisteredClientRequest(
         String description
 ) {
 
+    /**
+     * Applies the RFC defaults for omitted authentication, grant, and response types.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2">RFC 7591, Section 2</a>
+     */
     public RegisteredClientRequest {
         if (redirectUris == null) {
             redirectUris = Set.of();
