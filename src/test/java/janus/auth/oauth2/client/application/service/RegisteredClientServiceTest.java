@@ -110,7 +110,6 @@ public class RegisteredClientServiceTest {
     void testWhenAuthorizationCodeRedirectUriMissing_thenRejectRegistration() {
         var input = RegisteredClientTestDataFactory
                 .createAuthorizationCodeInputWithoutRedirectUri();
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_REDIRECT_URI);
     }
 
@@ -118,7 +117,6 @@ public class RegisteredClientServiceTest {
     void testWhenAuthorizationCodeResponseTypeMissing_thenRejectRegistration() {
         var input = RegisteredClientTestDataFactory
                 .createAuthorizationCodeInputWithoutResponseType();
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
@@ -126,14 +124,12 @@ public class RegisteredClientServiceTest {
     void testWhenCodeResponseTypeHasNoAuthorizationCodeGrant_thenRejectRegistration() {
         var input = RegisteredClientTestDataFactory
                 .createClientCredentialsInputWithCodeResponseType();
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
     @Test
     void testWhenPublicClientUsesClientCredentials_thenRejectRegistration() {
         var input = RegisteredClientTestDataFactory.createPublicClientCredentialsInput();
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
@@ -146,7 +142,6 @@ public class RegisteredClientServiceTest {
     })
     void testWhenRedirectUriInvalid_thenRejectRegistration(String redirectUri) {
         var input = RegisteredClientTestDataFactory.createInputWithRedirectUri(redirectUri);
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_REDIRECT_URI);
     }
 
@@ -159,7 +154,6 @@ public class RegisteredClientServiceTest {
     })
     void testWhenClientUriInvalid_thenRejectRegistration(String clientUri) {
         var input = RegisteredClientTestDataFactory.createInputWithClientUri(clientUri);
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
@@ -172,7 +166,6 @@ public class RegisteredClientServiceTest {
     })
     void testWhenScopeInvalid_thenRejectRegistration(String scope) {
         var input = RegisteredClientTestDataFactory.createInputWithScope(scope);
-
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 

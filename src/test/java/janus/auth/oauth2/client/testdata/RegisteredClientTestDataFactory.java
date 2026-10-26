@@ -33,6 +33,17 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
+    public static RegisteredClientInput createValidConfidentialAuthorizationCodeInput() {
+        return createInput(
+                Set.of(TEST_REDIRECT_URI),
+                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
+                Set.of(GrantType.AUTHORIZATION_CODE),
+                Set.of(ResponseType.CODE),
+                TEST_CLIENT_URI,
+                TEST_SCOPE
+        );
+    }
+
     public static RegisteredClientInput createValidPublicInput() {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
