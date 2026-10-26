@@ -93,7 +93,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // handle Type Mismatch Errors (e.g., String instead of Integer)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatchException(
             MethodArgumentTypeMismatchException ex,
@@ -101,12 +100,16 @@ public class GlobalExceptionHandler {
 
         log.error("Type mismatch error: {}", ex.getMessage());
 
-        assert ex.getRequiredType() != null;
-        String message = String.format(
-                "Parameter '%s' should be of type '%s'",
-                ex.getName(),
-                ex.getRequiredType().getSimpleName()
-        );
+        String message;
+        if (ex.getRequiredType() == null) {
+            message = String.format("Parameter '%s' has an invalid type", ex.getName());
+        } else {
+            message = String.format(
+                    "Parameter '%s' should be of type '%s'",
+                    ex.getName(),
+                    ex.getRequiredType().getSimpleName()
+            );
+        }
 
         ErrorDetails errorDetails = ErrorDetails.builder()
                 .errorCode("TYPE_MISMATCH")
