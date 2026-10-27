@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Handles client-registration errors separately from the global exception handler because
  * RFC 7591 defines its own {@code error} and {@code error_description} response format.
- * This advice is scoped to {@link RegisteredClientController}, so other endpoints continue
- * to use the standard Janus error response.
+ * This advice is scoped to the registered-client feature, so other endpoints continue to use
+ * the standard Janus error response.
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-3.2.2">RFC 7591, Section 3.2.2</a>
  */
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@RestControllerAdvice(assignableTypes = RegisteredClientController.class)
+@RestControllerAdvice(basePackages = "janus.auth.oauth2.client")
 public class RegisteredClientExceptionHandler {
 
     /**
