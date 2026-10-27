@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientStatus;
 import janus.auth.oauth2.client.domain.type.ClientType;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.common.type.GrantType;
+import janus.auth.oauth2.common.type.ResponseType;
 import janus.common.AbstractEntity;
 import lombok.*;
 

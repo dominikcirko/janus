@@ -3,8 +3,8 @@ package janus.auth.oauth2.client.adapter.in.web.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.common.type.GrantType;
+import janus.auth.oauth2.common.type.ResponseType;
 
 import java.util.Set;
 

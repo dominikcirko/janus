@@ -1,4 +1,4 @@
-package janus.auth.oauth2.client.domain.type;
+package janus.auth.oauth2.common.type;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

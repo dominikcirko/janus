@@ -5,8 +5,8 @@ import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientResponse;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.common.type.GrantType;
+import janus.auth.oauth2.common.type.ResponseType;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

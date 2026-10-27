@@ -8,8 +8,8 @@ import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientO
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.common.type.GrantType;
+import janus.auth.oauth2.common.type.ResponseType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

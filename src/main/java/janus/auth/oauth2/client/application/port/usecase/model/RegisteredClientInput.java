@@ -1,8 +1,8 @@
 package janus.auth.oauth2.client.application.port.usecase.model;
 
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
-import janus.auth.oauth2.client.domain.type.GrantType;
-import janus.auth.oauth2.client.domain.type.ResponseType;
+import janus.auth.oauth2.common.type.GrantType;
+import janus.auth.oauth2.common.type.ResponseType;
 
 import java.util.Set;
 
