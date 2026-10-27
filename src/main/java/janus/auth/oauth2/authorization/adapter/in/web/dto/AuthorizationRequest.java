@@ -7,4 +7,6 @@ public record AuthorizationRequest(
         String clientId,
         String redirectUri,
         String scope,
-        String state) {}
+        String state,
+        String codeChallenge,
+        String codeChallengeMethod) {}
