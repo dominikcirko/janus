@@ -64,7 +64,7 @@ public class RegisteredClientService implements RegisteredClientUseCase {
             clientSecretHash = passwordEncoder.encode(clientSecret);
         }
 
-        var client = registeredClientMapper.toEntity(
+        var client = registeredClientMapper.toClient(
                 input,
                 clientId,
                 clientSecretHash

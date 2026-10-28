@@ -1,8 +1,8 @@
 package janus.auth.oauth2.client.application.mapper;
 
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
-import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientType;
 import org.mapstruct.Mapper;
@@ -29,26 +29,26 @@ public interface RegisteredClientMapper {
     @Mapping(target = "type", source = "input.tokenEndpointAuthMethod", qualifiedByName = "toClientType")
     @Mapping(target = "clientId", source = "clientId")
     @Mapping(target = "authenticationMethod", source = "input.tokenEndpointAuthMethod")
-    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "status", constant = "ACTIVE")
     @Mapping(target = "clientSecretHash", source = "clientSecretHash")
     @Mapping(target = "clientSecretExpiresAt", ignore = true)
     @Mapping(target = "scopes", source = "input.scope", qualifiedByName = "toScopes")
-    RegisteredClientEntity toEntity(
+    RegisteredClient toClient(
             RegisteredClientInput input,
             String clientId,
             String clientSecretHash
     );
 
     @Mapping(target = "clientSecret", source = "clientSecret")
-    @Mapping(target = "clientIdIssuedAt", expression = "java(toEpochSecond(entity.getCreatedAt()))")
+    @Mapping(target = "clientIdIssuedAt", expression = "java(toEpochSecond(client.getCreatedAt()))")
     @Mapping(
             target = "clientSecretExpiresAt",
-            expression = "java(toExpirationEpochSecond(entity.getClientSecretExpiresAt(), clientSecret))"
+            expression = "java(toExpirationEpochSecond(client.getClientSecretExpiresAt(), clientSecret))"
     )
-    @Mapping(target = "tokenEndpointAuthMethod", source = "entity.authenticationMethod")
-    @Mapping(target = "scope", source = "entity.scopes", qualifiedByName = "toScope")
+    @Mapping(target = "tokenEndpointAuthMethod", source = "client.authenticationMethod")
+    @Mapping(target = "scope", source = "client.scopes", qualifiedByName = "toScope")
     RegisteredClientOutput toOutput(
-            RegisteredClientEntity entity,
+            RegisteredClient client,
             String clientSecret
     );
 

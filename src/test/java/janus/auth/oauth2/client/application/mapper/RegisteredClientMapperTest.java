@@ -1,6 +1,6 @@
 package janus.auth.oauth2.client.application.mapper;
 
-import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientStatus;
@@ -32,7 +32,7 @@ public class RegisteredClientMapperTest {
             Mappers.getMapper(RegisteredClientMapper.class);
 
     @Test
-    void testWhenConfidentialRegistrationInputValid_thenReturnMappedEntity() {
+    void testWhenConfidentialRegistrationInputValid_thenReturnMappedClient() {
         var input = new RegisteredClientInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -44,7 +44,7 @@ public class RegisteredClientMapperTest {
                 TEST_DESCRIPTION
         );
 
-        var result = mapper.toEntity(input, TEST_CLIENT_ID, TEST_CLIENT_SECRET_HASH);
+        var result = mapper.toClient(input, TEST_CLIENT_ID, TEST_CLIENT_SECRET_HASH);
 
         assertEquals(ClientType.CONFIDENTIAL, result.getType());
         assertEquals(input.redirectUris(), result.getRedirectUris());
@@ -62,7 +62,7 @@ public class RegisteredClientMapperTest {
     }
 
     @Test
-    void testWhenPublicRegistrationInputValid_thenReturnMappedEntityWithoutSecretOrScopes() {
+    void testWhenPublicRegistrationInputValid_thenReturnMappedClientWithoutSecretOrScopes() {
         var input = new RegisteredClientInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.NONE,
@@ -74,7 +74,7 @@ public class RegisteredClientMapperTest {
                 TEST_DESCRIPTION
         );
 
-        var result = mapper.toEntity(input, TEST_CLIENT_ID, null);
+        var result = mapper.toClient(input, TEST_CLIENT_ID, null);
 
         assertEquals(ClientType.PUBLIC, result.getType());
         assertEquals(Set.of(), result.getScopes());
@@ -83,7 +83,7 @@ public class RegisteredClientMapperTest {
 
     @Test
     void testWhenRegisteredClientHasExpiringSecret_thenReturnMappedOutput() {
-        var entity = RegisteredClientEntity.builder()
+        var client = RegisteredClient.builder()
                 .createdAt(TEST_CLIENT_ID_ISSUED_AT)
                 .type(ClientType.CONFIDENTIAL)
                 .redirectUris(Set.of(TEST_REDIRECT_URI))
@@ -98,7 +98,7 @@ public class RegisteredClientMapperTest {
                 .description(TEST_DESCRIPTION)
                 .build();
 
-        var result = mapper.toOutput(entity, TEST_CLIENT_SECRET);
+        var result = mapper.toOutput(client, TEST_CLIENT_SECRET);
 
         assertEquals(TEST_CLIENT_ID, result.clientId());
         assertEquals(TEST_CLIENT_SECRET, result.clientSecret());
@@ -118,11 +118,12 @@ public class RegisteredClientMapperTest {
 
     @Test
     void testWhenClientSecretHasNoExpiration_thenReturnZeroExpiration() {
-        var entity = RegisteredClientEntity.builder()
+        var client = RegisteredClient.builder()
                 .createdAt(TEST_CLIENT_ID_ISSUED_AT)
+                .scopes(Set.of())
                 .build();
 
-        var result = mapper.toOutput(entity, TEST_CLIENT_SECRET);
+        var result = mapper.toOutput(client, TEST_CLIENT_SECRET);
 
         assertEquals(0L, result.clientSecretExpiresAt());
         assertNull(result.scope());
@@ -130,12 +131,13 @@ public class RegisteredClientMapperTest {
 
     @Test
     void testWhenClientHasNoSecret_thenReturnNullExpiration() {
-        var entity = RegisteredClientEntity.builder()
+        var client = RegisteredClient.builder()
                 .createdAt(TEST_CLIENT_ID_ISSUED_AT)
                 .clientSecretExpiresAt(TEST_CLIENT_SECRET_EXPIRES_AT)
+                .scopes(Set.of())
                 .build();
 
-        var result = mapper.toOutput(entity, null);
+        var result = mapper.toOutput(client, null);
 
         assertNull(result.clientSecret());
         assertNull(result.clientSecretExpiresAt());

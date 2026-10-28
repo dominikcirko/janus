@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import janus.TestcontainersConfiguration;
 import janus.auth.oauth2.client.adapter.out.persistence.JpaRegisteredClientRepository;
 import janus.auth.oauth2.client.adapter.out.persistence.RegisteredClientRepositoryAdapter;
+import janus.auth.oauth2.client.adapter.out.persistence.mapper.RegisteredClientPersistenceMapperImpl;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapperImpl;
 import janus.auth.oauth2.client.testdata.RegisteredClientTestDataFactory;
 import janus.config.JpaAuditingConfig;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import({
         RegisteredClientService.class,
         RegisteredClientRepositoryAdapter.class,
+        RegisteredClientPersistenceMapperImpl.class,
         RegisteredClientMapperImpl.class,
         PasswordEncodingConfig.class,
         JpaAuditingConfig.class,

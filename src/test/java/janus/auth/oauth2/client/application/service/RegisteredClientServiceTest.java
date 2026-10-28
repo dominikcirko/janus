@@ -1,8 +1,8 @@
 package janus.auth.oauth2.client.application.service;
 
-import janus.auth.oauth2.client.adapter.out.persistence.entity.RegisteredClientEntity;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapper;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
@@ -43,9 +43,9 @@ public class RegisteredClientServiceTest {
     @Mock
     private PasswordEncoder passwordEncoderMock;
     @Mock
-    private RegisteredClientEntity mappedClientMock;
+    private RegisteredClient mappedClientMock;
     @Mock
-    private RegisteredClientEntity savedClientMock;
+    private RegisteredClient savedClientMock;
     @Mock
     private RegisteredClientOutput outputMock;
 
@@ -64,7 +64,7 @@ public class RegisteredClientServiceTest {
     void testWhenConfidentialRegistrationValid_thenGenerateSecretHashAndSaveClient() {
         var input = RegisteredClientTestDataFactory.createValidConfidentialInput();
         when(passwordEncoderMock.encode(anyString())).thenReturn(TEST_CLIENT_SECRET_HASH);
-        when(registeredClientMapperMock.toEntity(
+        when(registeredClientMapperMock.toClient(
                 same(input),
                 anyString(),
                 eq(TEST_CLIENT_SECRET_HASH)
@@ -91,7 +91,7 @@ public class RegisteredClientServiceTest {
     @Test
     void testWhenPublicRegistrationValid_thenSaveClientWithoutSecret() {
         var input = RegisteredClientTestDataFactory.createValidPublicInput();
-        when(registeredClientMapperMock.toEntity(
+        when(registeredClientMapperMock.toClient(
                 same(input),
                 anyString(),
                 isNull()
