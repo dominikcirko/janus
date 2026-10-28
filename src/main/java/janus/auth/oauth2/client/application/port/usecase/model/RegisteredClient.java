@@ -12,9 +12,7 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Internal representation of a registered OAuth client used by application services.
- */
+
 @Value
 @Builder
 public class RegisteredClient {
@@ -35,4 +33,16 @@ public class RegisteredClient {
     Set<ResponseType> responseTypes;
     String clientUri;
     String description;
+
+    public boolean hasRedirectUri(String redirectUri) {
+        return redirectUris.contains(redirectUri);
+    }
+
+    public boolean supportsResponseType(ResponseType responseType) {
+        return responseTypes.contains(responseType);
+    }
+
+    public boolean isActive() {
+        return status == ClientStatus.ACTIVE;
+    }
 }
