@@ -30,6 +30,22 @@ public class AuthorizationService implements AuthorizationUseCase {
                 () -> new AuthorizationException(AuthorizationError.INVALID_REQUEST, "Invalid client_id")
         );
 
+        validateResponseUri(input, client);
+        validateResponseType(input, client);
+
+        if (!client.isActive()) {
+            throw new AuthorizationException(
+                    AuthorizationError.UNAUTHORIZED_CLIENT,
+                    "Client is not active",
+                    new URI(input.redirectUri()),
+                    input.state()
+            );
+        }
+
+        return "";
+    }
+
+    private void validateResponseUri(AuthorizationInput input, RegisteredClient client){
         if(input.redirectUri() == null || input.redirectUri().isBlank()){
             throw new AuthorizationException(
                     AuthorizationError.INVALID_REQUEST, "redirect_uri must not be null or blank"
@@ -40,7 +56,10 @@ public class AuthorizationService implements AuthorizationUseCase {
                     AuthorizationError.INVALID_REQUEST, "Provided redirect_uri is not registered"
             );
         }
+    }
 
+    private void validateResponseType(AuthorizationInput input, RegisteredClient client)
+            throws URISyntaxException {
         if (input.responseType() == null || input.responseType().isBlank()) {
             throw new AuthorizationException(
                     AuthorizationError.INVALID_REQUEST,
@@ -68,16 +87,6 @@ public class AuthorizationService implements AuthorizationUseCase {
             );
         }
 
-        if (!client.isActive()) {
-            throw new AuthorizationException(
-                    AuthorizationError.UNAUTHORIZED_CLIENT,
-                    "Client is not active",
-                    new URI(input.redirectUri()),
-                    input.state()
-            );
-        }
-
-        return "";
     }
 
 }
