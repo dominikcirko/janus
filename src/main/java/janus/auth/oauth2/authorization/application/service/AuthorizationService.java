@@ -6,6 +6,7 @@ import janus.auth.oauth2.authorization.domain.exception.AuthorizationError;
 import janus.auth.oauth2.authorization.domain.exception.AuthorizationException;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
+import janus.auth.oauth2.common.type.CodeChallengeMethod;
 import janus.auth.oauth2.common.type.ResponseType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class AuthorizationService implements AuthorizationUseCase {
     public String authorize(AuthorizationInput input) {
 
         if(input.clientId() == null || input.clientId().isBlank()){
-            throw new AuthorizationException(AuthorizationError.INVALID_REQUEST, "client_id must not be null");
+            throw new AuthorizationException(AuthorizationError.INVALID_REQUEST, "client_id must not be null or blank");
         }
 
         RegisteredClient client = clientRepository.findByClientId(input.clientId()).orElseThrow(
@@ -52,7 +53,7 @@ public class AuthorizationService implements AuthorizationUseCase {
         }
 
         validateResponseType(input, client, validatedRedirectUri);
-        validateCodeChallenge(input, client, validatedRedirectUri);
+        validateCodeChallenge(input, validatedRedirectUri);
         Set<String> scopes = parseAndValidateScopes(input, client, validatedRedirectUri);
 
 
@@ -138,14 +139,22 @@ public class AuthorizationService implements AuthorizationUseCase {
         return requestedScopes;
     }
 
-    private void validateCodeChallenge(AuthorizationInput input, RegisteredClient client,
-                                      URI validatedRedirectUri){
+    private void validateCodeChallenge(AuthorizationInput input, URI validatedRedirectUri){
         if (input.codeChallenge() == null
                 || input.codeChallenge().isBlank()
                 || !S256_CODE_CHALLENGE_PATTERN.matcher(input.codeChallenge()).matches()) {
             throw new AuthorizationException(
                     AuthorizationError.INVALID_REQUEST,
                     "code_challenge must be a valid S256 challenge",
+                    validatedRedirectUri,
+                    input.state()
+            );
+        }
+
+        if (!Objects.equals(input.codeChallengeMethod(), CodeChallengeMethod.S256.value())) {
+            throw new AuthorizationException(
+                    AuthorizationError.INVALID_REQUEST,
+                    "code_challenge_method must be 'S256'",
                     validatedRedirectUri,
                     input.state()
             );
