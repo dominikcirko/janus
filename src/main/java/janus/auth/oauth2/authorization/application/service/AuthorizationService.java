@@ -24,13 +24,30 @@ public class AuthorizationService implements AuthorizationUseCase {
 
     private final RegisteredClientRepository clientRepository;
 
+    /**
+     * Enforces the space-delimited OAuth scope-token syntax.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     */
     private static final Pattern OAUTH_SCOPE_PATTERN = Pattern.compile(
             "[\\x21\\x23-\\x5B\\x5D-\\x7E]+(?: [\\x21\\x23-\\x5B\\x5D-\\x7E]+)*"
     );
 
-    private static final Pattern S256_CODE_CHALLENGE_PATTERN =
-            Pattern.compile("[A-Za-z0-9_-]{43}");
+    /**
+     * Enforces the 43-character Base64URL representation produced by S256.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7636#section-4.2">RFC 7636, Section 4.2</a>
+     */
+    private static final Pattern S256_CODE_CHALLENGE_PATTERN = Pattern.compile("[A-Za-z0-9_-]{43}");
 
+    /**
+     * Validates an authorization-code request before authenticating the resource owner.
+     * Client status is a Janus lifecycle policy; OAuth defines its rejection as
+     * {@code unauthorized_client}.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1">RFC 6749, Section 4.1.1</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1">RFC 6749, Section 4.1.2.1</a>
+     */
     public String authorize(AuthorizationInput input) {
 
         if(input.clientId() == null || input.clientId().isBlank()){
@@ -61,6 +78,13 @@ public class AuthorizationService implements AuthorizationUseCase {
         return "";
     }
 
+    /**
+     * Requires a redirect URI under Janus policy and matches it exactly against a
+     * registered URI. Invalid client or redirect data must not be used for a redirect.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.1.2.3">RFC 6749, Section 3.1.2.3</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1">RFC 6749, Section 4.1.2.1</a>
+     */
     private URI validateRedirectUri(AuthorizationInput input, RegisteredClient client) {
         if(input.redirectUri() == null || input.redirectUri().isBlank()){
             throw new AuthorizationException(
@@ -75,6 +99,12 @@ public class AuthorizationService implements AuthorizationUseCase {
         return URI.create(input.redirectUri());
     }
 
+    /**
+     * Requires {@code response_type=code} and verifies that the client may use it.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1">RFC 6749, Section 4.1.1</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1">RFC 6749, Section 4.1.2.1</a>
+     */
     private void validateResponseType(AuthorizationInput input, RegisteredClient client,
                                       URI validatedRedirectUri) {
         if (input.responseType() == null || input.responseType().isBlank()) {
@@ -105,6 +135,13 @@ public class AuthorizationService implements AuthorizationUseCase {
         }
     }
 
+    /**
+     * Validates scope syntax and limits the request to scopes registered for the client.
+     * Because Janus has no default-scope policy, an omitted scope is rejected.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1">RFC 6749, Section 4.1.2.1</a>
+     */
     private Set<String> parseAndValidateScopes(AuthorizationInput input, RegisteredClient client,
                                                URI validatedRedirectUri) {
         if(input.scope() == null ||input.scope().isBlank()){
@@ -139,6 +176,15 @@ public class AuthorizationService implements AuthorizationUseCase {
         return requestedScopes;
     }
 
+    /**
+     * Requires a valid PKCE challenge and the S256 transformation method. Janus does
+     * not accept {@code plain} because it exposes the verifier in the authorization request.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7636#section-4.2">RFC 7636, Section 4.2</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7636#section-4.3">RFC 7636, Section 4.3</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7636#section-4.4.1">RFC 7636, Section 4.4.1</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc9700#section-2.1.1">RFC 9700, Section 2.1.1</a>
+     */
     private void validateCodeChallenge(AuthorizationInput input, URI validatedRedirectUri){
         if (input.codeChallenge() == null
                 || input.codeChallenge().isBlank()
