@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: tenancy-service
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+app:
+  debug: false

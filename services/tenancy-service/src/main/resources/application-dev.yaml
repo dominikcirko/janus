@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/janus_tenancy_dev
+    username: postgres
+    password: postgres
+
+app:
+  debug: true

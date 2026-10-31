@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${JANUS_TENANCY_DATABASE_URL}
+    username: ${JANUS_TENANCY_DATABASE_USERNAME}
+    password: ${JANUS_TENANCY_DATABASE_PASSWORD}

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: janus
+    name: authorization-server
 
   jpa:
     hibernate:
@@ -14,4 +14,3 @@ spring:
 
 app:
   debug: false
-

@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${JANUS_IDENTITY_DATABASE_URL}
+    username: ${JANUS_IDENTITY_DATABASE_USERNAME}
+    password: ${JANUS_IDENTITY_DATABASE_PASSWORD}
