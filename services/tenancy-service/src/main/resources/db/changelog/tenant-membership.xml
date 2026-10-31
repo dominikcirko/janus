@@ -23,6 +23,9 @@
             <column name="user_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
+            <column name="role" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
             <column name="status" type="VARCHAR(32)" defaultValue="ACTIVE">
                 <constraints nullable="false"/>
             </column>

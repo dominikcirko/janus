@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import janus.common.AbstractEntity;
 import janus.tenancy.tenant.domain.type.TenantMembershipStatus;
+import janus.tenancy.tenant.domain.type.TenantRole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,10 @@ public class TenantMembershipEntity extends AbstractEntity {
 
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 32)
+    private TenantRole role;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

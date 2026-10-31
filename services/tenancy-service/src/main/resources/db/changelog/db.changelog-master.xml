@@ -5,6 +5,7 @@
                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <include file="organization.xml" relativeToChangelogFile="true"/>
+    <include file="organization-membership.xml" relativeToChangelogFile="true"/>
     <include file="tenant.xml" relativeToChangelogFile="true"/>
     <include file="tenant-membership.xml" relativeToChangelogFile="true"/>
 
