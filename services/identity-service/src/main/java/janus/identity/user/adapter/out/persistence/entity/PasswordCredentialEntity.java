@@ -17,6 +17,7 @@ public class PasswordCredentialEntity extends AbstractMappedIdEntity {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", nullable = false, updatable = false)
     private UserEntity user;
 
     @Column(name = "password_hash", nullable = false)
