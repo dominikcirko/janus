@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-response-type-table" author="dominik">
+        <createTable tableName="registered_client_response_type">
+            <column name="registered_client_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_registered_client_response_type_client"
+                             references="registered_client(id)"/>
+            </column>
+            <column name="response_type" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

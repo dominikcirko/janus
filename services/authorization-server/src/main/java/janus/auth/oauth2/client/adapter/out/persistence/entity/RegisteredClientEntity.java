@@ -12,6 +12,7 @@ import lombok.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Persists the metadata associated with a registered OAuth client.
@@ -25,7 +26,8 @@ import java.util.Set;
 @Table(name = "registered_client")
 public class RegisteredClientEntity extends AbstractEntity {
 
-    //todo add multitenancy
+    @Column(name = "tenant_id", updatable = false)
+    private UUID tenantId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "client_type", nullable = false, length = 32)

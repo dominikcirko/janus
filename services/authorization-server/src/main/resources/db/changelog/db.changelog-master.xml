@@ -5,5 +5,9 @@
                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <include file="registered-client.xml" relativeToChangelogFile="true"/>
+    <include file="registered-client-redirect-uri.xml" relativeToChangelogFile="true"/>
+    <include file="registered-client-grant-type.xml" relativeToChangelogFile="true"/>
+    <include file="registered-client-scope.xml" relativeToChangelogFile="true"/>
+    <include file="registered-client-response-type.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

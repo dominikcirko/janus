@@ -18,6 +18,7 @@ import java.util.UUID;
 public class RegisteredClient {
 
     UUID id;
+    UUID tenantId;
     Instant createdAt;
     Instant updatedAt;
     ClientType type;
