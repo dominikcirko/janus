@@ -16,7 +16,7 @@ import java.time.Instant;
 public class PasswordCredentialEntity extends AbstractMappedIdEntity {
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id", nullable = false, updatable = false)
     private UserEntity user;
 
