@@ -19,8 +19,7 @@ public class RegisteredClient {
 
     UUID id;
     UUID tenantId;
-    Instant createdAt;
-    Instant updatedAt;
+    Instant clientIdIssuedAt;
     ClientType type;
     Set<String> redirectUris;
     String clientName;

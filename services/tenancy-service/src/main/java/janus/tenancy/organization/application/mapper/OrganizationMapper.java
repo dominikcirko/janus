@@ -16,22 +16,16 @@ import org.mapstruct.ReportingPolicy;
 public interface OrganizationMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", constant = "ACTIVE")
     Organization toOrganization(OrganizationInput input);
 
     @Mapping(target = "id", source = "organization.id")
-    @Mapping(target = "createdAt", source = "organization.createdAt")
-    @Mapping(target = "updatedAt", source = "organization.updatedAt")
     @Mapping(target = "name", source = "input.name")
     @Mapping(target = "slug", source = "input.slug")
     @Mapping(target = "status", source = "organization.status")
     Organization updateOrganization(Organization organization, OrganizationInput input);
 
     @Mapping(target = "id", source = "organization.id")
-    @Mapping(target = "createdAt", source = "organization.createdAt")
-    @Mapping(target = "updatedAt", source = "organization.updatedAt")
     @Mapping(target = "name", source = "organization.name")
     @Mapping(target = "slug", source = "organization.slug")
     @Mapping(target = "status", source = "status")

@@ -25,8 +25,7 @@ public interface RegisteredClientMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "tenantId", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "clientIdIssuedAt", ignore = true)
     @Mapping(target = "type", source = "input.tokenEndpointAuthMethod", qualifiedByName = "toClientType")
     @Mapping(target = "clientId", source = "clientId")
     @Mapping(target = "authenticationMethod", source = "input.tokenEndpointAuthMethod")
@@ -41,7 +40,7 @@ public interface RegisteredClientMapper {
     );
 
     @Mapping(target = "clientSecret", source = "clientSecret")
-    @Mapping(target = "clientIdIssuedAt", expression = "java(toEpochSecond(client.getCreatedAt()))")
+    @Mapping(target = "clientIdIssuedAt", expression = "java(toEpochSecond(client.getClientIdIssuedAt()))")
     @Mapping(
             target = "clientSecretExpiresAt",
             expression = "java(toExpirationEpochSecond(client.getClientSecretExpiresAt(), clientSecret))"

@@ -84,7 +84,7 @@ public class RegisteredClientMapperTest {
     @Test
     void testWhenRegisteredClientHasExpiringSecret_thenReturnMappedOutput() {
         var client = RegisteredClient.builder()
-                .createdAt(TEST_CLIENT_ID_ISSUED_AT)
+                .clientIdIssuedAt(TEST_CLIENT_ID_ISSUED_AT)
                 .type(ClientType.CONFIDENTIAL)
                 .redirectUris(Set.of(TEST_REDIRECT_URI))
                 .clientName(TEST_CLIENT_NAME)
@@ -119,7 +119,7 @@ public class RegisteredClientMapperTest {
     @Test
     void testWhenClientSecretHasNoExpiration_thenReturnZeroExpiration() {
         var client = RegisteredClient.builder()
-                .createdAt(TEST_CLIENT_ID_ISSUED_AT)
+                .clientIdIssuedAt(TEST_CLIENT_ID_ISSUED_AT)
                 .scopes(Set.of())
                 .build();
 
@@ -132,7 +132,7 @@ public class RegisteredClientMapperTest {
     @Test
     void testWhenClientHasNoSecret_thenReturnNullExpiration() {
         var client = RegisteredClient.builder()
-                .createdAt(TEST_CLIENT_ID_ISSUED_AT)
+                .clientIdIssuedAt(TEST_CLIENT_ID_ISSUED_AT)
                 .clientSecretExpiresAt(TEST_CLIENT_SECRET_EXPIRES_AT)
                 .scopes(Set.of())
                 .build();

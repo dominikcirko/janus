@@ -4,7 +4,6 @@ import janus.tenancy.organization.domain.type.OrganizationStatus;
 import lombok.Builder;
 import lombok.Value;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Value
@@ -12,8 +11,6 @@ import java.util.UUID;
 public class Organization {
 
     UUID id;
-    Instant createdAt;
-    Instant updatedAt;
     String name;
     String slug;
     OrganizationStatus status;
