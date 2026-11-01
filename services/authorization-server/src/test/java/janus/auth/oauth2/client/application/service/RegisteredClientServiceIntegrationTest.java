@@ -7,7 +7,7 @@ import janus.auth.oauth2.client.adapter.out.persistence.RegisteredClientReposito
 import janus.auth.oauth2.client.adapter.out.persistence.mapper.RegisteredClientPersistenceMapperImpl;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapperImpl;
 import janus.auth.oauth2.client.testdata.RegisteredClientTestDataFactory;
-import janus.config.JpaAuditingConfig;
+import janus.common.config.JpaAuditingConfig;
 import janus.config.PasswordEncodingConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

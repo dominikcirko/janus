@@ -5,7 +5,7 @@ import janus.auth.oauth2.client.adapter.in.web.mapper.RegisteredClientWebMapper;
 import janus.auth.oauth2.client.application.port.usecase.RegisteredClientUseCase;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
-import janus.config.ApiVersioningConfig;
+import janus.common.config.ApiVersioningConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
