@@ -34,8 +34,8 @@ public class RegisteredClientService implements RegisteredClientUseCase {
     private static final int CLIENT_SECRET_SIZE_BYTES = 32;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private final RegisteredClientRepository registeredClientRepository;
-    private final RegisteredClientMapper registeredClientMapper;
+    private final RegisteredClientRepository repository;
+    private final RegisteredClientMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -64,14 +64,14 @@ public class RegisteredClientService implements RegisteredClientUseCase {
             clientSecretHash = passwordEncoder.encode(clientSecret);
         }
 
-        var client = registeredClientMapper.toClient(
+        var client = mapper.toClient(
                 input,
                 clientId,
                 clientSecretHash
         );
-        var registeredClient = registeredClientRepository.save(client);
+        var registeredClient = repository.save(client);
 
-        return registeredClientMapper.toOutput(registeredClient, clientSecret);
+        return mapper.toOutput(registeredClient, clientSecret);
     }
 
     /**

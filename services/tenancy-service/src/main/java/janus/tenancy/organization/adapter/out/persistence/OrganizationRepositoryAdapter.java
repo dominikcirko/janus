@@ -35,13 +35,6 @@ public class OrganizationRepositoryAdapter implements OrganizationRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Organization> findBySlug(String slug) {
-        return repo.findBySlug(slug)
-                .map(mapper::toOrganization);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Organization> findAll() {
         return repo.findAll()
                 .stream()
