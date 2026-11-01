@@ -19,7 +19,7 @@ import java.util.UUID;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity extends AbstractEntity {
 
     @TenantId

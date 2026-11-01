@@ -45,7 +45,7 @@ public class PasswordCredentialService implements PasswordCredentialUseCase {
                 .mustChangePassword(mustChangePassword)
                 .build();
 
-        repository.save(credential);
+        repository.create(credential);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class PasswordCredentialService implements PasswordCredentialUseCase {
                 .mustChangePassword(false)
                 .build();
 
-        repository.save(updatedCredential);
+        repository.update(updatedCredential);
     }
 
     @Override

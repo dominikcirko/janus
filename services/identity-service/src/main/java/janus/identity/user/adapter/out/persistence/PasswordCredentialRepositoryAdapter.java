@@ -1,5 +1,6 @@
 package janus.identity.user.adapter.out.persistence;
 
+import jakarta.persistence.EntityManager;
 import janus.identity.user.adapter.out.persistence.mapper.PasswordCredentialPersistenceMapper;
 import janus.identity.user.application.port.out.PasswordCredentialRepository;
 import janus.identity.user.application.port.usecase.model.PasswordCredential;
@@ -17,14 +18,29 @@ public class PasswordCredentialRepositoryAdapter implements PasswordCredentialRe
     private final JpaPasswordCredentialRepository repo;
     private final JpaUserRepository userRepo;
     private final PasswordCredentialPersistenceMapper mapper;
+    private final EntityManager entityManager;
 
+    /**
+     * Uses persist because @MapsId assigns the user's ID before the credential row exists;
+     * save would treat creation as an update instead of an insert.
+     */
     @Override
-    public PasswordCredential save(PasswordCredential credential) {
+    @Transactional
+    public void create(PasswordCredential credential) {
         var userEntity = userRepo.getReferenceById(credential.getUserId());
         var entity = mapper.toEntity(credential, userEntity);
-        var savedEntity = repo.save(entity);
+        entityManager.persist(entity);
+    }
 
-        return mapper.toCredential(savedEntity);
+    @Override
+    @Transactional
+    public void update(PasswordCredential credential) {
+        var entity = repo.getReferenceById(credential.getUserId());
+        entity.updatePassword(
+                credential.getPasswordHash(),
+                credential.getPasswordChangedAt(),
+                credential.isMustChangePassword()
+        );
     }
 
     @Override

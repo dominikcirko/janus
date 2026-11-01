@@ -28,4 +28,10 @@ public class PasswordCredentialEntity extends AbstractMappedIdEntity {
 
     @Column(name = "must_change_password", nullable = false)
     private boolean mustChangePassword;
+
+    public void updatePassword(String passwordHash, Instant passwordChangedAt, boolean mustChangePassword) {
+        this.passwordHash = passwordHash;
+        this.passwordChangedAt = passwordChangedAt;
+        this.mustChangePassword = mustChangePassword;
+    }
 }

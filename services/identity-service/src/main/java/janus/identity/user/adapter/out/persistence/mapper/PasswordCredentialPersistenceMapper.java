@@ -14,7 +14,7 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface PasswordCredentialPersistenceMapper {
 
-    @Mapping(target = "id", source = "credential.userId")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "user", source = "user")
