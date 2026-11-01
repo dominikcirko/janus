@@ -82,7 +82,7 @@ public class TenantService implements TenantUseCase {
             throw new ResourceAlreadyExistsException(TENANT, "slug", input.slug());
         }
 
-        var updatedTenant = mapper.updateTenant(tenant, input);
+        var updatedTenant = mapper.toUpdatedTenant(tenant, input);
         var savedTenant = repository.save(updatedTenant);
 
         return mapper.toOutput(savedTenant);
@@ -96,7 +96,7 @@ public class TenantService implements TenantUseCase {
         }
 
         var tenant = findTenant(tenantId);
-        var updatedTenant = mapper.changeStatus(tenant, status);
+        var updatedTenant = mapper.withUpdatedStatus(tenant, status);
         var savedTenant = repository.save(updatedTenant);
 
         return mapper.toOutput(savedTenant);

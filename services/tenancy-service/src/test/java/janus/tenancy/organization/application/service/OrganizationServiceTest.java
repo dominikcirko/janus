@@ -137,7 +137,7 @@ public class OrganizationServiceTest {
                 .thenReturn(Optional.of(organizationMock));
         when(organizationMock.getSlug()).thenReturn(currentInput.slug());
         when(organizationRepositoryMock.existsBySlug(updatedInput.slug())).thenReturn(false);
-        when(organizationMapperMock.updateOrganization(organizationMock, updatedInput))
+        when(organizationMapperMock.toUpdatedOrganization(organizationMock, updatedInput))
                 .thenReturn(mappedOrganizationMock);
         when(organizationRepositoryMock.save(mappedOrganizationMock)).thenReturn(savedOrganizationMock);
         when(organizationMapperMock.toOutput(savedOrganizationMock)).thenReturn(outputMock);
@@ -168,7 +168,7 @@ public class OrganizationServiceTest {
     void testWhenOrganizationStatusValid_thenSaveChangedStatus() {
         when(organizationRepositoryMock.findById(TEST_ORGANIZATION_ID))
                 .thenReturn(Optional.of(organizationMock));
-        when(organizationMapperMock.changeStatus(organizationMock, OrganizationStatus.SUSPENDED))
+        when(organizationMapperMock.withUpdatedStatus(organizationMock, OrganizationStatus.SUSPENDED))
                 .thenReturn(mappedOrganizationMock);
         when(organizationRepositoryMock.save(mappedOrganizationMock)).thenReturn(savedOrganizationMock);
         when(organizationMapperMock.toOutput(savedOrganizationMock)).thenReturn(outputMock);

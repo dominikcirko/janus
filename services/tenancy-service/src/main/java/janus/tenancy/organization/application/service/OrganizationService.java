@@ -69,7 +69,7 @@ public class OrganizationService implements OrganizationUseCase {
             throw new ResourceAlreadyExistsException(ORGANIZATION, "slug", input.slug());
         }
 
-        var updatedOrganization = mapper.updateOrganization(organization, input);
+        var updatedOrganization = mapper.toUpdatedOrganization(organization, input);
         var savedOrganization = repository.save(updatedOrganization);
 
         return mapper.toOutput(savedOrganization);
@@ -83,7 +83,7 @@ public class OrganizationService implements OrganizationUseCase {
         }
 
         var organization = findOrganization(organizationId);
-        var updatedOrganization = mapper.changeStatus(organization, status);
+        var updatedOrganization = mapper.withUpdatedStatus(organization, status);
         var savedOrganization = repository.save(updatedOrganization);
 
         return mapper.toOutput(savedOrganization);

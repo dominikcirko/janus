@@ -30,7 +30,7 @@ public interface TenantMapper {
     @Mapping(target = "environment", source = "input.environment")
     @Mapping(target = "status", source = "tenant.status")
     @Mapping(target = "issuer", source = "tenant.issuer")
-    Tenant updateTenant(Tenant tenant, TenantUpdateInput input);
+    Tenant toUpdatedTenant(Tenant tenant, TenantUpdateInput input);
 
     @Mapping(target = "id", source = "tenant.id")
     @Mapping(target = "organizationId", source = "tenant.organizationId")
@@ -39,7 +39,7 @@ public interface TenantMapper {
     @Mapping(target = "environment", source = "tenant.environment")
     @Mapping(target = "status", source = "status")
     @Mapping(target = "issuer", source = "tenant.issuer")
-    Tenant changeStatus(Tenant tenant, TenantStatus status);
+    Tenant withUpdatedStatus(Tenant tenant, TenantStatus status);
 
     TenantOutput toOutput(Tenant tenant);
 }

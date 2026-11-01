@@ -30,7 +30,7 @@ public class OrganizationMapperTest {
         var organization = OrganizationTestDataFactory.createActiveOrganization();
         var input = OrganizationTestDataFactory.createUpdatedInput();
 
-        var result = mapper.updateOrganization(organization, input);
+        var result = mapper.toUpdatedOrganization(organization, input);
 
         assertEquals(TEST_ORGANIZATION_ID, result.getId());
         assertEquals(input.name(), result.getName());
@@ -42,7 +42,7 @@ public class OrganizationMapperTest {
     void testWhenOrganizationStatusChanges_thenReturnOrganizationWithNewStatus() {
         var organization = OrganizationTestDataFactory.createActiveOrganization();
 
-        var result = mapper.changeStatus(organization, OrganizationStatus.SUSPENDED);
+        var result = mapper.withUpdatedStatus(organization, OrganizationStatus.SUSPENDED);
 
         assertEquals(organization.getId(), result.getId());
         assertEquals(organization.getName(), result.getName());
