@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.TenantId;
 import org.hibernate.type.SqlTypes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,6 +21,10 @@ import java.util.Map;
 @NoArgsConstructor
 @Table(name = "user")
 public class UserEntity extends AbstractEntity {
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false, updatable = false)
+    private UUID tenantId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)

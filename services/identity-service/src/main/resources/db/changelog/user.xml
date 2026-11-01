@@ -15,6 +15,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="tenant_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
             <column name="status" type="VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
@@ -35,6 +38,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addUniqueConstraint tableName="user"
+                             columnNames="tenant_id, email"
+                             constraintName="uq_user_tenant_email"/>
     </changeSet>
 
 </databaseChangeLog>
