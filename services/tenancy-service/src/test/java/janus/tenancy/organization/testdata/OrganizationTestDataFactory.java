@@ -3,8 +3,9 @@ package janus.tenancy.organization.testdata;
 import janus.tenancy.organization.adapter.in.web.dto.OrganizationRequest;
 import janus.tenancy.organization.adapter.in.web.dto.OrganizationResponse;
 import janus.tenancy.organization.application.port.usecase.model.Organization;
-import janus.tenancy.organization.application.port.usecase.model.OrganizationInput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationCreateInput;
 import janus.tenancy.organization.application.port.usecase.model.OrganizationOutput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationUpdateInput;
 import janus.tenancy.organization.domain.type.OrganizationStatus;
 
 import java.util.UUID;
@@ -21,20 +22,20 @@ public final class OrganizationTestDataFactory {
     private OrganizationTestDataFactory() {
     }
 
-    public static OrganizationInput createValidInput() {
-        return new OrganizationInput(TEST_ORGANIZATION_NAME, TEST_ORGANIZATION_SLUG);
+    public static OrganizationCreateInput createValidInput() {
+        return new OrganizationCreateInput(TEST_ORGANIZATION_NAME, TEST_ORGANIZATION_SLUG);
     }
 
-    public static OrganizationInput createUpdatedInput() {
-        return new OrganizationInput(UPDATED_ORGANIZATION_NAME, UPDATED_ORGANIZATION_SLUG);
+    public static OrganizationUpdateInput createUpdatedInput() {
+        return new OrganizationUpdateInput(UPDATED_ORGANIZATION_NAME, UPDATED_ORGANIZATION_SLUG);
     }
 
-    public static OrganizationInput createInputWithName(String name) {
-        return new OrganizationInput(name, TEST_ORGANIZATION_SLUG);
+    public static OrganizationCreateInput createInputWithName(String name) {
+        return new OrganizationCreateInput(name, TEST_ORGANIZATION_SLUG);
     }
 
-    public static OrganizationInput createInputWithSlug(String slug) {
-        return new OrganizationInput(TEST_ORGANIZATION_NAME, slug);
+    public static OrganizationCreateInput createInputWithSlug(String slug) {
+        return new OrganizationCreateInput(TEST_ORGANIZATION_NAME, slug);
     }
 
     public static Organization createActiveOrganization() {

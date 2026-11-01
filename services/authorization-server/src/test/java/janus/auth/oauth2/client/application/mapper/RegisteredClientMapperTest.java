@@ -1,7 +1,7 @@
 package janus.auth.oauth2.client.application.mapper;
 
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientStatus;
 import janus.auth.oauth2.client.domain.type.ClientType;
@@ -33,7 +33,7 @@ public class RegisteredClientMapperTest {
 
     @Test
     void testWhenConfidentialRegistrationInputValid_thenReturnMappedClient() {
-        var input = new RegisteredClientInput(
+        var input = new RegisteredClientCreateInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
                 Set.of(GrantType.AUTHORIZATION_CODE),
@@ -63,7 +63,7 @@ public class RegisteredClientMapperTest {
 
     @Test
     void testWhenPublicRegistrationInputValid_thenReturnMappedClientWithoutSecretOrScopes() {
-        var input = new RegisteredClientInput(
+        var input = new RegisteredClientCreateInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.NONE,
                 Set.of(GrantType.AUTHORIZATION_CODE),

@@ -9,7 +9,7 @@ import janus.tenancy.organization.testdata.OrganizationTestDataFactory;
 import janus.tenancy.tenant.application.mapper.TenantMapper;
 import janus.tenancy.tenant.application.port.out.TenantRepository;
 import janus.tenancy.tenant.application.port.usecase.model.Tenant;
-import janus.tenancy.tenant.application.port.usecase.model.TenantInput;
+import janus.tenancy.tenant.application.port.usecase.model.TenantCreateInput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantOutput;
 import janus.tenancy.tenant.domain.type.TenantStatus;
 import janus.tenancy.tenant.testdata.TenantTestDataFactory;
@@ -257,7 +257,7 @@ public class TenantServiceTest {
         verify(tenantRepositoryMock).deleteById(TEST_TENANT_ID);
     }
 
-    private void assertCreationRejected(UUID organizationId, TenantInput input) {
+    private void assertCreationRejected(UUID organizationId, TenantCreateInput input) {
         assertThrows(InvalidRequestException.class, () -> tenantService.createTenant(organizationId, input));
         verifyNoInteractions(tenantRepositoryMock, organizationRepositoryMock, tenantMapperMock);
     }

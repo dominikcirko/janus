@@ -1,7 +1,7 @@
 package janus.auth.oauth2.client.application.mapper;
 
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.client.domain.type.ClientType;
@@ -34,7 +34,7 @@ public interface RegisteredClientMapper {
     @Mapping(target = "clientSecretExpiresAt", ignore = true)
     @Mapping(target = "scopes", source = "input.scope", qualifiedByName = "toScopes")
     RegisteredClient toClient(
-            RegisteredClientInput input,
+            RegisteredClientCreateInput input,
             String clientId,
             String clientSecretHash
     );

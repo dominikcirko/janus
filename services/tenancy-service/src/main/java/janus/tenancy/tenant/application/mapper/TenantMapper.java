@@ -1,7 +1,7 @@
 package janus.tenancy.tenant.application.mapper;
 
 import janus.tenancy.tenant.application.port.usecase.model.Tenant;
-import janus.tenancy.tenant.application.port.usecase.model.TenantInput;
+import janus.tenancy.tenant.application.port.usecase.model.TenantCreateInput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantOutput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantUpdateInput;
 import janus.tenancy.tenant.domain.type.TenantStatus;
@@ -21,7 +21,7 @@ public interface TenantMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organizationId", source = "organizationId")
     @Mapping(target = "status", constant = "ACTIVE")
-    Tenant toTenant(UUID organizationId, TenantInput input);
+    Tenant toTenant(UUID organizationId, TenantCreateInput input);
 
     @Mapping(target = "id", source = "tenant.id")
     @Mapping(target = "organizationId", source = "tenant.organizationId")

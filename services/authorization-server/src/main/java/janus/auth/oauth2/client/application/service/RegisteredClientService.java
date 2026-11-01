@@ -3,7 +3,7 @@ package janus.auth.oauth2.client.application.service;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapper;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
 import janus.auth.oauth2.client.application.port.usecase.RegisteredClientUseCase;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
@@ -54,7 +54,7 @@ public class RegisteredClientService implements RegisteredClientUseCase {
      */
     @Override
     @Transactional
-    public RegisteredClientOutput registerClient(RegisteredClientInput input) {
+    public RegisteredClientOutput registerClient(RegisteredClientCreateInput input) {
         validateRegistration(input);
 
         var clientId = UUID.randomUUID().toString();
@@ -82,7 +82,7 @@ public class RegisteredClientService implements RegisteredClientUseCase {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-5">RFC 7591, Section 5</a>
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.4">RFC 6749, Section 4.4</a>
      */
-    private void validateRegistration(RegisteredClientInput input) {
+    private void validateRegistration(RegisteredClientCreateInput input) {
         var grantTypes = input.grantTypes();
         var responseTypes = input.responseTypes();
 

@@ -17,7 +17,7 @@ public class OrganizationWebMapperTest {
         var request = OrganizationTestDataFactory.createValidRequest();
         var expected = OrganizationTestDataFactory.createValidInput();
 
-        var result = mapper.toInput(request);
+        var result = mapper.toCreateInput(request);
 
         assertEquals(expected, result);
     }

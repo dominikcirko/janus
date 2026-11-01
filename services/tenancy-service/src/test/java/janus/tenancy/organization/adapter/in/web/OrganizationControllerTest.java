@@ -72,7 +72,7 @@ public class OrganizationControllerTest {
         var input = OrganizationTestDataFactory.createValidInput();
         var output = OrganizationTestDataFactory.createActiveOutput();
         var response = OrganizationTestDataFactory.createActiveResponse();
-        when(organizationWebMapperMock.toInput(request)).thenReturn(input);
+        when(organizationWebMapperMock.toCreateInput(request)).thenReturn(input);
         when(organizationUseCaseMock.createOrganization(input)).thenReturn(output);
         when(organizationWebMapperMock.toResponse(output)).thenReturn(response);
 
@@ -122,10 +122,10 @@ public class OrganizationControllerTest {
     @Test
     void testWhenOrganizationUpdateValid_thenUpdateOrganization() throws Exception {
         var request = OrganizationTestDataFactory.createValidRequest();
-        var input = OrganizationTestDataFactory.createValidInput();
+        var input = OrganizationTestDataFactory.createUpdatedInput();
         var output = OrganizationTestDataFactory.createActiveOutput();
         var response = OrganizationTestDataFactory.createActiveResponse();
-        when(organizationWebMapperMock.toInput(request)).thenReturn(input);
+        when(organizationWebMapperMock.toUpdateInput(request)).thenReturn(input);
         when(organizationUseCaseMock.updateOrganization(TEST_ORGANIZATION_ID, input)).thenReturn(output);
         when(organizationWebMapperMock.toResponse(output)).thenReturn(response);
 

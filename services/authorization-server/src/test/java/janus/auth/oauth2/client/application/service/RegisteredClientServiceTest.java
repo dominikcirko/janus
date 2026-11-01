@@ -3,7 +3,7 @@ package janus.auth.oauth2.client.application.service;
 import janus.auth.oauth2.client.application.mapper.RegisteredClientMapper;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientError;
 import janus.auth.oauth2.client.domain.exception.RegisteredClientException;
@@ -169,7 +169,7 @@ public class RegisteredClientServiceTest {
         assertRegistrationRejected(input, RegisteredClientError.INVALID_CLIENT_METADATA);
     }
 
-    private void assertRegistrationRejected(RegisteredClientInput input,
+    private void assertRegistrationRejected(RegisteredClientCreateInput input,
                                             RegisteredClientError expectedError) {
         var exception = assertThrows(
                 RegisteredClientException.class,

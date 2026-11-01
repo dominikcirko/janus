@@ -8,7 +8,7 @@ import janus.tenancy.tenant.application.mapper.TenantMapper;
 import janus.tenancy.tenant.application.port.out.TenantRepository;
 import janus.tenancy.tenant.application.port.usecase.TenantUseCase;
 import janus.tenancy.tenant.application.port.usecase.model.Tenant;
-import janus.tenancy.tenant.application.port.usecase.model.TenantInput;
+import janus.tenancy.tenant.application.port.usecase.model.TenantCreateInput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantOutput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantUpdateInput;
 import janus.tenancy.tenant.domain.type.TenantEnvironment;
@@ -33,7 +33,7 @@ public class TenantService implements TenantUseCase {
 
     @Override
     @Transactional
-    public TenantOutput createTenant(UUID organizationId, TenantInput input) {
+    public TenantOutput createTenant(UUID organizationId, TenantCreateInput input) {
         validateOrganizationId(organizationId);
         validateInput(input);
         validateOrganizationExists(organizationId);
@@ -125,7 +125,7 @@ public class TenantService implements TenantUseCase {
         }
     }
 
-    private void validateInput(TenantInput input) {
+    private void validateInput(TenantCreateInput input) {
         if (input == null) {
             throw new InvalidRequestException("Tenant input must not be null");
         }

@@ -6,7 +6,7 @@ import janus.common.exceptionhandler.exception.ResourceNotFoundException;
 import janus.tenancy.organization.application.mapper.OrganizationMapper;
 import janus.tenancy.organization.application.port.out.OrganizationRepository;
 import janus.tenancy.organization.application.port.usecase.model.Organization;
-import janus.tenancy.organization.application.port.usecase.model.OrganizationInput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationCreateInput;
 import janus.tenancy.organization.application.port.usecase.model.OrganizationOutput;
 import janus.tenancy.organization.domain.type.OrganizationStatus;
 import janus.tenancy.organization.testdata.OrganizationTestDataFactory;
@@ -198,7 +198,7 @@ public class OrganizationServiceTest {
         verify(organizationRepositoryMock).deleteById(TEST_ORGANIZATION_ID);
     }
 
-    private void assertCreationRejected(OrganizationInput input) {
+    private void assertCreationRejected(OrganizationCreateInput input) {
         assertThrows(InvalidRequestException.class, () -> organizationService.createOrganization(input));
         verifyNoInteractions(organizationRepositoryMock, organizationMapperMock);
     }

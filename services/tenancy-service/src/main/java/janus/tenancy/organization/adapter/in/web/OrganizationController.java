@@ -37,7 +37,7 @@ public class OrganizationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<OrganizationResponse> createOrganization(@Valid @RequestBody OrganizationRequest request) {
-        var input = organizationWebMapper.toInput(request);
+        var input = organizationWebMapper.toCreateInput(request);
         var output = organizationUseCase.createOrganization(input);
         var response = organizationWebMapper.toResponse(output);
 
@@ -69,7 +69,7 @@ public class OrganizationController {
     public OrganizationResponse updateOrganization(
             @PathVariable UUID organizationId,
             @Valid @RequestBody OrganizationRequest request) {
-        var input = organizationWebMapper.toInput(request);
+        var input = organizationWebMapper.toUpdateInput(request);
         var output = organizationUseCase.updateOrganization(organizationId, input);
 
         return organizationWebMapper.toResponse(output);

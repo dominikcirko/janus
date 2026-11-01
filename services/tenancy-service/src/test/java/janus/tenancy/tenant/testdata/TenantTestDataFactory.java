@@ -5,7 +5,7 @@ import janus.tenancy.tenant.adapter.in.web.dto.TenantRequest;
 import janus.tenancy.tenant.adapter.in.web.dto.TenantResponse;
 import janus.tenancy.tenant.adapter.in.web.dto.TenantUpdateRequest;
 import janus.tenancy.tenant.application.port.usecase.model.Tenant;
-import janus.tenancy.tenant.application.port.usecase.model.TenantInput;
+import janus.tenancy.tenant.application.port.usecase.model.TenantCreateInput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantOutput;
 import janus.tenancy.tenant.application.port.usecase.model.TenantUpdateInput;
 import janus.tenancy.tenant.domain.type.TenantEnvironment;
@@ -26,8 +26,8 @@ public final class TenantTestDataFactory {
     private TenantTestDataFactory() {
     }
 
-    public static TenantInput createValidInput() {
-        return new TenantInput(
+    public static TenantCreateInput createValidInput() {
+        return new TenantCreateInput(
                 TEST_TENANT_NAME,
                 TEST_TENANT_SLUG,
                 TenantEnvironment.DEVELOPMENT,
@@ -35,20 +35,20 @@ public final class TenantTestDataFactory {
         );
     }
 
-    public static TenantInput createInputWithName(String name) {
-        return new TenantInput(name, TEST_TENANT_SLUG, TenantEnvironment.DEVELOPMENT, TEST_ISSUER);
+    public static TenantCreateInput createInputWithName(String name) {
+        return new TenantCreateInput(name, TEST_TENANT_SLUG, TenantEnvironment.DEVELOPMENT, TEST_ISSUER);
     }
 
-    public static TenantInput createInputWithSlug(String slug) {
-        return new TenantInput(TEST_TENANT_NAME, slug, TenantEnvironment.DEVELOPMENT, TEST_ISSUER);
+    public static TenantCreateInput createInputWithSlug(String slug) {
+        return new TenantCreateInput(TEST_TENANT_NAME, slug, TenantEnvironment.DEVELOPMENT, TEST_ISSUER);
     }
 
-    public static TenantInput createInputWithEnvironment(TenantEnvironment environment) {
-        return new TenantInput(TEST_TENANT_NAME, TEST_TENANT_SLUG, environment, TEST_ISSUER);
+    public static TenantCreateInput createInputWithEnvironment(TenantEnvironment environment) {
+        return new TenantCreateInput(TEST_TENANT_NAME, TEST_TENANT_SLUG, environment, TEST_ISSUER);
     }
 
-    public static TenantInput createInputWithIssuer(String issuer) {
-        return new TenantInput(TEST_TENANT_NAME, TEST_TENANT_SLUG, TenantEnvironment.DEVELOPMENT, issuer);
+    public static TenantCreateInput createInputWithIssuer(String issuer) {
+        return new TenantCreateInput(TEST_TENANT_NAME, TEST_TENANT_SLUG, TenantEnvironment.DEVELOPMENT, issuer);
     }
 
     public static TenantUpdateInput createValidUpdateInput() {

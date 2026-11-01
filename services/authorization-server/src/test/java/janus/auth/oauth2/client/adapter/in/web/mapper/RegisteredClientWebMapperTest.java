@@ -2,7 +2,7 @@ package janus.auth.oauth2.client.adapter.in.web.mapper;
 
 import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientRequest;
 import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientResponse;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.common.type.GrantType;
@@ -41,7 +41,7 @@ public class RegisteredClientWebMapperTest {
                 TEST_SCOPE,
                 TEST_DESCRIPTION
         );
-        var expected = new RegisteredClientInput(
+        var expected = new RegisteredClientCreateInput(
                 request.redirectUris(),
                 request.tokenEndpointAuthMethod(),
                 request.grantTypes(),

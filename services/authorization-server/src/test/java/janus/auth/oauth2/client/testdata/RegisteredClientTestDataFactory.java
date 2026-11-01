@@ -2,7 +2,7 @@ package janus.auth.oauth2.client.testdata;
 
 import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientRequest;
 import janus.auth.oauth2.client.adapter.in.web.dto.RegisteredClientResponse;
-import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientInput;
+import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientCreateInput;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClientOutput;
 import janus.auth.oauth2.client.domain.type.ClientAuthenticationMethod;
 import janus.auth.oauth2.common.type.GrantType;
@@ -29,7 +29,7 @@ public final class RegisteredClientTestDataFactory {
     private RegisteredClientTestDataFactory() {
     }
 
-    public static RegisteredClientInput createValidConfidentialInput() {
+    public static RegisteredClientCreateInput createValidConfidentialInput() {
         return createInput(
                 Set.of(),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -40,7 +40,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createValidConfidentialAuthorizationCodeInput() {
+    public static RegisteredClientCreateInput createValidConfidentialAuthorizationCodeInput() {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -51,7 +51,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createValidPublicInput() {
+    public static RegisteredClientCreateInput createValidPublicInput() {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.NONE,
@@ -109,7 +109,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createAuthorizationCodeInputWithoutRedirectUri() {
+    public static RegisteredClientCreateInput createAuthorizationCodeInputWithoutRedirectUri() {
         return createInput(
                 Set.of(),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -120,7 +120,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createAuthorizationCodeInputWithoutResponseType() {
+    public static RegisteredClientCreateInput createAuthorizationCodeInputWithoutResponseType() {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -131,7 +131,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createClientCredentialsInputWithCodeResponseType() {
+    public static RegisteredClientCreateInput createClientCredentialsInputWithCodeResponseType() {
         return createInput(
                 Set.of(),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -142,7 +142,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createPublicClientCredentialsInput() {
+    public static RegisteredClientCreateInput createPublicClientCredentialsInput() {
         return createInput(
                 Set.of(),
                 ClientAuthenticationMethod.NONE,
@@ -153,7 +153,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createInputWithRedirectUri(String redirectUri) {
+    public static RegisteredClientCreateInput createInputWithRedirectUri(String redirectUri) {
         return createInput(
                 Collections.singleton(redirectUri),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -164,7 +164,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createInputWithClientUri(String clientUri) {
+    public static RegisteredClientCreateInput createInputWithClientUri(String clientUri) {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -175,7 +175,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    public static RegisteredClientInput createInputWithScope(String scope) {
+    public static RegisteredClientCreateInput createInputWithScope(String scope) {
         return createInput(
                 Set.of(TEST_REDIRECT_URI),
                 ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
@@ -186,7 +186,7 @@ public final class RegisteredClientTestDataFactory {
         );
     }
 
-    private static RegisteredClientInput createInput(
+    private static RegisteredClientCreateInput createInput(
             Set<String> redirectUris,
             ClientAuthenticationMethod authenticationMethod,
             Set<GrantType> grantTypes,
@@ -194,7 +194,7 @@ public final class RegisteredClientTestDataFactory {
             String clientUri,
             String scope
     ) {
-        return new RegisteredClientInput(
+        return new RegisteredClientCreateInput(
                 redirectUris,
                 authenticationMethod,
                 grantTypes,

@@ -7,8 +7,9 @@ import janus.tenancy.organization.application.mapper.OrganizationMapper;
 import janus.tenancy.organization.application.port.out.OrganizationRepository;
 import janus.tenancy.organization.application.port.usecase.OrganizationUseCase;
 import janus.tenancy.organization.application.port.usecase.model.Organization;
-import janus.tenancy.organization.application.port.usecase.model.OrganizationInput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationCreateInput;
 import janus.tenancy.organization.application.port.usecase.model.OrganizationOutput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationUpdateInput;
 import janus.tenancy.organization.domain.type.OrganizationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,8 @@ public class OrganizationService implements OrganizationUseCase {
 
     @Override
     @Transactional
-    public OrganizationOutput createOrganization(OrganizationInput input) {
-        validateInput(input);
+    public OrganizationOutput createOrganization(OrganizationCreateInput input) {
+        validateCreateInput(input);
 
         if (repository.existsBySlug(input.slug())) {
             throw new ResourceAlreadyExistsException(ORGANIZATION, "slug", input.slug());
@@ -60,8 +61,8 @@ public class OrganizationService implements OrganizationUseCase {
 
     @Override
     @Transactional
-    public OrganizationOutput updateOrganization(UUID organizationId, OrganizationInput input) {
-        validateInput(input);
+    public OrganizationOutput updateOrganization(UUID organizationId, OrganizationUpdateInput input) {
+        validateUpdateInput(input);
 
         var organization = findOrganization(organizationId);
         if (!organization.getSlug().equals(input.slug())
@@ -101,16 +102,28 @@ public class OrganizationService implements OrganizationUseCase {
                 .orElseThrow(() -> new ResourceNotFoundException(ORGANIZATION, "id",organizationId));
     }
 
-    private void validateInput(OrganizationInput input) {
+    private void validateCreateInput(OrganizationCreateInput input) {
         if (input == null) {
             throw new InvalidRequestException("Organization input must not be null");
         }
 
-        if (input.name() == null || input.name().isBlank()) {
+        validateMutableFields(input.name(), input.slug());
+    }
+
+    private void validateUpdateInput(OrganizationUpdateInput input) {
+        if (input == null) {
+            throw new InvalidRequestException("Organization update input must not be null");
+        }
+
+        validateMutableFields(input.name(), input.slug());
+    }
+
+    private void validateMutableFields(String name, String slug) {
+        if (name == null || name.isBlank()) {
             throw new InvalidRequestException("Organization name must not be null or blank");
         }
 
-        if (input.slug() == null || input.slug().isBlank()) {
+        if (slug == null || slug.isBlank()) {
             throw new InvalidRequestException("Organization slug must not be null or blank");
         }
     }

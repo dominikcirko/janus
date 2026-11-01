@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc7591#section-2">RFC 7591, Section 2</a>
  */
-public record RegisteredClientInput(
+public record RegisteredClientCreateInput(
         Set<String> redirectUris,
         ClientAuthenticationMethod tokenEndpointAuthMethod,
         Set<GrantType> grantTypes,

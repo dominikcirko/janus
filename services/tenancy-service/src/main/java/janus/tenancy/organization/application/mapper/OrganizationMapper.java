@@ -1,8 +1,9 @@
 package janus.tenancy.organization.application.mapper;
 
 import janus.tenancy.organization.application.port.usecase.model.Organization;
-import janus.tenancy.organization.application.port.usecase.model.OrganizationInput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationCreateInput;
 import janus.tenancy.organization.application.port.usecase.model.OrganizationOutput;
+import janus.tenancy.organization.application.port.usecase.model.OrganizationUpdateInput;
 import janus.tenancy.organization.domain.type.OrganizationStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,13 +18,13 @@ public interface OrganizationMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "ACTIVE")
-    Organization toOrganization(OrganizationInput input);
+    Organization toOrganization(OrganizationCreateInput input);
 
     @Mapping(target = "id", source = "organization.id")
     @Mapping(target = "name", source = "input.name")
     @Mapping(target = "slug", source = "input.slug")
     @Mapping(target = "status", source = "organization.status")
-    Organization toUpdatedOrganization(Organization organization, OrganizationInput input);
+    Organization toUpdatedOrganization(Organization organization, OrganizationUpdateInput input);
 
     @Mapping(target = "id", source = "organization.id")
     @Mapping(target = "name", source = "organization.name")
