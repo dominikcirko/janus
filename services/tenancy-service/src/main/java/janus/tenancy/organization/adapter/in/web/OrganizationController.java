@@ -67,7 +67,8 @@ public class OrganizationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public OrganizationResponse updateOrganization(
-            @PathVariable UUID organizationId, @Valid @RequestBody OrganizationRequest request) {
+            @PathVariable UUID organizationId,
+            @Valid @RequestBody OrganizationRequest request) {
         var input = organizationWebMapper.toInput(request);
         var output = organizationUseCase.updateOrganization(organizationId, input);
 
@@ -81,7 +82,8 @@ public class OrganizationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public OrganizationResponse changeOrganizationStatus(
-            @PathVariable UUID organizationId, @Valid @RequestBody OrganizationStatusRequest request) {
+            @PathVariable UUID organizationId,
+            @Valid @RequestBody OrganizationStatusRequest request) {
         var output = organizationUseCase.changeOrganizationStatus(organizationId, request.status());
 
         return organizationWebMapper.toResponse(output);
