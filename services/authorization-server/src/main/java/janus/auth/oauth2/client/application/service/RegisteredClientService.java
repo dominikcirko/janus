@@ -64,11 +64,7 @@ public class RegisteredClientService implements RegisteredClientUseCase {
             clientSecretHash = passwordEncoder.encode(clientSecret);
         }
 
-        var client = mapper.toClient(
-                input,
-                clientId,
-                clientSecretHash
-        );
+        var client = mapper.toClient(input, clientId, clientSecretHash);
         var registeredClient = repository.save(client);
 
         return mapper.toOutput(registeredClient, clientSecret);

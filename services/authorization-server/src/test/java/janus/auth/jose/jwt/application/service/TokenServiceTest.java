@@ -62,7 +62,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    void testWhenTokenIssuanceContextValid_thenReturnSignedJwt() {
+    void testWhenGenericTokenIssuanceContextValid_thenReturnSignedJwt() {
         var context = new TokenIssuanceContext(
                 TEST_ISSUER,
                 TEST_SUBJECT,
