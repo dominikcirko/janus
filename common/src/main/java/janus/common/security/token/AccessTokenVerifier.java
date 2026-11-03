@@ -1,5 +1,6 @@
 package janus.common.security.token;
 
+import janus.common.JwksKeyProvider;
 import janus.common.security.token.exception.InvalidAccessTokenException;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.JsonNode;
@@ -17,6 +18,7 @@ public final class AccessTokenVerifier {
 
     private final ObjectMapper objectMapper;
     private final long clockSkewSeconds;
+    private final JwksKeyProvider jwksKeyProvider;
 
     public VerifiedAccessToken verify(String token) {
 
@@ -35,10 +37,11 @@ public final class AccessTokenVerifier {
         JsonNode payloadNode = objectMapper.readTree(payloadBytes);
         validatePayload(payloadNode);
 
+        String kid = requireText(headerNode, "kid");
+        ECPublicKey trustedPublicKey = jwksKeyProvider.getKey(kid);
+
         validateSignature(parts[0], parts[1], signatureBytes, trustedPublicKey);
 
-
-        // Parse, verify signature, validate claims, return result
     }
 
     private void validateHeader(JsonNode headerNode) {
