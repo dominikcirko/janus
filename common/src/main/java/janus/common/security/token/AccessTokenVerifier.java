@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.Signature;
+import java.security.interfaces.ECPublicKey;
 import java.time.Instant;
 import java.util.Base64;
 
@@ -31,8 +35,7 @@ public final class AccessTokenVerifier {
         JsonNode payloadNode = objectMapper.readTree(payloadBytes);
         validatePayload(payloadNode);
 
-        JsonNode signatureNode = objectMapper.readTree(signatureBytes);
-
+        validateSignature(parts[0], parts[1], signatureBytes, trustedPublicKey);
 
 
         // Parse, verify signature, validate claims, return result
@@ -44,16 +47,12 @@ public final class AccessTokenVerifier {
         String type = requireText(headerNode, "typ");
         if (!(type.equals("at+jwt")
                 || type.equals("application/at+jwt"))) {
-            throw new InvalidAccessTokenException(
-                    "typ must be 'at+jwt' or 'application/at+jwt'"
-            );
+            throw new InvalidAccessTokenException("typ must be 'at+jwt' or 'application/at+jwt'");
         }
 
         String algorithm = requireText(headerNode, "alg");
         if (!algorithm.equals("ES256")) {
-            throw new InvalidAccessTokenException(
-                    "Signing algorithm must be 'ES256'"
-            );
+            throw new InvalidAccessTokenException("Signing algorithm must be 'ES256'");
         }
     }
 
@@ -82,6 +81,29 @@ public final class AccessTokenVerifier {
         }
 
         validateTimestamps(payloadNode);
+    }
+
+    private void validateSignature(String encodedHeader, String encodedPayload,
+            byte[] signatureBytes, ECPublicKey trustedPublicKey) {
+        if (signatureBytes.length != 64) {
+            throw new InvalidAccessTokenException("ES256 signature must be 64 bytes");
+        }
+
+        try {
+            Signature verifier = Signature.getInstance("SHA256withECDSAinP1363Format");
+            verifier.initVerify(trustedPublicKey);
+
+            byte[] signingInput = (encodedHeader + "." + encodedPayload)
+                    .getBytes(StandardCharsets.US_ASCII);
+
+            verifier.update(signingInput);
+
+            if (!verifier.verify(signatureBytes)) {
+                throw new InvalidAccessTokenException("Invalid JWT signature");
+            }
+        } catch (GeneralSecurityException ex) {
+            throw new InvalidAccessTokenException("JWT signature verification failed", ex);
+        }
     }
 
     private void validateTimestamps(JsonNode payload) {
