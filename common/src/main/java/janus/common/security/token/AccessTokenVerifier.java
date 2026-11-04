@@ -19,6 +19,7 @@ public final class AccessTokenVerifier {
     private final ObjectMapper objectMapper;
     private final long clockSkewSeconds;
     private final JwksKeyProvider jwksKeyProvider;
+    private final String expectedAudience;
 
     public VerifiedAccessToken verify(String token) {
 
@@ -41,6 +42,7 @@ public final class AccessTokenVerifier {
         ECPublicKey trustedPublicKey = jwksKeyProvider.getKey(kid);
 
         validateSignature(parts[0], parts[1], signatureBytes, trustedPublicKey);
+        validateAudience(payloadNode);
 
     }
 
@@ -86,6 +88,24 @@ public final class AccessTokenVerifier {
         validateTimestamps(payloadNode);
     }
 
+    private void validateAudience(JsonNode payloadNode) {
+        JsonNode audience = requireClaim(payloadNode, "aud");
+
+        if (audience.isString()) {
+            if (expectedAudience.equals(audience.stringValue())) {
+                return;
+            }
+        } else if (audience.isArray()) {
+            for (JsonNode value : audience) {
+                if (value.isString() && expectedAudience.equals(value.stringValue())) {
+                    return;
+                }
+            }
+        }
+
+        throw new InvalidAccessTokenException("Token audience does not include this API");
+    }
+
     private void validateSignature(String encodedHeader, String encodedPayload,
             byte[] signatureBytes, ECPublicKey trustedPublicKey) {
         if (signatureBytes.length != 64) {
@@ -121,9 +141,7 @@ public final class AccessTokenVerifier {
         }
 
         if (!expiresAtNode.isIntegralNumber() || !expiresAtNode.canConvertToLong()) {
-            throw new InvalidAccessTokenException(
-                    "exp must be an integer timestamp within the supported range"
-            );
+            throw new InvalidAccessTokenException("exp must be an integer timestamp within the supported range");
         }
 
         long issuedAt = issuedAtNode.longValue();
