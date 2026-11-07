@@ -3,6 +3,7 @@ package janus.common.security.token;
 import janus.common.JwksKeyProvider;
 import janus.common.security.token.exception.InvalidAccessTokenException;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -12,38 +13,73 @@ import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public final class AccessTokenVerifier {
+
+    /**
+     * Enforces the OAuth scope-token syntax for each name after splitting the scope claim.
+     * Requires one or more printable ASCII characters, excluding spaces, double quotes,
+     * and backslashes, so malformed scope names are rejected before exposing granted scopes.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.3">RFC 6749, Section 3.3</a>
+     */
+    private static final Pattern OAUTH_SCOPE_TOKEN_PATTERN = Pattern.compile(
+            "[\\x21\\x23-\\x5B\\x5D-\\x7E]+"
+    );
 
     private final ObjectMapper objectMapper;
     private final long clockSkewSeconds;
     private final JwksKeyProvider jwksKeyProvider;
     private final String expectedAudience;
+    private final TenantIssuerClient tenantIssuerClient;
 
     public VerifiedAccessToken verify(String token) {
+        if (token == null || token.isBlank()) {
+            throw new InvalidAccessTokenException("Access token must not be blank");
+        }
 
         var decoder = Base64.getUrlDecoder();
 
         String[] parts = token.split("\\.", -1);
         if(parts.length != 3) throw new InvalidAccessTokenException("JWT must have 3 parts");
+        for (String part : parts) {
+            if (part.isEmpty()) {
+                throw new InvalidAccessTokenException("JWT parts must not be empty");
+            }
+        }
 
-        byte[] headerBytes = decoder.decode(parts[0]);
-        byte[] payloadBytes = decoder.decode(parts[1]);
-        byte[] signatureBytes = decoder.decode(parts[2]);
+        JsonNode headerNode;
+        JsonNode payloadNode;
+        byte[] signatureBytes;
+        try {
+            headerNode = objectMapper.readTree(decoder.decode(parts[0]));
+            payloadNode = objectMapper.readTree(decoder.decode(parts[1]));
+            signatureBytes = decoder.decode(parts[2]);
+        } catch (IllegalArgumentException | JacksonException ex) {
+            throw new InvalidAccessTokenException("Malformed JWT encoding or JSON", ex);
+        }
 
-        JsonNode headerNode = objectMapper.readTree(headerBytes);
         validateHeader(headerNode);
-
-        JsonNode payloadNode = objectMapper.readTree(payloadBytes);
         validatePayload(payloadNode);
 
         String kid = requireText(headerNode, "kid");
         ECPublicKey trustedPublicKey = jwksKeyProvider.getKey(kid);
 
         validateSignature(parts[0], parts[1], signatureBytes, trustedPublicKey);
-        validateAudience(payloadNode);
+        Set<String> audiences = validateAudience(payloadNode);
+        UUID tenantId = readTenantId(payloadNode);
+        String issuer = requireText(payloadNode, "iss");
+        if (!tenantIssuerClient.getIssuer(tenantId).equals(issuer)) {
+            throw new InvalidAccessTokenException("Token issuer does not match its tenant");
+        }
 
+        return new VerifiedAccessToken(issuer, requireText(payloadNode, "sub"), tenantId,
+                requireText(payloadNode, "client_id"), audiences, readScopes(payloadNode));
     }
 
     private void validateHeader(JsonNode headerNode) {
@@ -88,22 +124,53 @@ public final class AccessTokenVerifier {
         validateTimestamps(payloadNode);
     }
 
-    private void validateAudience(JsonNode payloadNode) {
+    private Set<String> validateAudience(JsonNode payloadNode) {
         JsonNode audience = requireClaim(payloadNode, "aud");
+        var audiences = new HashSet<String>();
 
         if (audience.isString()) {
-            if (expectedAudience.equals(audience.stringValue())) {
-                return;
-            }
-        } else if (audience.isArray()) {
+            audiences.add(audience.stringValue());
+        } else {
             for (JsonNode value : audience) {
-                if (value.isString() && expectedAudience.equals(value.stringValue())) {
-                    return;
-                }
+                audiences.add(value.stringValue());
             }
         }
 
-        throw new InvalidAccessTokenException("Token audience does not include this API");
+        if (!audiences.contains(expectedAudience)) {
+            throw new InvalidAccessTokenException("Token audience does not include this API");
+        }
+        return Set.copyOf(audiences);
+    }
+
+    private UUID readTenantId(JsonNode payloadNode) {
+        String tenantId = requireText(payloadNode, "tenant_id");
+        try {
+            return UUID.fromString(tenantId);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidAccessTokenException("tenant_id must be a UUID", ex);
+        }
+    }
+
+    private Set<String> readScopes(JsonNode payloadNode) {
+        JsonNode scope = payloadNode.get("scope");
+        if (scope == null) {
+            return Set.of();
+        }
+        if (!scope.isString()) {
+            throw new InvalidAccessTokenException("scope must be a space-separated string");
+        }
+        if (scope.stringValue().isEmpty()) {
+            return Set.of();
+        }
+
+        var scopes = new HashSet<String>();
+        for (String value : scope.stringValue().split(" ", -1)) {
+            if (!OAUTH_SCOPE_TOKEN_PATTERN.matcher(value).matches()) {
+                throw new InvalidAccessTokenException("scope must contain valid space-separated scope names");
+            }
+            scopes.add(value);
+        }
+        return Set.copyOf(scopes);
     }
 
     private void validateSignature(String encodedHeader, String encodedPayload,

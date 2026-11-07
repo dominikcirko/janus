@@ -18,6 +18,7 @@ public class InternalServiceAuthenticator {
         this.serviceToken = serviceToken.strip().getBytes(StandardCharsets.UTF_8);
     }
 
+    // TODO: replace shared-secret authn with mTLS
     public boolean isAuthenticated(String authorization) {
         if (serviceToken.length == 0 || authorization == null
                 || !authorization.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
