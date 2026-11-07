@@ -12,7 +12,8 @@ public final class TenantContext {
         return TENANT_ID.get();
     }
 
-    public static void runWithTenant(UUID tenantId, Runnable action) {
-        ScopedValue.where(TENANT_ID, tenantId).run(action);
+    public static <R, X extends Throwable> R callWithTenant(
+            UUID tenantId, ScopedValue.CallableOp<R, X> action) throws X {
+        return ScopedValue.where(TENANT_ID, tenantId).call(action);
     }
 }

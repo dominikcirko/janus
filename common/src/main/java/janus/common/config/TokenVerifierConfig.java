@@ -4,6 +4,7 @@ import janus.common.JwksKeyProvider;
 import janus.common.security.token.AccessTokenVerifier;
 import janus.common.security.token.TenantIssuerClient;
 import janus.common.filters.AccessTokenAuthenticationFilter;
+import janus.common.filters.TenantContextFilter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,8 +43,8 @@ public class TokenVerifierConfig {
             JwksKeyProvider jwksKeyProvider,
             TenantIssuerClient tenantIssuerClient,
             TokenVerifierProperties properties,
-            @Value("${janus.security.clock-skew-seconds:30}") long clockSkewSeconds
-    ) {
+            @Value("${janus.security.clock-skew-seconds:30}") long clockSkewSeconds) {
+
         return new AccessTokenVerifier(objectMapper, clockSkewSeconds, jwksKeyProvider,
                 properties.audience(), tenantIssuerClient);
     }
@@ -52,12 +53,24 @@ public class TokenVerifierConfig {
     private FilterRegistrationBean<AccessTokenAuthenticationFilter> accessTokenAuthenticationFilter(
             AccessTokenVerifier accessTokenVerifier,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
-            TokenVerifierProperties properties
-    ) {
+            TokenVerifierProperties properties) {
+
         var filter = new AccessTokenAuthenticationFilter(accessTokenVerifier, exceptionResolver);
         var registration = new FilterRegistrationBean<>(filter);
         registration.setUrlPatterns(properties.protectedPaths());
         registration.setOrder(0);
+        return registration;
+    }
+
+    @Bean
+    private FilterRegistrationBean<TenantContextFilter> tenantContextFilter(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
+            TokenVerifierProperties properties) {
+
+        var filter = new TenantContextFilter(exceptionResolver);
+        var registration = new FilterRegistrationBean<>(filter);
+        registration.setUrlPatterns(properties.protectedPaths());
+        registration.setOrder(1);
         return registration;
     }
 }
