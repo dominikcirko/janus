@@ -11,8 +11,5 @@ janus:
       password: ${JANUS_SIGNING_KEYSTORE_PASSWORD}
   jose:
     x5u_base_url: ${JANUS_X5U_BASE_URL}
-    #todo: jwks uri currently uses http. when we introduce tls, change the var to https
-    #todo: introduce tls when ready for traefik & k8s
-    jwks-uri: ${JANUS_JWKS_URI}
 app:
   debug: true

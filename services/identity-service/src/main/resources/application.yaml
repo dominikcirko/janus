@@ -12,5 +12,13 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+janus:
+  security:
+    audience: ${JANUS_IDENTITY_AUDIENCE:identity-service}
+    tenant-issuer-service-url: ${JANUS_TENANT_ISSUER_SERVICE_URL}
+    tenant-issuer-service-token: ${JANUS_TENANT_ISSUER_SERVICE_TOKEN}
+  jose:
+    jwks-uri: ${JANUS_JWKS_URI}
+
 app:
   debug: false

@@ -12,5 +12,15 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+janus:
+  security:
+    audience: ${JANUS_AUTHORIZATION_AUDIENCE:authorization-server}
+    tenant-issuer-service-url: ${JANUS_TENANT_ISSUER_SERVICE_URL}
+    tenant-issuer-service-token: ${JANUS_TENANT_ISSUER_SERVICE_TOKEN}
+  jose:
+    #todo: jwks uri currently uses http. when we introduce tls, change the var to https
+    #todo: introduce tls when ready for traefik & k8s
+    jwks-uri: ${JANUS_JWKS_URI}
+
 app:
   debug: false
