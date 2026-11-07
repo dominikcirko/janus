@@ -3,11 +3,15 @@ package janus.common.config;
 import janus.common.JwksKeyProvider;
 import janus.common.security.token.AccessTokenVerifier;
 import janus.common.security.token.TenantIssuerClient;
+import janus.common.filters.AccessTokenAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
@@ -42,5 +46,18 @@ public class TokenVerifierConfig {
     ) {
         return new AccessTokenVerifier(objectMapper, clockSkewSeconds, jwksKeyProvider,
                 properties.audience(), tenantIssuerClient);
+    }
+
+    @Bean
+    private FilterRegistrationBean<AccessTokenAuthenticationFilter> accessTokenAuthenticationFilter(
+            AccessTokenVerifier accessTokenVerifier,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
+            TokenVerifierProperties properties
+    ) {
+        var filter = new AccessTokenAuthenticationFilter(accessTokenVerifier, exceptionResolver);
+        var registration = new FilterRegistrationBean<>(filter);
+        registration.setUrlPatterns(properties.protectedPaths());
+        registration.setOrder(0);
+        return registration;
     }
 }

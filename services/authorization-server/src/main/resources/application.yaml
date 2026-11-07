@@ -14,6 +14,8 @@ spring:
 
 janus:
   security:
+    protected-paths:
+      - /api/*
     audience: ${JANUS_AUTHORIZATION_AUDIENCE:authorization-server}
     tenant-issuer-service-url: ${JANUS_TENANT_ISSUER_SERVICE_URL}
     tenant-issuer-service-token: ${JANUS_TENANT_ISSUER_SERVICE_TOKEN}

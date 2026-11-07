@@ -3,7 +3,7 @@ package janus.identity.user.application.service;
 import jakarta.persistence.EntityManager;
 import janus.TestcontainersConfiguration;
 import janus.common.config.JpaAuditingConfig;
-import janus.identity.config.PasswordEncodingConfig;
+import janus.common.config.PasswordEncodingConfig;
 import janus.identity.user.adapter.out.persistence.JpaPasswordCredentialRepository;
 import janus.identity.user.adapter.out.persistence.JpaUserRepository;
 import janus.identity.user.adapter.out.persistence.PasswordCredentialRepositoryAdapter;
