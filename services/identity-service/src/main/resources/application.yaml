@@ -2,6 +2,13 @@ spring:
   application:
     name: identity-service
 
+  data:
+    jpa:
+      repositories:
+        # Startup query initialization opens entity managers without a tenant, which our resolver rejects.
+        # Initialize repositories on first use inside a tenant-bound request.
+        bootstrap-mode: lazy
+
   jpa:
     hibernate:
       ddl-auto: validate
