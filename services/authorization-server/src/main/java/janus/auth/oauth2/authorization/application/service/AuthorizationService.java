@@ -6,8 +6,11 @@ import janus.auth.oauth2.authorization.domain.exception.AuthorizationError;
 import janus.auth.oauth2.authorization.domain.exception.AuthorizationException;
 import janus.auth.oauth2.client.application.port.out.RegisteredClientRepository;
 import janus.auth.oauth2.client.application.port.usecase.model.RegisteredClient;
+import janus.auth.oauth2.client.application.service.ClientTenantResolver;
 import janus.auth.oauth2.common.type.CodeChallengeMethod;
 import janus.auth.oauth2.common.type.ResponseType;
+import janus.common.TenantContext;
+import janus.common.exceptionhandler.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class AuthorizationService implements AuthorizationUseCase {
 
     private final RegisteredClientRepository clientRepository;
+    private final ClientTenantResolver clientTenantResolver;
 
     /**
      * Enforces the space-delimited OAuth scope-token syntax.
@@ -48,12 +53,23 @@ public class AuthorizationService implements AuthorizationUseCase {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1">RFC 6749, Section 4.1.1</a>
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1">RFC 6749, Section 4.1.2.1</a>
      */
+    @Override
     public String authorize(AuthorizationInput input) {
-
-        if(input.clientId() == null || input.clientId().isBlank()){
-            throw new AuthorizationException(AuthorizationError.INVALID_REQUEST, "client_id must not be null or blank");
+        if (input == null) {
+            throw new AuthorizationException(AuthorizationError.INVALID_REQUEST, "Authorization request is required");
         }
 
+        UUID tenantId;
+        try {
+            tenantId = clientTenantResolver.resolveClientTenant(input.clientId());
+        } catch (InvalidRequestException ex) {
+            throw new AuthorizationException(AuthorizationError.INVALID_REQUEST, ex.getMessage());
+        }
+
+        return TenantContext.callWithTenant(tenantId, () -> authorizeForTenant(input));
+    }
+
+    private String authorizeForTenant(AuthorizationInput input) {
         RegisteredClient client = clientRepository.findByClientId(input.clientId()).orElseThrow(
                 () -> new AuthorizationException(AuthorizationError.INVALID_REQUEST, "Invalid client_id")
         );

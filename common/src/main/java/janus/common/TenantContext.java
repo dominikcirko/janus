@@ -12,6 +12,10 @@ public final class TenantContext {
         return TENANT_ID.get();
     }
 
+    public static boolean isBound() {
+        return TENANT_ID.isBound();
+    }
+
     public static <R, X extends Throwable> R callWithTenant(
             UUID tenantId, ScopedValue.CallableOp<R, X> action) throws X {
         return ScopedValue.where(TENANT_ID, tenantId).call(action);

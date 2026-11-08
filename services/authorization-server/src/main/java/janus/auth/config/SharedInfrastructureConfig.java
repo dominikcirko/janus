@@ -1,5 +1,6 @@
 package janus.auth.config;
 
+import janus.auth.oauth2.client.adapter.out.persistence.HibernateClientTenantLookup;
 import janus.common.TenantIdentifierResolver;
 import janus.common.config.ApiVersioningConfig;
 import janus.common.config.JpaAuditingConfig;
@@ -22,7 +23,7 @@ public class SharedInfrastructureConfig {
 
     @Bean
     private HibernatePropertiesCustomizer tenantHibernateProperties(
-            TenantIdentifierResolver tenantIdentifierResolver) {
+            HibernateClientTenantLookup tenantIdentifierResolver) {
         return properties -> properties.put(
                 MultiTenancySettings.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantIdentifierResolver
         );
