@@ -2,6 +2,11 @@ spring:
   application:
     name: authorization-server
 
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: lazy
+
   jpa:
     hibernate:
       ddl-auto: validate

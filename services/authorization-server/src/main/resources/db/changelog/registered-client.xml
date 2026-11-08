@@ -38,4 +38,17 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="002-require-client-tenant" author="janus">
+        <preConditions onFail="HALT" onError="HALT"
+                       onFailMessage="Assign tenant_id to existing registered clients before applying tenant isolation.">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM registered_client WHERE tenant_id IS NULL
+            </sqlCheck>
+        </preConditions>
+
+        <addNotNullConstraint tableName="registered_client"
+                              columnName="tenant_id"
+                              columnDataType="UUID"/>
+    </changeSet>
+
 </databaseChangeLog>

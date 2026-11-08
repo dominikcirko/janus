@@ -8,6 +8,7 @@ import janus.auth.oauth2.common.type.GrantType;
 import janus.auth.oauth2.common.type.ResponseType;
 import janus.common.AbstractEntity;
 import lombok.*;
+import org.hibernate.annotations.TenantId;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -26,7 +27,8 @@ import java.util.UUID;
 @Table(name = "registered_client")
 public class RegisteredClientEntity extends AbstractEntity {
 
-    @Column(name = "tenant_id", updatable = false)
+    @TenantId
+    @Column(name = "tenant_id", nullable = false, updatable = false)
     private UUID tenantId;
 
     @Enumerated(EnumType.STRING)
